@@ -1,0 +1,33 @@
+{
+    "/sites/*": {
+        "target": "http://localhost:4298",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/_api/*": {
+        "target": "http://localhost:4298",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug",
+        "pathRewrite": {}
+    },
+    "/teams/*": {
+        "target": "http://localhost:4298",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/_vti_bin/*": {
+        "target": "http://localhost:4298",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    },
+    "/_layouts/*": {
+        "target": "http://localhost:4298",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}

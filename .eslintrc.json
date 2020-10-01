@@ -1,0 +1,52 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": ["./tsconfig.eslint.json"],
+        "tsconfigRootDir": "__dirname",
+        "ecmaVersion": 6
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "@angular-eslint",
+        "@typescript-eslint",
+        "import/typescript",
+        "import/errors",
+        "import/warnings",
+        "json"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "prettier",
+        "plugin:prettier/recommended",
+        "plugin:json/recommended",
+        "prettier/@typescript-eslint"
+    ],
+    "overriders": [
+        {
+            "files": "['*.component.html']",
+            "parser": "@angular-eslint/template-parser",
+            "plugins": "['@angular-eslint/template']",
+            "rules": {
+                "@angular-eslint/template/banana-in-a-box": "error",
+                "@angular-eslint/template/cyclomatic-complexity": "error",
+                "@angular-eslint/template/no-call-expression": "error",
+                "@angular-eslint/template/no-negated-async": "error",
+                "@angular-eslint/template/i18n": [
+                    "error",
+                    {
+                        "checkId": false,
+                        "checkText": true,
+                        "checkAttributes": true,
+                        "ignoreAttributes": ["field", "identifier"]
+                    }
+                ]
+            }
+        }
+    ],
+    "rules": {}
+}
