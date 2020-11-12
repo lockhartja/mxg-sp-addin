@@ -29,9 +29,7 @@
                             "src/app/main/angular-material-elements"
                         ],
                         "styles": ["src/styles.scss"],
-                        "scripts": [
-                            "src/@data/breeze-providers/datajs-1.1.3.js"
-                        ],
+                        "scripts": [],
                         "showCircularDependencies": false,
                         "allowedCommonJsDependencies": [
                             "lodash",
@@ -43,7 +41,9 @@
                             "crossvent",
                             "dom-plane",
                             "dom-set",
-                            "@mattlewis92/dom-autoscroller"
+                            "@mattlewis92/dom-autoscroller",
+                            "papaparse",
+                            "xml-js"
                         ]
                     },
                     "configurations": {
@@ -121,10 +121,7 @@
                 "lint": {
                     "builder": "@angular-eslint/builder:lint",
                     "options": {
-                        "lintFilePatterns": [
-                            "src/**/*.ts",
-                            "src/**/*.component.html"
-                        ],
+                        "lintFilePatterns": ["src/**/*.ts", "src/**/*.component.html"],
                         "exclude": ["**/node_modules/**", "**/@fuse/**"]
                     }
                 }

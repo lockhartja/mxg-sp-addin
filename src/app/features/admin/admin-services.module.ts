@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-    EmServiceProviderConfig,
-    EmServiceProviderFactory,
-    RepoFactory,
-} from '@data';
+import { EmServiceProviderConfig, EmServiceProviderFactory, RepoFactory } from '@data';
 import { MaterialModule } from 'app/material.module';
 
 export function emProviderFactory() {

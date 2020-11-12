@@ -1,50 +1,28 @@
-declare var OData: any;
+import { HttpHeaders } from '@angular/common/http';
+import { KnownHttpHeaders, KnownHttpMethods } from '@atypes';
+import { PossibleNameSpace } from './sharepoint-list';
 
-export interface IODataRequest {
-    method: 'POST';
-    requestUri: string;
-    headers: {
-        Accept: string;
-        MaxDataServiceVersion: string;
-        DataServiceVersion: string;
-        'CONTENT-TYPE'?: string;
-        'X-REQUESTDIGEST': string;
-    };
-    data?: IODataBatchData;
+export interface IBatchConfig {
+    batchUriEndpoint: PossibleNameSpace;
+    namespace: PossibleNameSpace;
+    batchRequests: IBatchInternalRequest[];
 }
 
-export type HttpMethods = 'GET' | 'POST' | 'DELETE' | 'MERGE';
-
-export interface IOdataaChangeSet {
-    method: HttpMethods | string;
-    requestUri: string;
-    data: object;
-    headers: {
-        DataServiceVersion: string;
-        'CONTENT-ID'?: number;
-        Accept: string;
-    };
+export interface IBatchInternalRequest {
+    internalUri: string;
+    headers?: Record<KnownHttpHeaders, string | number>;
+    contentId: string | number;
+    method?: KnownHttpMethods;
+    data?: unknown;
+    etag?: string;
 }
 
-export interface IODataBatchData {
-    __batchRequests: Array<{
-        __changeRequests: IOdataaChangeSet[];
-    }>;
-}
-
-export interface IODataBatchResponse {
-    body: string;
-    data: { results: any[] };
-    headers: { [index: string]: string };
-    statusCode: number;
+export interface IBatchParseResponse {
+    contentId: string;
+    headers: HttpHeaders;
+    responseBatchGroup: string;
+    status: number;
     statusText: string;
-}
-
-export interface IODataPayload {
-    body: string;
-    data: { __batchResponses: IODataBatchResponse[] };
-    headers: Array<{ [index: string]: string }>;
-    requestUri: string;
-    statusCode: number;
-    statusText: string;
+    data: unknown;
+    error: unknown;
 }

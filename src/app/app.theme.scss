@@ -67,8 +67,7 @@ $typography: mat-typography-config(
     $title: mat-typography-level(20px, 32px, 600),
     $body-2: mat-typography-level(14px, 24px, 600),
     $button: mat-typography-level(14px, 14px, 600),
-    $input: mat-typography-level(16px, 1.125, 400)
-        // line-height must be unitless !!!,,,
+    $input: mat-typography-level(16px, 1.125, 400) // line-height must be unitless !!!,,,,,,
 );
 
 // Setup the typography
@@ -79,13 +78,12 @@ $typography: mat-typography-config(
 // -----------------------------------------------------------------------------------------------------
 
 // Import app and page component themes here to enable theming for them
-@import 'src/app/layout/components/chat-panel/chat-panel.theme';
 @import 'src/app/layout/components/toolbar/toolbar.theme';
+@import '~@sweetalert2/theme-material-ui/material-ui.scss';
 
 // Define a mixin for easier access
 @mixin components-theme($theme) {
     // Layout components
-    @include chat-panel-theme($theme);
     @include toolbar-theme($theme);
 }
 
@@ -99,11 +97,7 @@ $default-accent-palette: mat-palette($mat-light-blue, 600, 400, 700);
 $default-warn-palette: mat-palette($mat-red);
 
 // Create the Material theme object
-$theme: mat-light-theme(
-    $default-primary-palette,
-    $default-accent-palette,
-    $default-warn-palette
-);
+$theme: mat-light-theme($default-primary-palette, $default-accent-palette, $default-warn-palette);
 
 // Add ".theme-default" class to the body to activate this theme.
 // Class name must start with "theme-" !!!

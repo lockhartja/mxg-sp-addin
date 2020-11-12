@@ -1,6 +1,6 @@
-import { SharepointEntity } from '../sp-global/sharepoint-entity';
+import { SpListEntityBase } from '../abstract/sp-list-entity-base';
 
-export class UnitKpi extends SharepointEntity {
+export class UnitKpi extends SpListEntityBase {
     readonly namespace = 'SP.Data.Kpi';
     readonly shortName = 'UntKpi';
     personnelName: string;

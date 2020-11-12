@@ -1,28 +1,33 @@
-import { SpBaseEntity } from '../sp-global/base-entity';
+import { SpEntityBase } from '../abstract/sp-entity-base';
 import { XtendedEntityTypeConfig, CustomAppFormGroup } from '@atypes';
 import {
     Validators,
     ValidatorFn,
     AbstractControl,
     ValidationErrors,
+    FormControl,
 } from '@angular/forms';
 import { Validator } from 'breeze-client';
-import * as _m from 'moment';
 
 export const makeFormValidator = (
-    entityType: Partial<XtendedEntityTypeConfig>,
-) => (formGroup: CustomAppFormGroup<any>, targetEntity: SpBaseEntity): void => {
+    entityType: Partial<XtendedEntityTypeConfig>
+) => (
+    formGroup: CustomAppFormGroup<unknown>,
+    targetEntity: SpEntityBase
+): void => {
     const frmCntrlKeys = Object.keys(formGroup.controls);
 
     for (const cntrlKey of frmCntrlKeys) {
         const propValidators = entityType.custom?.formValidators?.propVal.get(
-            cntrlKey,
+            cntrlKey
         );
 
         if (propValidators) {
-            formGroup.controls[cntrlKey].setValidators(propValidators);
+            const formControl = formGroup.controls[cntrlKey] as FormControl;
 
-            formGroup.controls[cntrlKey].updateValueAndValidity({
+            formControl.setValidators(propValidators);
+
+            formControl.updateValueAndValidity({
                 onlySelf: true,
                 emitEvent: false,
             });
@@ -31,7 +36,7 @@ export const makeFormValidator = (
 
     if (entityType.custom?.formValidators?.entityVal.length && targetEntity) {
         const entityLevelValidators = entityType?.custom?.formValidators?.entityVal.map(
-            (ev) => ev(targetEntity),
+            (ev) => ev(targetEntity)
         );
 
         formGroup.setValidators(Validators.compose(entityLevelValidators));
@@ -51,17 +56,11 @@ export const makeFormValidator = (
  * on the Breeze entity type.
  */
 export const transformBreezePropValidatorToFormValidator = (
-    validator: Validator,
+    validator: Validator
 ): ValidatorFn => (cntrl: AbstractControl): ValidationErrors | null => {
-    let currentPropValue = cntrl.value;
-    const validatorName = validator.name ?? validator.context?.propertyName;
+    const currentPropValue = cntrl.value as unknown;
 
-    /**
-     * Mat-Date Picker uses momentjs dates in form controls,
-     */
-    if (_m.isMoment(currentPropValue ?? null)) {
-        currentPropValue = (cntrl.value as _m.Moment).toDate();
-    }
+    const validatorName = validator.name ?? validator.context?.propertyName;
 
     const result = validator.validate(currentPropValue, validator.context);
 
@@ -79,18 +78,15 @@ export const transformBreezePropValidatorToFormValidator = (
  */
 export const transformBreezeEntityValidatorToFormValidator = (
     validator: Validator,
-    requiredProps: string[],
-) => (entity: SpBaseEntity): ValidatorFn => (cntrl: AbstractControl) => {
+    requiredProps: string[]
+) => (entity: SpEntityBase): ValidatorFn => (cntrl: AbstractControl) => {
     validator.context = validator.context || {};
 
     requiredProps.forEach((prop) => {
-        let currentPropValue = cntrl.get(prop)?.value;
+        const currentPropValue = cntrl.get(prop) as FormControl;
 
-        /**
-         * Mat-Date Picker uses momentjs dates in form controls,
-         */
-        if (_m.isMoment(currentPropValue ?? null)) {
-            currentPropValue = (cntrl.value as _m.Moment).toDate();
+        if (!currentPropValue) {
+            return;
         }
 
         validator.context[prop] = currentPropValue;

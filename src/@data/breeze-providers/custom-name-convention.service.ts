@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
+import { IBzCustomNameDictionary } from '@atypes';
 import { DataProperty, EntityType, NamingConvention } from 'breeze-client';
-import { DataAccessModule } from '../data-access.module';
-
-export interface ICustomClientDict {
-    [index: string]: { [index: string]: string };
-}
 
 /*
  *
@@ -31,7 +27,7 @@ export interface ICustomClientDict {
  */
 @Injectable({ providedIn: 'root' })
 export class CustomNameConventionService {
-    private clientToServerDictionary: ICustomClientDict;
+    private clientToServerDictionary: IBzCustomNameDictionary;
     private serverToClientDictionary: { [index: string]: EntityType };
     private sourceConvention: NamingConvention;
 
@@ -42,7 +38,7 @@ export class CustomNameConventionService {
     createNameDictionary(
         name: string,
         sourceConv: NamingConvention,
-        clientToServerDict: ICustomClientDict
+        clientToServerDict: IBzCustomNameDictionary
     ): NamingConvention {
         if (!(sourceConv instanceof NamingConvention)) {
             throw new Error('must be a instance of a Naming Convention');
@@ -54,62 +50,47 @@ export class CustomNameConventionService {
         this.sourceConvention = sourceConv;
         this.serverToClientDictionary = this.makeServerToClientDictionary();
 
-        // tslint:disable-next-line: no-this-assignment
-        const that = this;
         return new NamingConvention({
             name,
-            clientPropertyNameToServer: (
-                namer: string,
-                propDef: DataProperty
-            ): string => {
-                if (
-                    propDef &&
-                    propDef.parentType &&
-                    propDef.parentType.name === '__metadata:#Global'
-                ) {
+            clientPropertyNameToServer: (namer: string, propDef: DataProperty): string => {
+                /**
+                 * Special Case: property names for the SpMetadata entity are lowercase on the
+                 * server, so we need to bypass renaming them.
+                 */
+                if (propDef?.parentType?.name === '__metadata:#global') {
                     return namer;
                 }
-                const typeName =
-                    propDef && propDef.parentType && propDef.parentType.name;
-                const props =
-                    that.clientToServerDictionary[typeName || undefined];
+                const typeName = propDef?.parentType?.name;
+                const props = this.clientToServerDictionary[typeName || undefined];
+
+                /**
+                 * If a SpInternal is found in the dictionary, go ahead and use it in place
+                 * of the client's known name for property.
+                 */
                 const newName = props && props[namer];
-                return (
-                    newName ||
-                    that.sourceConvention.clientPropertyNameToServer(
-                        namer,
-                        propDef
-                    )
-                );
+
+                /**
+                 * if we have either the new name just return in it's proper case. i.e.
+                 * the new name should already be in PascalCase not camelCase.
+                 * or if the nameOnServer is the same as the name on the client, run it through
+                 * breeze's base source convention. In this particular instance it will
+                 * be the camelCase
+                 */
+                return newName || this.sourceConvention.clientPropertyNameToServer(namer, propDef);
             },
-            serverPropertyNameToClient: (
-                namer: string,
-                propDef: DataProperty
-            ): string => {
-                if (
-                    propDef &&
-                    propDef.parentType &&
-                    propDef.name === '__metadata:#Global'
-                ) {
+            serverPropertyNameToClient: (namer: string, propDef: DataProperty): string => {
+                if (propDef?.parentType && propDef?.name === '__metadata:#global') {
                     return namer;
                 }
-                const typeName =
-                    propDef && propDef.parentType && propDef.parentType.name;
-                const props =
-                    that.serverToClientDictionary[typeName || undefined];
-                const newName = props && props[namer];
-                return (
-                    newName ||
-                    that.sourceConvention.serverPropertyNameToClient(
-                        namer,
-                        propDef
-                    )
-                );
+                const typeName = propDef?.parentType?.name;
+                const props = this.serverToClientDictionary[typeName || undefined];
+                const newName = props && (props[namer] as string);
+                return newName || this.sourceConvention.serverPropertyNameToClient(namer, propDef);
             },
         });
     }
 
-    updateDictionary(dict: ICustomClientDict): void {
+    updateDictionary(dict: IBzCustomNameDictionary): void {
         const newDictKeys = Object.keys(dict);
         for (const key of newDictKeys) {
             this.clientToServerDictionary[key] = dict[key];
@@ -117,7 +98,7 @@ export class CustomNameConventionService {
         this.serverToClientDictionary = this.makeServerToClientDictionary();
     }
 
-    // makes new dictionary based on clientToServerDifctionary
+    // makes new dictionary based on clientToServerDictionary
     // that reverses each EntityType's {clientPropName: serverPropName} KV pairs
     makeServerToClientDictionary(): { [index: string]: EntityType } {
         const dict = {};

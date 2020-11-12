@@ -1,6 +1,6 @@
-import { SharepointEntity } from '../sp-global';
+import { SpListEntityBase } from '../abstract';
 
-export class MpRosterTest extends SharepointEntity {
+export class MpRosterTest extends SpListEntityBase {
     readonly namespace = 'SP.Data.Kpi';
     readonly shortName = 'MpRosterTest';
     personnelName: string;

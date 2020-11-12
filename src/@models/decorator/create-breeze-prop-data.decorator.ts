@@ -1,22 +1,17 @@
 // https://medium.com/jspoint/introduction-to-reflect-metadata-package-and-its-ecmascript-proposal-8798405d7d88
 
 import 'reflect-metadata';
-import {
-    decorateBzDataProp,
-    DoNotCare,
-    XtendedEntityTypeCustom,
-} from '@atypes';
-import { DataProperty } from 'breeze-client/';
-import {
-    getEntityType,
-    addDataValidator,
-    ENTITY_TYPE_DEF_KEY,
-} from './decorator-utilities';
-import { DataType, Validator } from 'breeze-client';
-import { makeFormValidator } from './create-form-validator';
+import { Instantiable, XtendedEntityTypeCustom } from '@atypes';
+import { DataProperty, DataType, Validator } from 'breeze-client/';
+import { getEntityType, addDataValidator, ENTITY_TYPE_DEF_KEY } from './decorator-utilities';
 
-export const BzDataProp: typeof decorateBzDataProp = (config = {}) => (
-    target: DoNotCare,
+import { makeFormValidator } from './create-form-validator';
+import { ValidatorFn } from '@angular/forms';
+import { DataPropertyConfig } from 'breeze-client/src/entity-metadata';
+import { SpEntityBase } from '@models/abstract';
+
+export const BzDataProp = <TClass extends SpEntityBase>(config: Partial<DataPropertyConfig> = {}) => (
+    target: TClass,
     propertyKey: string
 ): void => {
     const entityTypeDef = getEntityType(target.constructor);
@@ -32,11 +27,9 @@ export const BzDataProp: typeof decorateBzDataProp = (config = {}) => (
     dataProp.isComplexProperty = !!config.complexTypeName;
 
     if (!config.dataType && !dataProp.isComplexProperty) {
-        const propDataType = Reflect.getOwnMetadata(
-            'design:type',
-            target,
-            propertyKey
-        ).name;
+        const designType = Reflect.getOwnMetadata('design:type', target, propertyKey) as { name: string };
+
+        const propDataType = designType.name;
 
         switch (propDataType.toLowerCase()) {
             case 'string':
@@ -52,36 +45,27 @@ export const BzDataProp: typeof decorateBzDataProp = (config = {}) => (
                 dataProp.dataType = DataType.DateTime;
                 break;
             default:
-                throw new Error(
-                    `Datatype ${propDataType} unknown or missing on Entity`
-                );
+                throw new Error(`Datatype ${propDataType} unknown or missing on Entity`);
         }
     }
 
-    entityTypeDef.custom =
-        entityTypeDef.custom ?? ({} as Partial<XtendedEntityTypeCustom>);
+    entityTypeDef.custom = entityTypeDef.custom ?? ({} as Partial<XtendedEntityTypeCustom>);
 
-    entityTypeDef.custom.formValidators = entityTypeDef.custom
-        .formValidators ?? {
+    entityTypeDef.custom.formValidators = entityTypeDef.custom.formValidators ?? {
         entityVal: [],
-        propVal: new Map(),
+        propVal: new Map<string, ValidatorFn[]>(),
     };
 
-    entityTypeDef.custom.setFormValidators =
-        entityTypeDef.custom.setFormValidators ??
-        makeFormValidator(entityTypeDef);
+    entityTypeDef.custom.setFormValidators = entityTypeDef.custom.setFormValidators ?? makeFormValidator(entityTypeDef);
 
     /** Set required Validator for non-nullable types */
     if (!dataProp.isNullable) {
         addDataValidator(dataProp, Validator.required());
     }
 
-    /** Set maxlength Validator  types */
+    /** Set maxLength Validator  types */
     if (dataProp.maxLength != null && dataProp.dataType === DataType.String) {
-        addDataValidator(
-            dataProp,
-            Validator.maxLength({ maxlength: config.maxLength })
-        );
+        addDataValidator(dataProp, Validator.maxLength({ maxLength: config.maxLength }));
     }
 
     /**

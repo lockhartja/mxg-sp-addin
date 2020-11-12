@@ -1,11 +1,12 @@
+import { Instantiable, SpEntities } from '@atypes';
+import { SpEntityBase } from '@models/abstract';
 import 'reflect-metadata';
-import { DoNotCare } from '@atypes';
 import { ENTITY_TYPE_DEF_KEY, getEntityType } from './decorator-utilities';
 
-export const BzEntityInitializer: MethodDecorator = <T>(
-    target: DoNotCare,
+export const BzEntityInitializer: MethodDecorator = <TClass extends Instantiable<SpEntityBase>>(
+    target: TClass,
     propertyKey: string,
-    descriptor: TypedPropertyDescriptor<T extends Function ? Function : never>
+    descriptor: TypedPropertyDescriptor<unknown>
 ) => {
     const entityType = getEntityType(target);
     entityType.initFn = descriptor.value;

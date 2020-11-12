@@ -2,16 +2,16 @@ import { ENTITY_TYPE_DEF_KEY, getEntityType } from './decorator-utilities';
 import { transformBreezePropValidatorToFormValidator } from './create-form-validator';
 import { Validator } from 'breeze-client';
 import { ValidationFn, ValidationContext } from 'breeze-client/src/validate';
-import { ValidEntity } from '@atypes';
+import { Instantiable, SpEntities } from '@atypes';
+import { ValidatorFn } from '@angular/forms';
+import { SpEntityBase } from '@models/abstract';
 
-export const BzPropValidator = <T>(
-    targetedProp: Extract<keyof T, string>
+export const BzPropValidator = <TClass extends SpEntityBase>(
+    targetedProp: Extract<keyof TClass, string>
 ): MethodDecorator => <U>(
-    entityClass: ValidEntity,
+    entityClass: TClass,
     propertyKey: string,
-    descriptor: TypedPropertyDescriptor<
-        U extends ValidationFn ? ValidationFn : never
-    >
+    descriptor: TypedPropertyDescriptor<U extends ValidationFn ? ValidationFn : never>
 ) => {
     const valCtx: ValidationContext = {
         propertyName: propertyKey,
@@ -32,12 +32,10 @@ export const BzPropValidator = <T>(
     currentEntity.custom = currentEntity.custom ?? {};
 
     const formVal = currentEntity.custom.formValidators ?? {
-        propVal: new Map(),
+        propVal: new Map<string, ValidatorFn[]>(),
     };
 
-    const propLevelValidator = transformBreezePropValidatorToFormValidator(
-        breezeVal
-    );
+    const propLevelValidator = transformBreezePropValidatorToFormValidator(breezeVal);
 
     if (formVal.propVal.has(propertyKey)) {
         const propVals = formVal.propVal.get(propertyKey);

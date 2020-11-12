@@ -1,6 +1,5 @@
 import {
     Entity,
-    EntityKey,
     EntityType,
     MetadataStore,
     DataProperty,
@@ -9,74 +8,82 @@ import {
     EntityChangedEventArgs,
     PropertyChangedEventArgs,
     DataService,
-    EntityState,
     EntityQuery,
-    MergeStrategy,
     SaveContext,
     SaveResult,
     MappingContext,
     SaveBundle,
-    JsonResultsAdapter,
-    StructuralObject,
+    HttpResponse,
+    QueryResult,
 } from 'breeze-client';
 
 import {
-    GetEntityProp,
-    ISpQueryOptions,
-    AllEntityList,
-    GetEntityInNamespace,
     RawEntity,
-    GetEntityTypeFromShortName,
-    ReturnType,
-    ReturnShortName,
-} from './entity-extension';
+    SpEntityNamespaces,
+    SpEntityShortNames,
+    EntityShortNameByNamespace,
+    EntityTypeByShortName,
+} from './sharepoint-entity';
 
 import { ValidatorFn } from '@angular/forms';
-import { DoNotCare, Instantiable, Unarray } from './utility';
-import { SharepointEntity, SharepointMetadata, SpBaseEntity } from '@models';
+import { SpListEntityBase, SpMetadata, SpEntityBase } from '@models';
 import { BehaviorSubject, Subject } from 'rxjs';
-import {
-    DataPropertyConfig,
-    EntityTypeConfig,
-    NavigationPropertyConfig,
-} from 'breeze-client/src/entity-metadata';
+import { EntityTypeConfig } from 'breeze-client/src/entity-metadata';
 import { CustomAppFormGroup } from './custom-form';
-import { CustomDataServiceUtils } from '@data';
-import { EntitySibling } from './sharepoint';
+import { PossibleNameSpace } from './sharepoint-list';
+import { IBatchInternalRequest } from './odata';
+import { HttpHeaders, HttpRequest, HttpResponse as NgResponse } from '@angular/common/http';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { EmDataSource } from '@data/em-service-factory/emDataSource';
 
-export interface IBzNameDict {
-    [index: string]: string;
+export interface XtendedEntityChngEvtArgs<TEntityShortName extends SpEntityShortNames>
+    extends EntityChangedEventArgs {
+    entity: EntityTypeByShortName<TEntityShortName>;
+    args?: XtendedPropChngEvtArgs<TEntityShortName>;
 }
 
-export declare function decorateBzNavProp(
-    reciprocalEntity: Instantiable<EntitySibling<SharepointEntity>>,
-    config?: Partial<NavigationPropertyConfig>
-): PropertyDecorator;
+export interface XtendedPropChngEvtArgs<TEntityShortName extends SpEntityShortNames>
+    extends PropertyChangedEventArgs {
+    entity: EntityTypeByShortName<TEntityShortName>;
+    propertyName: keyof RawEntity<EntityTypeByShortName<TEntityShortName>> & string;
+}
+export interface XtendedBreezeHttpResponse extends HttpResponse {
+    config: HttpRequest<unknown>;
+    headers: HttpHeaders;
+    statusText: string;
+    response: NgResponse<unknown>;
+}
 
-export declare function decorateBzDataProp(
-    config?: Partial<DataPropertyConfig>
-): PropertyDecorator;
-
-export interface XtendedEntChngEvtArgs extends EntityChangedEventArgs {
-    entity: XtendedEntity;
+export interface XtendedDataServiceOpts {
+    odataAppEndpoint: string;
+    serviceNameSpace: PossibleNameSpace;
 }
 
 export interface XtendedDataService extends DataService {
-    getRequestDigest(): Promise<string>;
-    odataAppEndpoint: string;
+    xtendedOptions?: XtendedDataServiceOpts;
+    serviceName: PossibleNameSpace;
 }
 
-export interface XtendedPropChngEvtArgs<TEntity extends SpBaseEntity>
-    extends PropertyChangedEventArgs {
-    entity: TEntity;
-    propertyName: keyof TEntity & string;
+/**
+ * Used only during save operations to capture the contentID
+ * in batch requests.
+ */
+export interface XtendedEntity extends SpListEntityBase {
+    contentId: string;
+    resolveResponse: (
+        this: SpListEntityBase,
+        saveResult: XtendedSaveResult,
+        status: 'success' | 'fail',
+        rawEntity?: SpListEntityBase
+    ) => void;
 }
 
 export interface XtendedEntityTypeCustom {
     defaultSelect: string;
     formValidators: {
         propVal: Map<string, ValidatorFn[]>;
-        entityVal: Array<(entity: SpBaseEntity) => ValidatorFn>;
+        entityVal: Array<(entity: SpEntityBase) => ValidatorFn>;
     };
     /**
      * Sets up the entity type's validators for a given
@@ -84,86 +91,71 @@ export interface XtendedEntityTypeCustom {
      * form group with all associate form controls have
      * been created.
      */
-    setFormValidators(
-        formGroup: CustomAppFormGroup<any>,
-        targetEntity: SpBaseEntity
-    ): void;
+    setFormValidators(formGroup: CustomAppFormGroup<unknown>, targetEntity: SpEntityBase): void;
 }
 
 export interface XtendedEntityTypeConfig extends EntityTypeConfig {
-    //isComplexType: boolean;
     dataProperties: DataProperty[];
     navigationProperties: NavigationProperty[];
-    initFn: Function;
+    initFn: unknown;
     custom: Partial<XtendedEntityTypeCustom>;
 }
 
-export type OnEntityChanges<
-    TEntityName extends AllEntityList['shortName']
-> = GetEntityTypeFromShortName<TEntityName>;
-
-declare function xtendedUnwrapChngValues(
-    entity: SharepointEntity,
-    metadataStore: MetadataStore,
-    transformFn: (dp: DataProperty, val: any) => any
-): {
-    __metadata: Partial<SharepointMetadata>;
-};
-
-declare function xtendedUnwrapInstance(
-    structObj: StructuralObject,
-    transformFn?: (dp: DataProperty, val: any) => any
-): SharepointEntity;
-
-export interface XtendedEntityMgr<TNamespace extends AllEntityList['namespace']>
-    extends EntityManager {
+export interface XtendedEntityMgr<TNamespace extends SpEntityNamespaces> extends EntityManager {
     isSaving: BehaviorSubject<boolean>;
-    dataService: XtendedDataService;
-    helper: {
-        unwrapInstance: typeof xtendedUnwrapInstance;
-        unwrapOriginalValues: (
-            target: StructuralObject,
-            metadataStore: MetadataStore,
-            transformFn?: (dp: DataProperty, val: any) => any
-        ) => {};
-        unwrapChangedValues: typeof xtendedUnwrapChngValues;
-    };
 
-    onEntityStateChanged<
-        TEntityNames extends GetEntityInNamespace<TNamespace, ReturnShortName>[]
-    >(
-        entities: TEntityNames,
-        unsubToken: Subject<any>
-    ): Subject<XtendedPropChngEvtArgs<OnEntityChanges<Unarray<TEntityNames>>>>;
+    dataService: XtendedDataService;
+
+    // entityTypeDataSource<TEntityShortName extends EntityShortNameByNamespace<TNamespace>>(
+    //     entity: TEntityShortName
+    // ): EmDataSource<TNamespace, EntityShortNameByNamespace<TNamespace>>
+
+    entityDataSource<TEntityShortName extends EntityShortNameByNamespace<TNamespace>>(
+        entityName: TEntityShortName,
+        paginator?: MatPaginator,
+        sorter?: MatSort,
+        dataFilter?: BehaviorSubject<
+            [
+                searchProps: Array<keyof RawEntity<EntityTypeByShortName<TEntityShortName>>>,
+                searchValue: string
+            ]
+        >
+    ): EmDataSource<TNamespace, TEntityShortName>;
+
+    onEntityStateChanged<TEntityShortName extends EntityShortNameByNamespace<TNamespace>>(
+        entities: TEntityShortName[],
+        unsubToken: Subject<never>
+    ): Subject<XtendedPropChngEvtArgs<TEntityShortName>>;
 
     onEntityPropertyChanged<
-        TEntityName extends AllEntityList['shortName'],
-        TProps extends Array<keyof RawEntity<OnEntityChanges<TEntityName>>>
+        TEntityShortName extends EntityShortNameByNamespace<TNamespace>,
+        TEntityProps extends Array<keyof RawEntity<EntityTypeByShortName<TEntityShortName>>>
     >(
-        entityName: TEntityName,
-        properties: TProps,
-        unsubToken: Subject<any>
-    ): Subject<XtendedPropChngEvtArgs<OnEntityChanges<TEntityName>>>;
+        entityName: TEntityShortName,
+        propNames: TEntityProps,
+        unsubToken: Subject<never>
+    ): Subject<XtendedPropChngEvtArgs<TEntityShortName>>;
 
-    getEntities<TEntity extends GetEntityInNamespace<TNamespace, ReturnType>>(
-        entityType?: XtendedEntityType | XtendedEntityType[],
-        entityStates?: EntityState | EntityState[]
-    ): TEntity[];
-
-    getEntities<TEntity extends GetEntityInNamespace<TNamespace, ReturnType>>(
-        entityTypeNames?: TEntity['shortName'] | Array<TEntity['shortName']>,
-        entityStates?: EntityState | EntityState[]
-    ): TEntity[];
+    // onEntityPropertyChanged<
+    //     TEntityShortName extends EntityShortNameByNamespace<TNamespace>,
+    //     TEntityProps extends Array<keyof RawEntity<EntityTypeByShortName<TEntityShortName>>>
+    // >(
+    //     entityName: TEntityShortName,
+    //     properties: TEntityProps,
+    //     unsubToken: Subject<unknown>
+    // ): Subject<XtendedPropChngEvtArgs<TEntityShortName>>;
 }
 
-export interface XtendedEntityType extends EntityType {
-    shortName: AllEntityList['shortName'];
-    __metadata: SharepointMetadata;
+export declare class XtendedEntityType extends EntityType {
+    shortName: SpEntityShortNames;
+
+    __metadata: SpMetadata;
+
     custom: {
         defaultSelect?: string;
         formValidators?: {
             propVal: Map<string, ValidatorFn[]>;
-            entityVal: Array<(entity: SpBaseEntity) => ValidatorFn>;
+            entityVal: Array<(entity: SpEntityBase) => ValidatorFn>;
         };
         /**
          * Sets up the entity type's validators for a given
@@ -171,39 +163,39 @@ export interface XtendedEntityType extends EntityType {
          * form group with all associate form controls have
          * been created.
          */
-        setFormValidators(
-            formGroup: CustomAppFormGroup<any>,
-            targetEntity: SpBaseEntity
-        ): void;
+        setFormValidators(formGroup: CustomAppFormGroup<unknown>, targetEntity: SpEntityBase): void;
     };
+
+    createEntity(
+        initialValues?: {
+            [index in keyof RawEntity<
+                EntityTypeByShortName<this['shortName']>
+            >]: EntityTypeByShortName<this['shortName']>[index];
+        }
+    ): EntityTypeByShortName<this['shortName']>;
 }
 
-export interface XtendedEntity extends Entity {
-    entityType: XtendedEntityType;
+export interface XtendedEntityQueryOpts {
+    name?: string;
+    useSpBatchQuery?: boolean;
+    isCamlQuery?: boolean;
+    forceRefresh?: boolean;
+    getAllWithMax?: number;
+    // JSON-stringified Custom string to query as part of sharepoint post operations
+    postData?: string;
 }
 
 export interface XtendedEntityQuery extends EntityQuery {
-    useSpBatchQuery: boolean;
-    name: string;
-    forceRefresh: boolean;
-    getAllWithMax: number;
-    spQueryOptions: ISpQueryOptions;
-    _getToEntityType(
-        metadataStore: MetadataStore,
-        skipFromCheck: boolean
-    ): XtendedEntityType;
+    xtendedOptions?: XtendedEntityQueryOpts;
+    _getToEntityType(metadataStore: MetadataStore, skipFromCheck: boolean): XtendedEntityType;
 }
 
-export interface IPropChgEvtArgs<TEntity extends SpBaseEntity>
-    extends PropertyChangedEventArgs {
+export interface IPropChgEvtArgs<TEntity extends SpEntityBase> extends PropertyChangedEventArgs {
     entity: TEntity;
 }
 
 export interface XtendedSaveContext extends SaveContext {
-    tempKeys: EntityKey[];
-    originalEntities: SharepointEntity[];
-    saveResult: XtendedSaveResult;
-    entityManager: XtendedEntityMgr<any>;
+    dataService: XtendedDataService;
 }
 
 export interface XtendedSaveResult extends SaveResult {
@@ -211,77 +203,48 @@ export interface XtendedSaveResult extends SaveResult {
 }
 
 export interface XtendedSaveBundle extends SaveBundle {
-    entities: SharepointEntity[];
+    entities: SpListEntityBase[];
 }
 
-export interface IHttpResultsData {
-    results: any[];
-    inlineCount: number;
-    httpResponse: any;
+export interface IBreezeVisitNodeResult {
+    entityType: XtendedEntityType;
+    passThru: boolean;
+    node: unknown;
+    ignore: boolean;
 }
 
 export interface XtendedMappingCtx extends MappingContext {
     query: XtendedEntityQuery;
-    entityManager: XtendedEntityMgr<DoNotCare>;
+    entityManager: XtendedEntityMgr<undefined>;
+    dataService: XtendedDataService;
+    /**
+     * Used only for internal batch querying by executeBatchQuery method.
+     */
+    internalBatchRequest?: IBatchInternalRequest;
 }
 
-export interface SpSaveDataSvcInit {
-    saveContext: XtendedSaveContext;
-    saveBundle: XtendedSaveBundle;
-    jsonResultAdapter: JsonResultsAdapter;
-    customDataSvcUtils: CustomDataServiceUtils;
+export interface XtendedQueryResult extends QueryResult {
+    error?: unknown;
 }
 
 export type DataServiceSaveResultData = [boolean, boolean, SaveResult];
 
-// declare module 'breeze-client/src/entity-metadata' {
-//     interface EntityType {
-//         custom?: Object;
-//         _mappedPropertiesCount: number;
-//     }
-// export interface IBzHttpResponse {
-//     config: any;
-//     data: any[];
-//     getHeaders: () => any;
-//     status: number;
-//     ngConfig: string;
-//     spConfig: any;
-//     statusText: string;
-//     error: any;
-//     response: any;
-// }
-//     // export interface HttpResponse {
-//     //     saveContext: SaveContext;
-//     // }
-// }
+export interface IEntityError {
+    ErrorName: string;
+    EntityTypeName: string;
+    PropertyName: string;
+    ErrorMessage: string;
+    KeyValues: unknown;
+}
 
-// declare module 'breeze-client/src/entity-manager' {
+export interface IDotNetError {
+    Message?: string;
+    ExceptionMessage?: string;
+    EntityErrors?: IEntityError[];
+    Errors?: IEntityError[];
+    InnerException?: IDotNetError;
+}
 
-//     export interface SaveResult {
-//         entitiesWithErrors: Entity[];
-//     }
-
-//     /**
-//      * For use by breeze plugin authors only. The class is for use in building a [[IDataServiceAdapter]] implementation.
-//      * @adapter (see [[IDataServiceAdapter]])
-//      * @hidden @internal
-//      */
-//     export interface EntityErrorFromServer {
-//         entityTypeName: string;
-//         keyValues: any[];
-
-//         errorName: string;
-//         errorMessage: string;
-//         propertyName: string;
-//     }
-
-//     /**
-//      * Shape of a save error returned from the server.
-//      * For use by breeze plugin authors only. The class is for use in building a [[IDataServiceAdapter]] implementation.
-//      * @adapter (see [[IDataServiceAdapter]])
-//      * @hidden @internal
-//      */
-//     export interface SaveErrorFromServer extends ServerError {
-//         entityErrors: EntityErrorFromServer[];
-//     }
-// }
+export interface IBzCustomNameDictionary {
+    [index: string]: { [index: string]: string };
+}

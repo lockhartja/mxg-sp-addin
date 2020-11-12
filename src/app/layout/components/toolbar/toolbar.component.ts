@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { AppSpCtxService } from 'app/app-sp-context.service';
+import { SpCtxRepoService } from '@data/repo-managers/sp-ctx-repo.service';
 
 @Component({
     selector: 'toolbar',
@@ -41,10 +41,10 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         private _fuseSidebarService: FuseSidebarService,
         private _translateService: TranslateService,
         private navService: FuseNavigationService,
-        private spContext: AppSpCtxService
+        private spCtxRepo: SpCtxRepoService
     ) {
-        this.userName = `${this.spContext.userContext.lastName}, ${this.spContext.userContext.firstName}`;
-        this.userProfilePic = this.spContext.userContext.profilePicture;
+        this.userName = `${this.spCtxRepo.my.lastName}, ${this.spCtxRepo.my.firstName}`;
+        this.userProfilePic = this.spCtxRepo.my.profilePicture;
         // Set the defaults
         this.userStatusOptions = [
             {

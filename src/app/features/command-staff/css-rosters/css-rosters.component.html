@@ -1,0 +1,56 @@
+<div id="css-roster-page" class="page-layout simple right-sidebar" fxLayout="row">
+    <div class="center" fusePerfectScrollbar>
+        <div class="header accent-900 p-24 pb-0" fxLayout="column" fxLayoutAlign="center start">
+            <div
+                class="header-content"
+                fxLayout="row wrap"
+                fxLayoutAlign="space-between"
+                fxFlex="1 0 auto"
+            >
+                <div fxLayout="row" fxLayoutAlign="space-between start">
+                    <div>
+                        <mat-icon class="secondary-text s-18">home</mat-icon>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <span class="secondary-text">CSS Portal</span>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <span class="secondary-text">CSS Rosters</span>
+                    </div>
+                    <span
+                        class="mat-display-1 my-0 my-sm-24 welcome-message"
+                        [@animate]="{ value: '*', params: { x: '50px' } }"
+                    >
+                        CSS Function [Personnel Roster]
+                    </span>
+                </div>
+
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="center center"
+                    fxFlexOrder="2"
+                    fxFlexOrder.gt-xs="1"
+                >
+                    <button
+                        mat-raised-button
+                        class="header-button"
+                        (click)="uploadRoster()"
+                        aria-label="boards button"
+                    >
+                        <mat-icon class="mr-8">assessment</mat-icon>
+                        <span>UPDATE ROSTER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <mat-tab-group>
+                <mat-tab label="Unit Members"> </mat-tab>
+                <mat-tab label="Alpha Roster">
+                    <app-alpha-roster></app-alpha-roster>
+                </mat-tab>
+                <mat-tab label="Unit Members"> </mat-tab>
+                <mat-tab label="Unit Members"> </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</div>

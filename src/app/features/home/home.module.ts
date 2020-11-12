@@ -7,30 +7,29 @@ import {
     RepoFactory,
 } from '@data';
 import { MaterialModule } from 'app/material.module';
-import { UnitKpi, UnitManningPosition } from '@models';
 
-export function emProviderFactory() {
-    const config = new EmServiceProviderConfig('SP.Global', [
-        UnitManningPosition,
-    ]);
+// export function emProviderFactory() {
+//     const config = new EmServiceProviderConfig('SP.Global', [
+//         UnitManningPosition,
+//     ]);
 
-    // Home module is the top level module that will load global data modules.
-    return (emFactory: EmServiceProviderFactory, httpClient: HttpClient) => {
-        const mgr = emFactory.createManager(config);
-        return new RepoFactory(mgr, httpClient);
-    };
-}
+//     // Home module is the top level module that will load global data modules.
+//     return (emFactory: EmServiceProviderFactory, httpClient: HttpClient) => {
+//         const mgr = emFactory.createManager(config);
+//         return new RepoFactory(mgr, httpClient);
+//     };
+// }
 
 @NgModule({
     declarations: [HomeComponent],
     imports: [MaterialModule],
     exports: [],
     providers: [
-        {
-            provide: RepoFactory,
-            useFactory: emProviderFactory(),
-            deps: [EmServiceProviderFactory, HttpClient],
-        },
+        // {
+        //     provide: RepoFactory,
+        //     useFactory: emProviderFactory(),
+        //     deps: [EmServiceProviderFactory, HttpClient],
+        // },
     ],
 })
 export class HomeModule {}

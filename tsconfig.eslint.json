@@ -3,5 +3,13 @@
     "compilerOptions": {
         "noEmit": true
     },
-    "include": ["src", "e2e"]
+    "include": [
+        "src",
+        "e2e",
+        "proxy-server.js"
+    ],
+    "exclude": [
+        "src/@fuse",
+        "datajs-1.1.3"
+    ]
 }

@@ -1,0 +1,376 @@
+{
+    "odata.metadata": "https://usaf.dps.mil/teams/5MXG-WM/striker-app/_api/$metadata#SP.ApiData.PersonPropertiess/@Element",
+    "odata.type": "SP.UserProfiles.PersonProperties",
+    "odata.id": "https://usaf.dps.mil/teams/5MXG-WM/striker-app/_api/sp.userprofiles.peoplemanager/getmyproperties",
+    "odata.editLink": "sp.userprofiles.peoplemanager/getmyproperties",
+    "AccountName": "i:0#.f|membership|johnny.lockhart@us.af.mil",
+    "DirectReports": [
+        "i:0#.f|membership|5mxg.mxop.gccoperations@us.af.mil",
+        "i:0#.f|membership|sondra.clouston@us.af.mil"
+    ],
+    "DisplayName": "LOCKHART, JOHNNY A MSgt USAF AFGSC 5 MXG/MXOP",
+    "Email": "johnny.lockhart@us.af.mil",
+    "ExtendedManagers": [
+        "i:0#.f|membership|bradley.cochran@us.af.mil",
+        "i:0#.f|membership|aaron.cowley@us.af.mil",
+        "i:0#.f|membership|brian.anderson.56@us.af.mil",
+        "i:0#.f|membership|joseph.miles.1@us.af.mil"
+    ],
+    "ExtendedReports": [
+        "i:0#.f|membership|johnny.lockhart@us.af.mil",
+        "i:0#.f|membership|5mxg.mxop.gccoperations@us.af.mil",
+        "i:0#.f|membership|sondra.clouston@us.af.mil",
+        "i:0#.f|membership|5mxg.usm.securityoffice@us.af.mil"
+    ],
+    "IsFollowed": false,
+    "LatestPost": null,
+    "Peers": [
+        "i:0#.f|membership|5mos.taskerwf@us.af.mil",
+        "i:0#.f|membership|steven.bailey.10@us.af.mil",
+        "i:0#.f|membership|casey.heinz@us.af.mil",
+        "i:0#.f|membership|ieve.klemisch@us.af.mil",
+        "i:0#.f|membership|scott.link.2@us.af.mil",
+        "i:0#.f|membership|robert.moss.3@us.af.mil",
+        "i:0#.f|membership|lecricia.usher@us.af.mil",
+        "i:0#.f|membership|michael.wolbert@us.af.mil"
+    ],
+    "PersonalSiteHostUrl": "https://usaf-my.dps.mil:443/",
+    "PersonalUrl": "https://usaf-my.dps.mil/personal/johnny_lockhart_us_af_mil/",
+    "PictureUrl": null,
+    "Title": "Group Security Manager",
+    "UserProfileProperties": [
+        {
+            "Key": "UserProfile_GUID",
+            "Value": "4b3e39ab-b8ca-4adb-bea3-e8801dfbb511",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SID",
+            "Value": "i:0h.f|membership|1003000099ac89de@live.com",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "ADGuid",
+            "Value": "System.Byte[]",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "AccountName",
+            "Value": "i:0#.f|membership|johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "FirstName", "Value": "JOHNNY", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-PhoneticFirstName",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "LastName", "Value": "LOCKHART", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-PhoneticLastName",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "PreferredName",
+            "Value": "LOCKHART, JOHNNY A MSgt USAF AFGSC 5 MXG/MXOP",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PhoneticDisplayName",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "WorkPhone", "Value": "453-1850", "ValueType": "Edm.String" },
+        { "Key": "Department", "Value": "AFGSC", "ValueType": "Edm.String" },
+        {
+            "Key": "Title",
+            "Value": "Group Security Manager",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-Department",
+            "Value": "AFGSC",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "Manager",
+            "Value": "i:0#.f|membership|joseph.miles.1@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "AboutMe", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "PersonalSpace",
+            "Value": "/personal/johnny_lockhart_us_af_mil/",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "PictureURL",
+            "Value": "https://usaf-my.dps.mil:443/User%20Photos/Profile%20Pictures/johnny_lockhart_us_af_mil_MThumb.jpg",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "UserName",
+            "Value": "johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "QuickLinks", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-JobTitle",
+            "Value": "Group Security Manager",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "WebSite", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "PublicSiteRedirect",
+            "Value": "https://myeim.amc.af.mil/personal/1065318454a/",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-DataSource", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-MemberOf", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Dotted-line", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Peers", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Responsibility", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-SipAddress",
+            "Value": "johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-MySiteUpgrade", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-DontSuggestList",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-ProxyAddresses", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-HireDate", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-DisplayOrder", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-ClaimID",
+            "Value": "johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-ClaimProviderID",
+            "Value": "membership",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-LastColleagueAdded",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-OWAUrl", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-ResourceSID", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-ResourceAccountName",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-MasterAccountName",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-UserPrincipalName",
+            "Value": "johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-O15FirstRunExperience",
+            "Value": "786432",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PersonalSiteInstantiationState",
+            "Value": "2",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-DistinguishedName",
+            "Value": "CN=8b9b9a6d-b328-4a07-97dc-68ab1581ad36,OU=8331b18d-2d87-48ef-a35f-ac8818ebf9b4,OU=Tenants,OU=MSOnline,DC=SPODS175038,DC=msft,DC=net",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-SourceObjectDN", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-LastKeywordAdded",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-ClaimProviderType",
+            "Value": "Forms",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-SavedAccountName",
+            "Value": "i:0#.f|membership|johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-SavedSID",
+            "Value": "System.Byte[]",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-ObjectExists", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-PersonalSiteCapabilities",
+            "Value": "4",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PersonalSiteFirstCreationTime",
+            "Value": "9/24/2018 8:35:58 PM",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PersonalSiteLastCreationTime",
+            "Value": "7/16/2019 4:49:58 PM",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PersonalSiteNumberOfRetries",
+            "Value": "39",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PersonalSiteFirstCreationError",
+            "Value": "Does not have the capabilites or license to create a personal site - UnauthorizedAccessException",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-FeedIdentifier", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "WorkEmail",
+            "Value": "johnny.lockhart@us.af.mil",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "CellPhone", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "Fax", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "HomePhone", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "Office", "Value": "MXOP", "ValueType": "Edm.String" },
+        { "Key": "SPS-Location", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "Assistant", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-PastProjects", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Skills", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-School", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Birthday", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-StatusNotes", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Interests", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-HashTags", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-EmailOptin", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-PrivacyPeople",
+            "Value": "True",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PrivacyActivity",
+            "Value": "4095",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PictureTimestamp",
+            "Value": "63733362283",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PicturePlaceholderState",
+            "Value": "1",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PictureExchangeSyncState",
+            "Value": "0",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-MUILanguages", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-ContentLanguages",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-TimeZone", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-RegionalSettings-FollowWeb",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-Locale", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-CalendarType", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-AltCalendarType",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-AdjustHijriDays",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-ShowWeeks", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-WorkDays", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-WorkDayStartHour",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-WorkDayEndHour", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-Time24", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-FirstDayOfWeek", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-FirstWeekOfYear",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-RegionalSettings-Initialized",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "OfficeGraphEnabled", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-UserType", "Value": "0", "ValueType": "Edm.String" },
+        {
+            "Key": "SPS-HideFromAddressLists",
+            "Value": "False",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-RecipientTypeDetails",
+            "Value": "2147483648",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "DelveFlags", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "VideoUserPopup", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "PulseMRUPeople", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "msOnline-ObjectId",
+            "Value": "8b9b9a6d-b328-4a07-97dc-68ab1581ad36",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-PointPublishingUrl",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-TenantInstanceId",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        {
+            "Key": "SPS-SharePointHomeExperienceState",
+            "Value": "132367",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "SPS-RefreshToken", "Value": "", "ValueType": "Edm.String" },
+        { "Key": "SPS-MultiGeoFlags", "Value": "", "ValueType": "Edm.String" },
+        {
+            "Key": "PreferredDataLocation",
+            "Value": "",
+            "ValueType": "Edm.String"
+        },
+        { "Key": "USAFBase", "Value": "", "ValueType": "Edm.String" }
+    ],
+    "UserUrl": "https://usaf-my.dps.mil:443/Person.aspx?accountname=i%3A0%23%2Ef%7Cmembership%7Cjohnny%2Elockhart%40us%2Eaf%2Emil"
+}

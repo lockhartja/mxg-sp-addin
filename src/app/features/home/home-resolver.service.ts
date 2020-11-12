@@ -3,20 +3,17 @@ import { Resolve } from '@angular/router';
 import { XtendedFuseNavService } from '@atypes';
 import { RepoFactory } from '@data';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { SharePointUser } from '@models';
 import { environment } from 'environments/environment';
 import { loadPageContext } from 'sp-rest-proxy/dist/utils/env';
-import * as globalNav from '../../app-global-navigation';
+import * as globalNav from '../../app-global.navigation';
 
 @Injectable({ providedIn: 'root' })
-export class HomeResolverService implements Resolve<SharePointUser> {
-    userContext: SharePointUser = {} as any;
+export class HomeResolverService implements Resolve<any> {
+    constructor() {}
 
-    constructor(private repoFactory: RepoFactory<'SP.Global'>) {}
-
-    async resolve(): Promise<SharePointUser> {
-        const repo = this.repoFactory.getRepo('UnitManningPosition');
-        const unitData = repo.getAll();
-        return this.userContext;
+    async resolve(): Promise<any> {
+        // const repo = this.repoFactory.getRepo('UnitManningPosition');
+        // const unitData = repo.getAll();
+        // return this.userContext;
     }
 }

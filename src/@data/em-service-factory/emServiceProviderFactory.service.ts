@@ -1,112 +1,74 @@
+import { ModelLibraryBackingStoreAdapter } from 'breeze-client/adapter-model-library-backing-store';
+import { UriBuilderODataAdapter } from 'breeze-client/adapter-uri-builder-odata';
+import { AjaxHttpClientAdapter } from 'breeze-client/adapter-ajax-httpclient';
 import {
     EntityManager,
     DataService,
     NamingConvention,
     MetadataStore,
     EntityAction,
-    SaveResult,
-    EntityType,
 } from 'breeze-client';
-import '../breeze-providers/sharepoint-dataservice';
+import { SpDataService } from '../breeze-providers/sharepoint.dataservice';
 import { EmServiceProviderConfig } from './emServiceProviderConfig';
+import { CustomNameConventionService } from '../breeze-providers/custom-name-convention.service';
+import { Injectable, Injector } from '@angular/core';
 import {
-    CustomNameConventionService,
-    ICustomClientDict,
-} from '../breeze-providers/custom-name-convention.service';
-import { Injectable } from '@angular/core';
-import { DataAccessModule } from '../data-access.module';
-import {
-    AllEntityList,
     XtendedDataService,
     XtendedEntityMgr,
-    GetEntityInNamespace,
     RawEntity,
     XtendedPropChngEvtArgs,
-    XtendedEntChngEvtArgs,
-    ReturnShortName,
-    CompatibilityFix,
-    OnEntityChanges,
-    SharepointNamespace,
-    ObjectInitializer,
+    XtendedEntityType,
+    SpEntities,
+    EntityShortNameByNamespace,
+    EntityTypeByShortName,
+    XtendedEntityChngEvtArgs,
+    SpEntityNamespaces,
+    IBzCustomNameDictionary,
+    XtendedDataServiceOpts,
 } from '@atypes';
-import * as debounce from 'debounce-promise';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import {
-    SharepointMetadata,
-    SpBaseEntity,
-    ENTITY_TYPE_DEF_KEY,
-    SP_INTERNAL_NAME_DICT_KEY,
-    MpRosterTest,
-} from '@models';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
-import * as _m from 'moment';
-import * as _l from 'lodash';
-
-// List of models that are used across feature sets
-const GlobalModels = [SharepointMetadata];
+import { Subject, BehaviorSubject } from 'rxjs';
+import { ENTITY_TYPE_DEF_KEY, SP_INTERNAL_NAME_DICT_KEY } from '@models';
+import { HttpClient } from '@angular/common/http';
+import _ from 'lodash';
+import { EmDataSource } from './emDataSource';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Injectable({ providedIn: 'root' })
 export class EmServiceProviderFactory {
+    private isInitialized = false;
     private metaStore: MetadataStore;
     private managerStore: {
-        [index in SharepointNamespace]: XtendedEntityMgr<any>;
-    } = {} as ObjectInitializer;
-
-    private saveDebounce: (
-        entityBundler: [SpBaseEntity][]
-    ) => Promise<SaveResult>;
+        [index in SpEntityNamespaces]: XtendedEntityMgr<index>;
+    } = {} as {
+        [index in SpEntityNamespaces]: XtendedEntityMgr<index>;
+    };
 
     constructor(
         private nameDictService: CustomNameConventionService,
+        injector: Injector,
         private http: HttpClient
     ) {
-        this.initEmServiceProvider();
-    }
+        ModelLibraryBackingStoreAdapter.register();
+        UriBuilderODataAdapter.register();
+        AjaxHttpClientAdapter.register(this.http);
+        SpDataService.injector = injector;
+        SpDataService.register();
 
-    initEmServiceProvider(): void {
         const nameDictionaryService = this.nameDictService;
 
         const namingDictionary = {};
 
         nameDictionaryService
-            .createNameDictionary(
-                'spNameCov',
-                NamingConvention.camelCase,
-                namingDictionary
-            )
+            .createNameDictionary('spNameCov', NamingConvention.camelCase, namingDictionary)
             .setAsDefault();
 
         this.metaStore = new MetadataStore();
-
-        GlobalModels.forEach((bzClass: any) => {
-            const bzEntity = Reflect.getOwnMetadata(
-                ENTITY_TYPE_DEF_KEY,
-                bzClass
-            );
-
-            this.metaStore.addEntityType(bzEntity);
-
-            this.metaStore.registerEntityTypeCtor(
-                bzEntity.shortName,
-                undefined,
-                bzEntity.initFn as Function
-            );
-
-            const nameDict = Reflect.getOwnMetadata(
-                SP_INTERNAL_NAME_DICT_KEY,
-                bzClass
-            ) as ICustomClientDict;
-
-            if (nameDict) {
-                this.nameDictService.updateDictionary(nameDict);
-            }
-        });
     }
 
-    createManager<T extends SharepointNamespace>(
-        mgrCfg: EmServiceProviderConfig<T>
-    ): XtendedEntityMgr<T> {
+    createManager<TNamespace extends SpEntityNamespaces>(
+        mgrCfg: EmServiceProviderConfig<TNamespace>
+    ): XtendedEntityMgr<TNamespace> {
         /**
          * if we have already register a namespace, i.e. SP.Global
          * reopen the metadata store and add the additional entity
@@ -125,14 +87,16 @@ export class EmServiceProviderFactory {
 
         this.registerEntities(mgrCfg);
 
-        dataService.getRequestDigest = this.getRequestDigest(mgrCfg);
+        dataService.xtendedOptions = {} as XtendedDataServiceOpts;
 
-        dataService.odataAppEndpoint = mgrCfg.odataAppEnd;
+        dataService.xtendedOptions.serviceNameSpace = mgrCfg.namespace;
+
+        dataService.xtendedOptions.odataAppEndpoint = mgrCfg.odataAppEnd;
 
         const em = new EntityManager({
             dataService,
             metadataStore: this.metaStore,
-        }) as XtendedEntityMgr<any>;
+        }) as XtendedEntityMgr<TNamespace>;
 
         em.isSaving = new BehaviorSubject(false);
 
@@ -140,54 +104,90 @@ export class EmServiceProviderFactory {
 
         em.onEntityPropertyChanged = this.onEntityPropertyChanged(em);
 
+        em.entityDataSource = this.eManagerDataSource(em);
+
         this.managerStore[mgrCfg.namespace] = em;
 
         return em;
     }
 
-    private registerEntities<T extends SharepointNamespace>(
+    private registerEntities<T extends SpEntities['namespace']>(
         mgrCfg: EmServiceProviderConfig<T>
     ): void {
         mgrCfg.featureEntities.forEach((bzClass) => {
-            const bzEntity = Reflect.getOwnMetadata(
-                ENTITY_TYPE_DEF_KEY,
-                bzClass
-            );
-
-            this.metaStore.addEntityType(bzEntity);
-
-            this.metaStore.registerEntityTypeCtor(
-                bzEntity.shortName,
-                undefined,
-                bzEntity.initFn as Function
-            );
-
+            //Order matters -- needed to update name dictionary before adding entity types.
             const nameDict = Reflect.getOwnMetadata(
                 SP_INTERNAL_NAME_DICT_KEY,
                 bzClass
-            ) as ICustomClientDict;
+            ) as IBzCustomNameDictionary;
 
-            if (nameDict) {
+            if (!_.isEmpty(nameDict)) {
                 this.nameDictService.updateDictionary(nameDict);
             }
+
+            const bzEntityType = Reflect.getOwnMetadata(
+                ENTITY_TYPE_DEF_KEY,
+                bzClass
+            ) as XtendedEntityType;
+
+            this.metaStore.addEntityType(bzEntityType);
+
+            // Let's not add a Ctor to a complex type, keeps from the prototype chain clean.
+            if (bzEntityType.isComplexType) {
+                this.metaStore.registerEntityTypeCtor(bzEntityType.shortName, undefined, undefined);
+            } else {
+                this.metaStore.registerEntityTypeCtor(
+                    bzEntityType.shortName,
+                    bzClass,
+                    bzEntityType.initFn
+                );
+            }
+
+            // if (!bzEntityType.isComplexType) {
+            //     // eslint-disable-next-line no-debugger
+            //     bzEntityType.custom.defaultSelect = bzEntityType.dataProperties
+            //         .filter((dp) => dp.isDataProperty && !dp.isUnmapped && !dp.isComplexProperty)
+            //         .map((dp) => dp.nameOnServer)
+            //         .join(',');
+            // }
+
+            Reflect.deleteMetadata(ENTITY_TYPE_DEF_KEY, bzClass);
+            Reflect.deleteMetadata(SP_INTERNAL_NAME_DICT_KEY, bzClass);
         });
     }
 
-    private onEntityStateChanged(em: EntityManager) {
-        return <TNamespace extends AllEntityList['namespace']>(
-            eNames: GetEntityInNamespace<TNamespace, ReturnShortName>[],
-            unsubToken: Subject<any>
-        ) => {
-            const ecSub = new Subject<XtendedPropChngEvtArgs<any>>();
+    private eManagerDataSource<TNamespace extends SpEntityNamespaces>(
+        em: XtendedEntityMgr<TNamespace>
+    ) {
+        return <TEntityShortName extends EntityShortNameByNamespace<TNamespace>>(
+            eName: TEntityShortName,
+            matPaginator?: MatPaginator,
+            matSort?: MatSort,
+            dataFilter?: BehaviorSubject<
+                [
+                    searchProps: Array<keyof RawEntity<EntityTypeByShortName<TEntityShortName>>>,
+                    searchValue: string
+                ]
+            >
+        ) => new EmDataSource(em, eName, matPaginator, matSort, dataFilter);
+    }
+
+    private onEntityStateChanged<TNamespace extends SpEntityNamespaces>(
+        em: XtendedEntityMgr<TNamespace>
+    ) {
+        return <TEntityShortName extends EntityShortNameByNamespace<TNamespace>>(
+            eNames: TEntityShortName[],
+            unsubToken: Subject<never>
+        ): Subject<XtendedPropChngEvtArgs<TEntityShortName>> => {
+            const ecSub = new Subject<XtendedPropChngEvtArgs<TEntityShortName>>();
 
             const subscriptionToken = em.entityChanged.subscribe(
-                (eventArgs: XtendedEntChngEvtArgs) => {
-                    const etName = eventArgs.entity?.entityType.shortName;
+                (eventArgs: XtendedEntityChngEvtArgs<TEntityShortName>) => {
+                    const etName = eventArgs.entity?.entityType.shortName as TEntityShortName;
 
                     if (
-                        eventArgs.entityAction !==
-                            EntityAction.EntityStateChange &&
-                        !eNames.includes(etName as CompatibilityFix)
+                        eventArgs.entityAction !== EntityAction.EntityStateChange &&
+                        !eNames.includes(etName)
                     ) {
                         return;
                     }
@@ -205,33 +205,27 @@ export class EmServiceProviderFactory {
         };
     }
 
-    private onEntityPropertyChanged(em: EntityManager) {
+    private onEntityPropertyChanged<TNamespace extends SpEntityNamespaces>(
+        em: XtendedEntityMgr<TNamespace>
+    ) {
         return <
-            TNamespace extends AllEntityList['namespace'],
-            TEntityName extends GetEntityInNamespace<
-                TNamespace,
-                ReturnShortName
-            >,
-            TProps extends Array<keyof RawEntity<OnEntityChanges<TEntityName>>>
+            TEntityShortName extends EntityShortNameByNamespace<TNamespace>,
+            TProps extends Array<keyof RawEntity<EntityTypeByShortName<TEntityShortName>>>
         >(
-            entityName: TEntityName,
+            entityName: TEntityShortName,
             properties: TProps,
-            unsubToken: Subject<any>
+            unsubToken: Subject<never>
         ) => {
-            const ecSub = new Subject<XtendedPropChngEvtArgs<any>>();
+            const ecSub = new Subject<XtendedPropChngEvtArgs<TEntityShortName>>();
 
             const subscriptionToken = em.entityChanged.subscribe(
-                (eventArgs: XtendedEntChngEvtArgs) => {
-                    const evtArgsEtName =
-                        eventArgs.entity?.entityType.shortName;
+                (eventArgs: XtendedEntityChngEvtArgs<TEntityShortName>) => {
+                    const evtArgsEtName = eventArgs.entity?.entityType.shortName;
 
                     if (
-                        eventArgs.entityAction !==
-                            EntityAction.PropertyChange &&
+                        eventArgs.entityAction !== EntityAction.PropertyChange &&
                         entityName !== evtArgsEtName &&
-                        !properties.includes(
-                            eventArgs.args?.propertyName as any
-                        )
+                        !properties.includes(eventArgs.args?.propertyName)
                     ) {
                         return;
                     }
@@ -246,60 +240,6 @@ export class EmServiceProviderFactory {
             });
 
             return ecSub;
-        };
-    }
-
-    // debounceSave(
-    //   em: EntityManager
-    // ): (entity: BreezeEntity) => Promise<SaveResult> {
-    //   const saveDebounce = debounce(
-    //     (contexts: [BreezeEntity][]) => {
-    //       const entitiesToSave = _l.flatMap(contexts, x => x.map(c => c));
-    //       return em.saveChanges(entitiesToSave as any[]);
-    //     },
-    //     1500,
-    //     { accumulate: true }
-    //   );
-    //   return entity => saveDebounce(entity as any);
-    // }
-
-    getRequestDigest(
-        mgrCfg: EmServiceProviderConfig<any>
-    ): () => Promise<string> {
-        let tokenExpireTime = _m();
-        let digestToken = '';
-        let tokenPromise: Promise<string>;
-
-        return () => {
-            const isExpired = _m().diff(tokenExpireTime, 'minute') > 5;
-
-            if (digestToken && !isExpired) {
-                return Promise.resolve(digestToken);
-            }
-
-            const headers = new HttpHeaders({
-                'Content-Type': 'application/json;odata=minimalmetadata',
-                Accept: 'application/json;odata=verbose',
-            });
-
-            if (tokenPromise) {
-                return tokenPromise;
-            }
-
-            tokenPromise = this.http
-                .post(mgrCfg.ctxEnd, undefined, { headers })
-                .toPromise()
-                .then((ctxResponse) => {
-                    digestToken = (ctxResponse as any).d
-                        .GetContextWebInformation.FormDigestValue;
-                    const timeoutSeconds = (ctxResponse as any).d
-                        .GetContextWebInformation.FormDigestTimeoutSeconds;
-
-                    tokenExpireTime = _m().add(timeoutSeconds, 'second');
-                    tokenPromise = undefined;
-                    return digestToken;
-                });
-            return tokenPromise;
         };
     }
 }

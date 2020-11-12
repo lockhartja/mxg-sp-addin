@@ -1,0 +1,98 @@
+<div id="about-portal" class="page-layout simple fullwidth">
+    <div class="center" fusePerfectScrollbar>
+        <!-- HEADER -->
+        <div class="header accent-900 p-24 pb-0" fxLayout="column" fxLayoutAlign="center start">
+            <div
+                class="header-content"
+                fxFlex="1 0 auto"
+                fxLayout="row wrap"
+                fxLayoutAlign="space-between"
+            >
+                <div fxLayout="row" fxLayoutAlign="space-between start">
+                    <div>
+                        <mat-icon class="secondary-text s-18">home</mat-icon>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <span class="secondary-text">{{ portalName }} Portal</span>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <span class="secondary-text">About</span>
+                    </div>
+                    <span
+                        class="mat-display-1 my-0 my-sm-24 welcome-message"
+                        [@animate]="{ value: '*', params: { x: '50px' } }"
+                    >
+                        {{ portalName }} Portal
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- / HEADER -->
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content p-24" fxLayout="row" fxLayoutAlign="space-around">
+        <div fxFlex="75">
+            <ng-content select=".content"></ng-content>
+        </div>
+        <div fxFlex="20">
+            <ng-content select=".spGroups"></ng-content>
+
+            <div class="fuse-card">
+                <div class="px-20">
+                    <div class="h1 pl-16">Assigned Permissions</div>
+                    <div class="card-divider"></div>
+                </div>
+
+                <div>
+                    <div class="px-16 secondary-text" fxLayout="column" fxLayoutAlign="start start">
+                        <p class="mb-4 mt-0"> Group Name: SMA-CSS-NUC </p>
+                        <p class="mb-4 mt-0">
+                            Purpose: Allow filter access to unit roster list for 705 and unknown
+                            records
+                        </p>
+                    </div>
+
+                    <div class="p-16 pt-4">
+                        <div class="mb-8" fxLayout="column" fxLayoutAlign="center end">
+                            <div>Johnny Lockhart </div>
+                            <div>Bob Smith</div>
+                            <div>Jody Flams</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="px-16 secondary-text" fxLayout="column" fxLayoutAlign="start start">
+                        <p class="mb-4 mt-0"> Group Name: SMA-CSS-MUNS </p>
+                        <p class="mb-4 mt-0">
+                            Purpose: Allow filter access to unit roster list for 705 and unknown
+                            records
+                        </p>
+                    </div>
+
+                    <div class="p-16 pt-4">
+                        <div class="mb-8" fxLayout="column" fxLayoutAlign="center end">
+                            <div>Johnny Lockhart </div>
+                            <div>Bob Smith</div>
+                            <div>Jody Flams</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-8 pt-0" fxLayout="row" fxLayoutAlign="start center">
+                    <button mat-button color="accent" (click)="showAddForm = !showAddForm">
+                        <span *ngIf="!showAddForm">Add User</span>
+                        <span *ngIf="showAddForm">Cancel</span>
+                    </button>
+                </div>
+                <form *ngIf="showAddForm">
+                    <mat-form-field appearance="outline" fxFlex="0 1 auto">
+                        <mat-label>Group</mat-label>
+                        <input matInput name="mood" />
+                    </mat-form-field>
+                </form>
+            </div>
+        </div>
+        <!-- / ANGULAR CLI  -->
+    </div>
+    <!-- / CONTENT -->
+</div>

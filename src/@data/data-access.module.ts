@@ -1,12 +1,14 @@
-import { ModelLibraryBackingStoreAdapter } from 'breeze-client/adapter-model-library-backing-store';
-import { UriBuilderODataAdapter } from 'breeze-client/adapter-uri-builder-odata';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { config } from 'breeze-client';
-import { AjaxHttpClientAdapter } from 'breeze-client/adapter-ajax-httpclient';
-import { SpDataService } from './breeze-providers/sharepoint-dataservice';
-import { DataServiceWebApiAdapter } from 'breeze-client/adapter-data-service-webapi';
+
+import { EmServiceProviderFactory } from './em-service-factory/emServiceProviderFactory.service';
+import { CentralRepositoryService } from 'app/app-central-repository.service';
+import { EmServiceProviderConfig } from './em-service-factory/emServiceProviderConfig';
+import { RepoFactory } from './repo-managers/repo-factory';
+import { TermSet, SpMetadata, SharepointTaxonomy, RootTermStore } from '@models';
+import { UnitMember } from '@models/sp-global';
+import { UnitMemberIdentity } from '@models/sp-global/unit-member-identity';
 
 @NgModule({
     declarations: [],
@@ -15,22 +17,30 @@ import { DataServiceWebApiAdapter } from 'breeze-client/adapter-data-service-web
     providers: [],
 })
 export class DataAccessModule {
-    constructor(http: HttpClient) {
-        ModelLibraryBackingStoreAdapter.register();
-        UriBuilderODataAdapter.register();
-        AjaxHttpClientAdapter.register(http);
-        SpDataService.register();
+    constructor(
+        http: HttpClient,
+        emFactory: EmServiceProviderFactory,
+        centralRepo: CentralRepositoryService
+    ) {
+        const localGlobalConfig = new EmServiceProviderConfig('Global', [
+            SpMetadata,
+            SharepointTaxonomy,
+            TermSet,
+            RootTermStore,
+        ]);
 
-        config.initializeAdapterInstance(
-            'ajax',
-            AjaxHttpClientAdapter.adapterName,
-            true
-        );
+        const spGlobalConfig = new EmServiceProviderConfig('SP.Global', [
+            UnitMember,
+            UnitMemberIdentity,
+        ]);
 
-        // config.initializeAdapterInstance(
-        //     'dataService',
-        //     SpDataService.name,
-        //     true
-        // );
+        const localConfigManager = emFactory.createManager(localGlobalConfig);
+        const spConfigManager = emFactory.createManager(spGlobalConfig);
+
+        const localRepoFactory = new RepoFactory(localConfigManager, http);
+        const spGlobalRepoFactory = new RepoFactory(spConfigManager, http);
+
+        centralRepo.registerRepo('Global', localRepoFactory);
+        centralRepo.registerRepo('SP.Global', spGlobalRepoFactory);
     }
 }

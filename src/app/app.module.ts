@@ -2,7 +2,6 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { TranslateModule } from '@ngx-translate/core';
 import { DEFAULT_FUSE_CONFIG } from '@config';
 import { FuseModule } from '@fuse/fuse.module';
@@ -15,7 +14,8 @@ import { MaterialModule } from './material.module';
 import { HomeModule } from './features/home/home.module';
 import { DataAccessModule } from '@data';
 import { AppRoutingModule } from './app-routes.module';
-import { AppSpCtxService } from './app-sp-context.service';
+import { SpCtxRepoService } from '@data/repo-managers/sp-ctx-repo.service';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 
 @NgModule({
     declarations: [AppComponent],
@@ -26,9 +26,6 @@ import { AppSpCtxService } from './app-sp-context.service';
         HttpClientModule,
 
         TranslateModule.forRoot(),
-
-        // Material moment date module
-        MatMomentDateModule,
 
         // Material
         MaterialModule,
@@ -48,9 +45,8 @@ import { AppSpCtxService } from './app-sp-context.service';
         {
             provide: APP_INITIALIZER,
             multi: true,
-            deps: [AppSpCtxService],
-            useFactory: (appInitializer: AppSpCtxService) =>
-                appInitializer.initializeSPContext(),
+            deps: [SpCtxRepoService],
+            useFactory: (spCtxRepo: SpCtxRepoService) => spCtxRepo.initializeApp(),
         },
     ],
     bootstrap: [AppComponent],

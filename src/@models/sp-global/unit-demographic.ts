@@ -1,14 +1,11 @@
 import { BzDataProp, BzEntity } from '@models/decorator';
 import { DataType } from 'breeze-client';
-import { SharepointEntity } from './sharepoint-entity';
+import { SpListEntityBase } from '../abstract/sp-list-entity-base';
 
-export type UnitDemographicType =
-    | 'Pascode'
-    | 'ProperName'
-    | 'CommandIdentifier';
+export type UnitDemographicType = 'Pascode' | 'ProperName' | 'CommandIdentifier';
 
 @BzEntity
-export class UnitDemographic extends SharepointEntity {
+export class UnitDemographic extends SpListEntityBase {
     readonly namespace = 'SP.Global';
     readonly shortName = 'UnitDemographic';
 

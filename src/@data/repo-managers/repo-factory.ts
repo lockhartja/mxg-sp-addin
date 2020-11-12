@@ -1,69 +1,34 @@
-import { EntityManager } from 'breeze-client';
-import {
-    GlobalRepoManagerExtended,
-    SharepointEntityList,
-    SelectedEntityKind,
-    GetEntityType,
-    GetSpEntityType,
-    GetEntityInNamespace,
-    AllEntityList,
-    Instantiable,
-    RepoReturn,
-    XtendedEntityMgr,
-    ReturnType,
-    ReturnShortName,
-    ToComplex,
-} from '@atypes';
+import { EntityShortNameByNamespace, SpEntityNamespaces, XtendedEntityMgr } from '@atypes';
 import { CoreSharepointRepo } from './core-sharepoint-repo';
-import { CoreRepo } from './core-repo';
 import { HttpClient } from '@angular/common/http';
-import { SharepointEntity, SpBaseEntity } from '@models';
 
-export class RepoFactory<TNameSpace extends AllEntityList['namespace']> {
-    static repoStore: { [index: string]: ToComplex } = {};
+export class RepoFactory<TNameSpace extends SpEntityNamespaces> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+    private repoStore = {} as any;
 
-    constructor(
-        public entityManager: XtendedEntityMgr<TNameSpace>,
-        private httpClient: HttpClient
-    ) {}
+    constructor(public entityManager: XtendedEntityMgr<TNameSpace>, private httpClient: HttpClient) {}
 
-    private initializedRepo<
-        TEntity extends GetEntityInNamespace<TNameSpace, ReturnShortName>
-    >(repoName: TEntity, useSpRepo = true) {
-        let newRepo:
-            | CoreRepo<TNameSpace, TEntity>
-            | CoreSharepointRepo<TNameSpace, TEntity>;
-        const repoAlias = repoName.charAt(0).toUpperCase() + repoName.slice(1);
+    private initializedRepo<TEntityShortName extends EntityShortNameByNamespace<TNameSpace>>(
+        repoName: TEntityShortName
+    ): CoreSharepointRepo<TNameSpace, TEntityShortName> {
+        // const repoAlias = repoName.charAt(0).toUpperCase() + repoName.slice(1);
 
-        if (!useSpRepo) {
-            newRepo = new CoreRepo(repoAlias as any, this.entityManager);
-        } else {
-            newRepo = new CoreSharepointRepo(
-                repoAlias as any,
-                this.httpClient,
-                this.entityManager
-            );
-        }
-        RepoFactory.repoStore[repoName] = newRepo;
+        const newRepo = new CoreSharepointRepo(repoName, this.httpClient, this.entityManager);
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        this.repoStore[repoName] = newRepo;
+
         return newRepo;
     }
 
-    getRepo<
-        TEntitiesInNameSpace extends GetEntityInNamespace<
-            TNameSpace,
-            ReturnShortName
-        >
-    >(entityName: TEntitiesInNameSpace, useSpRepo = true) {
-        if (RepoFactory.repoStore[entityName]) {
-            return RepoFactory.repoStore[entityName] as RepoReturn<
-                TEntitiesInNameSpace,
-                TNameSpace
-            >;
+    getRepo<TEntityShortName extends EntityShortNameByNamespace<TNameSpace>>(
+        entityName: TEntityShortName
+    ): CoreSharepointRepo<TNameSpace, TEntityShortName> {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (this.repoStore[entityName]) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+            return this.repoStore[entityName];
         }
-
-        return this.initializedRepo(entityName, useSpRepo) as RepoReturn<
-            TEntitiesInNameSpace,
-            TNameSpace
-        >;
+        return this.initializedRepo(entityName);
     }
 }

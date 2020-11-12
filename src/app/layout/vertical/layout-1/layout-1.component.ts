@@ -38,11 +38,9 @@ export class VerticalLayout1Component implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Subscribe to config changes
-        this._fuseConfigService.config
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((config) => {
-                this.fuseConfig = config;
-            });
+        this._fuseConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe((config) => {
+            this.fuseConfig = config;
+        });
     }
 
     /**

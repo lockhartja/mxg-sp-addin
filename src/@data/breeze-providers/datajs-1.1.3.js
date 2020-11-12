@@ -14,7 +14,6 @@
 // datajs.js
 
 (function (window, undefined) {
-
     var datajs = window.datajs || {};
     var odata = window.OData || {};
 
@@ -30,9 +29,8 @@
     datajs.version = {
         major: 1,
         minor: 1,
-        build: 1
+        build: 1,
     };
-
 
     var activeXObject = function (progId) {
         /// <summary>Creates a new ActiveXObject from the given progId.</summary>
@@ -81,7 +79,7 @@
         /// <param name="a">First value.</param>
         /// <param name="b">Second value.</param>
         /// <returns>a if it's a defined value; else b.</returns>
-        return (a !== undefined) ? a : b;
+        return a !== undefined ? a : b;
     };
 
     var delay = function (callback) {
@@ -97,7 +95,6 @@
             callback.apply(this, args);
         }, 0);
     };
-
 
     var extend = function (target, values) {
         /// <summary>Extends the target with the specified values.</summary>
@@ -134,7 +131,7 @@
         /// <param name="value">Value to check.</param>
         /// <returns type="Boolean">true if the value is an array object; false otherwise.</returns>
 
-        return Object.prototype.toString.call(value) === "[object Array]";
+        return Object.prototype.toString.call(value) === '[object Array]';
     };
 
     var isDate = function (value) {
@@ -142,7 +139,7 @@
         /// <param name="value">Value to check.</param>
         /// <returns type="Boolean">true if the value is a Date object; false otherwise.</returns>
 
-        return Object.prototype.toString.call(value) === "[object Date]";
+        return Object.prototype.toString.call(value) === '[object Date]';
     };
     var isObject = function (value) {
         /// <summary>Tests whether a value is an object.</summary>
@@ -152,7 +149,7 @@
         /// </remarks>
         /// <returns type="Boolean">True is the value is an object; false otherwise.</returns>
 
-        return typeof value === "object";
+        return typeof value === 'object';
     };
 
     var parseInt10 = function (value) {
@@ -205,7 +202,7 @@
         /// This should only be used for cases where falsy values are valid;
         /// otherwise the pattern should be 'x = (value) ? value : defaultValue;'.
         /// </remarks>
-        return (value !== undefined) ? value : defaultValue;
+        return value !== undefined ? value : defaultValue;
     };
 
     // Regular expression that splits a uri into its components:
@@ -216,7 +213,7 @@
     // 4 - is the query.
     // 5 - is the fragment.
     var uriRegEx = /^([^:\/?#]+:)?(\/\/[^\/?#]*)?([^?#:]+)?(\?[^#]*)?(#.*)?/;
-    var uriPartNames = ["scheme", "authority", "path", "query", "fragment"];
+    var uriPartNames = ['scheme', 'authority', 'path', 'query', 'fragment'];
 
     var getURIInfo = function (uri) {
         /// <summary>Gets information about the components of the specified URI.</summary>
@@ -250,12 +247,13 @@
         /// <param name="uriInfo" type="Object"> An object with uri parts (scheme, authority, etc.).</param>
         /// <returns type="String">URI string.</returns>
 
-        return "".concat(
-            uriInfo.scheme || "",
-            uriInfo.authority || "",
-            uriInfo.path || "",
-            uriInfo.query || "",
-            uriInfo.fragment || "");
+        return ''.concat(
+            uriInfo.scheme || '',
+            uriInfo.authority || '',
+            uriInfo.path || '',
+            uriInfo.query || '',
+            uriInfo.fragment || ''
+        );
     };
 
     // Regular expression that splits a uri authority into its subcomponents:
@@ -266,7 +264,7 @@
     var uriAuthorityRegEx = /^\/{0,2}(?:([^@]*)@)?([^:]+)(?::{1}(\d+))?/;
 
     // Regular expression that matches percentage enconded octects (i.e %20 or %3A);
-    var pctEncodingRegEx = /%[0-9A-F]{2}/ig;
+    var pctEncodingRegEx = /%[0-9A-F]{2}/gi;
 
     var normalizeURICase = function (uri) {
         /// <summary>Normalizes the casing of a URI.</summary>
@@ -282,10 +280,11 @@
             if (authority) {
                 var matches = uriAuthorityRegEx.exec(authority);
                 if (matches) {
-                    uriInfo.authority = "//" +
-                    (matches[1] ? matches[1] + "@" : "") +
-                    (matches[2].toLowerCase()) +
-                    (matches[3] ? ":" + matches[3] : "");
+                    uriInfo.authority =
+                        '//' +
+                        (matches[1] ? matches[1] + '@' : '') +
+                        matches[2].toLowerCase() +
+                        (matches[3] ? ':' + matches[3] : '');
                 }
             }
         }
@@ -349,15 +348,15 @@
         /// <param name="basePath" type="String">Base URI path.</param>
         /// <returns type="String">A string with the merged path.</returns>
 
-        var path = "/";
+        var path = '/';
         var end;
 
         if (basePath) {
-            end = basePath.lastIndexOf("/");
+            end = basePath.lastIndexOf('/');
             path = basePath.substring(0, end);
 
-            if (path.charAt(path.length - 1) !== "/") {
-                path = path + "/";
+            if (path.charAt(path.length - 1) !== '/') {
+                path = path + '/';
             }
         }
 
@@ -369,31 +368,31 @@
         /// <param name="path" type="string">URI path component.</param>
         /// <returns type="String">Path without any . and .. folders.</returns>
 
-        var result = "";
-        var segment = "";
+        var result = '';
+        var segment = '';
         var end;
 
         while (path) {
-            if (path.indexOf("..") === 0 || path.indexOf(".") === 0) {
-                path = path.replace(/^\.\.?\/?/g, "");
-            } else if (path.indexOf("/..") === 0) {
-                path = path.replace(/^\/\..\/?/g, "/");
-                end = result.lastIndexOf("/");
+            if (path.indexOf('..') === 0 || path.indexOf('.') === 0) {
+                path = path.replace(/^\.\.?\/?/g, '');
+            } else if (path.indexOf('/..') === 0) {
+                path = path.replace(/^\/\..\/?/g, '/');
+                end = result.lastIndexOf('/');
                 if (end === -1) {
-                    result = "";
+                    result = '';
                 } else {
                     result = result.substring(0, end);
                 }
-            } else if (path.indexOf("/.") === 0) {
-                path = path.replace(/^\/\.\/?/g, "/");
+            } else if (path.indexOf('/.') === 0) {
+                path = path.replace(/^\/\.\/?/g, '/');
             } else {
                 segment = path;
-                end = path.indexOf("/", 1);
+                end = path.indexOf('/', 1);
                 if (end !== -1) {
                     segment = path.substring(0, end);
                 }
                 result = result + segment;
-                path = path.replace(segment, "");
+                path = path.replace(segment, '');
             }
         }
         return result;
@@ -409,21 +408,21 @@
                 arr.push(binaryStr.charCodeAt(i));
             }
         }
-        var hexValue = "";
-        var hexValues = "0123456789ABCDEF";
+        var hexValue = '';
+        var hexValues = '0123456789ABCDEF';
         for (var j = 0; j < arr.length; j++) {
             var t = arr[j];
             hexValue += hexValues[t >> 4];
-            hexValue += hexValues[t & 0x0F];
+            hexValue += hexValues[t & 0x0f];
         }
         return hexValue;
     };
 
     var decodeBase64 = function (str) {
-        var binaryString = "";
+        var binaryString = '';
         for (var i = 0; i < str.length; i++) {
             var base65IndexValue = getBase64IndexValue(str[i]);
-            var binaryValue = "";
+            var binaryValue = '';
             if (base65IndexValue !== null) {
                 binaryValue = base65IndexValue.toString(2);
                 binaryString += addBase64Padding(binaryValue);
@@ -442,15 +441,18 @@
         var asciiCode = character.charCodeAt(0);
         var asciiOfA = 65;
         var differenceBetweenZanda = 6;
-        if (asciiCode >= 65 && asciiCode <= 90) {           // between "A" and "Z" inclusive
+        if (asciiCode >= 65 && asciiCode <= 90) {
+            // between "A" and "Z" inclusive
             return asciiCode - asciiOfA;
-        } else if (asciiCode >= 97 && asciiCode <= 122) {   // between 'a' and 'z' inclusive
+        } else if (asciiCode >= 97 && asciiCode <= 122) {
+            // between 'a' and 'z' inclusive
             return asciiCode - asciiOfA - differenceBetweenZanda;
-        } else if (asciiCode >= 48 && asciiCode <= 57) {    // between '0' and '9' inclusive
+        } else if (asciiCode >= 48 && asciiCode <= 57) {
+            // between '0' and '9' inclusive
             return asciiCode + 4;
-        } else if (character == "+") {
+        } else if (character == '+') {
             return 62;
-        } else if (character == "/") {
+        } else if (character == '/') {
             return 63;
         } else {
             return null;
@@ -459,21 +461,20 @@
 
     var addBase64Padding = function (binaryString) {
         while (binaryString.length < 6) {
-            binaryString = "0" + binaryString;
+            binaryString = '0' + binaryString;
         }
         return binaryString;
     };
 
-
     // URI prefixes to generate smaller code.
-    var http = "http://";
-    var w3org = http + "www.w3.org/";               // http://www.w3.org/
+    var http = 'http://';
+    var w3org = http + 'www.w3.org/'; // http://www.w3.org/
 
-    var xhtmlNS = w3org + "1999/xhtml";             // http://www.w3.org/1999/xhtml
-    var xmlnsNS = w3org + "2000/xmlns/";            // http://www.w3.org/2000/xmlns/
-    var xmlNS = w3org + "XML/1998/namespace";       // http://www.w3.org/XML/1998/namespace
+    var xhtmlNS = w3org + '1999/xhtml'; // http://www.w3.org/1999/xhtml
+    var xmlnsNS = w3org + '2000/xmlns/'; // http://www.w3.org/2000/xmlns/
+    var xmlNS = w3org + 'XML/1998/namespace'; // http://www.w3.org/XML/1998/namespace
 
-    var mozillaParserErroNS = http + "www.mozilla.org/newlayout/xml/parsererror.xml";
+    var mozillaParserErroNS = http + 'www.mozilla.org/newlayout/xml/parsererror.xml';
 
     var hasLeadingOrTrailingWhitespace = function (text) {
         /// <summary>Checks whether the specified string has leading or trailing spaces.</summary>
@@ -499,10 +500,10 @@
         /// <returns type="Boolean">Whether xml:space='preserve' is in effect.</returns>
 
         while (domElement !== null && domElement.nodeType === 1) {
-            var val = xmlAttributeValue(domElement, "space", xmlNS);
-            if (val === "preserve") {
+            var val = xmlAttributeValue(domElement, 'space', xmlNS);
+            if (val === 'preserve') {
                 return true;
-            } else if (val === "default") {
+            } else if (val === 'default') {
                 break;
             } else {
                 domElement = domElement.parentNode;
@@ -520,7 +521,7 @@
         /// </returns>
 
         var nodeName = domAttribute.nodeName;
-        return nodeName == "xmlns" || nodeName.indexOf("xmlns:") === 0;
+        return nodeName == 'xmlns' || nodeName.indexOf('xmlns:') === 0;
     };
 
     var safeSetProperty = function (obj, name, value) {
@@ -531,7 +532,7 @@
 
         try {
             obj.setProperty(name, value);
-        } catch (_) { }
+        } catch (_) {}
     };
 
     var msXmlDom3 = function () {
@@ -541,12 +542,12 @@
         ///    of the MSXML 3.0 ActiveX object.
         /// <returns type="Object">New MSXML 3.0 ActiveX object.</returns>
 
-        var msxml3 = activeXObject("Msxml2.DOMDocument.3.0");
+        var msxml3 = activeXObject('Msxml2.DOMDocument.3.0');
         if (msxml3) {
-            safeSetProperty(msxml3, "ProhibitDTD", true);
-            safeSetProperty(msxml3, "MaxElementDepth", 256);
-            safeSetProperty(msxml3, "AllowDocumentFunction", false);
-            safeSetProperty(msxml3, "AllowXsltScript", false);
+            safeSetProperty(msxml3, 'ProhibitDTD', true);
+            safeSetProperty(msxml3, 'MaxElementDepth', 256);
+            safeSetProperty(msxml3, 'AllowDocumentFunction', false);
+            safeSetProperty(msxml3, 'AllowXsltScript', false);
         }
         return msxml3;
     };
@@ -561,7 +562,7 @@
         /// <returns type="Object">New MSXML 3.0 ActiveX object.</returns>
 
         try {
-            var msxml = activeXObject("Msxml2.DOMDocument.6.0");
+            var msxml = activeXObject('Msxml2.DOMDocument.6.0');
             if (msxml) {
                 msxml.async = true;
             }
@@ -603,10 +604,10 @@
         /// </param>
         /// <param name="errorXmlText" type="String">XML string for wich the parsing failed.</param>
 
-        if (typeof exceptionOrReason === "string") {
+        if (typeof exceptionOrReason === 'string') {
             exceptionOrReason = { message: exceptionOrReason };
         }
-        throw extend(exceptionOrReason, { srcText: srcText || "", errorXmlText: errorXmlText || "" });
+        throw extend(exceptionOrReason, { srcText: srcText || '', errorXmlText: errorXmlText || '' });
     };
 
     var xmlParse = function (text) {
@@ -621,15 +622,15 @@
         if (!domParser) {
             dom = msXmlParse(text);
             if (!dom) {
-                xmlThrowParserError("XML DOM parser not supported");
+                xmlThrowParserError('XML DOM parser not supported');
             }
             return dom;
         }
 
         try {
-            dom = domParser.parseFromString(text, "text/xml");
+            dom = domParser.parseFromString(text, 'text/xml');
         } catch (e) {
-            xmlThrowParserError(e, "", text);
+            xmlThrowParserError(e, '', text);
         }
 
         var element = dom.documentElement;
@@ -637,28 +638,28 @@
         var localName = xmlLocalName(element);
 
         // Firefox reports errors by returing the DOM for an xml document describing the problem.
-        if (localName === "parsererror" && nsURI === mozillaParserErroNS) {
-            var srcTextElement = xmlFirstChildElement(element, mozillaParserErroNS, "sourcetext");
-            var srcText = srcTextElement ? xmlNodeValue(srcTextElement) : "";
-            xmlThrowParserError(xmlInnerText(element) || "", srcText, text);
+        if (localName === 'parsererror' && nsURI === mozillaParserErroNS) {
+            var srcTextElement = xmlFirstChildElement(element, mozillaParserErroNS, 'sourcetext');
+            var srcText = srcTextElement ? xmlNodeValue(srcTextElement) : '';
+            xmlThrowParserError(xmlInnerText(element) || '', srcText, text);
         }
 
         // Chrome (and maybe other webkit based browsers) report errors by injecting a header with an error message.
         // The error may be localized, so instead we simply check for a header as the
         // top element or descendant child of the document.
-        if (localName === "h3" && nsURI === xhtmlNS || xmlFirstDescendantElement(element, xhtmlNS, "h3")) {
-            var reason = "";
+        if ((localName === 'h3' && nsURI === xhtmlNS) || xmlFirstDescendantElement(element, xhtmlNS, 'h3')) {
+            var reason = '';
             var siblings = [];
             var cursor = element.firstChild;
             while (cursor) {
                 if (cursor.nodeType === 1) {
-                    reason += xmlInnerText(cursor) || "";
+                    reason += xmlInnerText(cursor) || '';
                 }
                 siblings.push(cursor.nextSibling);
                 cursor = cursor.firstChild || siblings.shift();
             }
-            reason += xmlInnerText(element) || "";
-            xmlThrowParserError(reason, "", text);
+            reason += xmlInnerText(element) || '';
+            xmlThrowParserError(reason, '', text);
         }
 
         return dom;
@@ -670,7 +671,7 @@
         /// <param name="name" type="String">Name string to qualify with the prefix.</param>
         /// <returns type="String">Qualified name.</returns>
 
-        return prefix ? prefix + ":" + name : name;
+        return prefix ? prefix + ':' + name : name;
     };
 
     var xmlAppendText = function (domNode, textNode) {
@@ -678,12 +679,12 @@
         /// <param name="domNode">DOM node for the element.</param>
         /// <param name="text" type="String" mayBeNull="false">Text to append as a child of element.</param>
         if (hasLeadingOrTrailingWhitespace(textNode.data)) {
-            var attr = xmlAttributeNode(domNode, xmlNS, "space");
+            var attr = xmlAttributeNode(domNode, xmlNS, 'space');
             if (!attr) {
-                attr = xmlNewAttribute(domNode.ownerDocument, xmlNS, xmlQualifiedName("xml", "space"));
+                attr = xmlNewAttribute(domNode.ownerDocument, xmlNS, xmlQualifiedName('xml', 'space'));
                 xmlAppendChild(domNode, attr);
             }
-            attr.value = "preserve";
+            attr.value = 'preserve';
         }
         domNode.appendChild(textNode);
         return domNode;
@@ -733,17 +734,16 @@
         /// <param name="baseURI" mayBeNull="true" optional="true">Base URI used to normalize the value of the xml:base attribute.</param>
         /// <returns type="String">Value of the xml:base attribute if found; the baseURI or null otherwise.</returns>
 
-        var base = xmlAttributeNode(domNode, "base", xmlNS);
+        var base = xmlAttributeNode(domNode, 'base', xmlNS);
         return (base ? normalizeURI(base.value, baseURI) : baseURI) || null;
     };
-
 
     var xmlChildElements = function (domNode, onElementCallback) {
         /// <summary>Iterates through the XML element's child DOM elements and invokes the callback function for each one.</summary>
         /// <param name="element">DOM Node containing the DOM elements to iterate over.</param>
         /// <param name="onElementCallback" type="Function">Callback function to invoke for each child DOM element.</param>
 
-        xmlTraverse(domNode, /*recursive*/false, function (child) {
+        xmlTraverse(domNode, /*recursive*/ false, function (child) {
             if (child.nodeType === 1) {
                 onElementCallback(child);
             }
@@ -763,7 +763,7 @@
         ///     The function will stop searching on the first element that doesn't match the namespace and the path.
         /// </remarks>
 
-        var parts = path.split("/");
+        var parts = path.split('/');
         var i, len;
         for (i = 0, len = parts.length; i < len; i++) {
             root = root && xmlFirstChildElement(root, namespaceURI, parts[i]);
@@ -784,13 +784,13 @@
         ///     The last segment of the path may be decorated with a starting @ character to indicate that the desired node is a DOM attribute.
         /// </remarks>
 
-        var lastSegmentStart = path.lastIndexOf("/");
+        var lastSegmentStart = path.lastIndexOf('/');
         var nodePath = path.substring(lastSegmentStart + 1);
         var parentPath = path.substring(0, lastSegmentStart);
 
         var node = parentPath ? xmlFindElementByPath(root, namespaceURI, parentPath) : root;
         if (node) {
-            if (nodePath.charAt(0) === "@") {
+            if (nodePath.charAt(0) === '@') {
                 return xmlAttributeNode(node, nodePath.substring(1), namespaceURI);
             }
             return xmlFirstChildElement(node, namespaceURI, nodePath);
@@ -805,7 +805,7 @@
         /// <param name="localName" type="String" optional="true">Name of the element to match.</param>
         /// <returns>The node's first child DOM element that matches the specified namespace URI and local name; null otherwise.</returns>
 
-        return xmlFirstElementMaybeRecursive(domNode, namespaceURI, localName, /*recursive*/false);
+        return xmlFirstElementMaybeRecursive(domNode, namespaceURI, localName, /*recursive*/ false);
     };
 
     var xmlFirstDescendantElement = function (domNode, namespaceURI, localName) {
@@ -819,7 +819,7 @@
             var result = domNode.getElementsByTagNameNS(namespaceURI, localName);
             return result.length > 0 ? result[0] : null;
         }
-        return xmlFirstElementMaybeRecursive(domNode, namespaceURI, localName, /*recursive*/true);
+        return xmlFirstElementMaybeRecursive(domNode, namespaceURI, localName, /*recursive*/ true);
     };
 
     var xmlFirstElementMaybeRecursive = function (domNode, namespaceURI, localName, recursive) {
@@ -854,7 +854,7 @@
         /// <returns type="String">Text for all direct children.</returns>
 
         var result = null;
-        var root = (xmlElement.nodeType === 9 && xmlElement.documentElement) ? xmlElement.documentElement : xmlElement;
+        var root = xmlElement.nodeType === 9 && xmlElement.documentElement ? xmlElement.documentElement : xmlElement;
         var whitespaceAlreadyRemoved = root.ownerDocument.preserveWhiteSpace === false;
         var whitespacePreserveContext;
 
@@ -914,7 +914,7 @@
         /// <summary>Returns the value or the inner text of a XML node.</summary>
         /// <param name="node">DOM node to get the value from.</param>
         /// <returns>Value of the domNode or the inner text if domNode represents a DOM element node.</returns>
-        
+
         if (domNode.nodeType === 1) {
             return xmlInnerText(domNode);
         }
@@ -979,9 +979,9 @@
         /// </remarks>
 
         var implementation = window.document.implementation;
-        return (implementation && implementation.createDocument) ?
-           implementation.createDocument(null, null, null) :
-           msXmlDom();
+        return implementation && implementation.createDocument
+            ? implementation.createDocument(null, null, null)
+            : msXmlDom();
     };
 
     var xmlAppendChildren = function (parent, children) {
@@ -1016,7 +1016,7 @@
         /// </remarks>
 
         if (child) {
-            if (typeof child === "string") {
+            if (typeof child === 'string') {
                 return xmlAppendText(parent, xmlNewText(parent.ownerDocument, child));
             }
             if (child.nodeType === 2) {
@@ -1036,10 +1036,10 @@
         /// <returns>DOM attribute node for the namespace declaration.</returns>
 
         var attribute =
-            dom.createAttributeNS && dom.createAttributeNS(namespaceURI, qualifiedName) ||
+            (dom.createAttributeNS && dom.createAttributeNS(namespaceURI, qualifiedName)) ||
             dom.createNode(2, qualifiedName, namespaceURI || undefined);
 
-        attribute.value = value || "";
+        attribute.value = value || '';
         return attribute;
     };
 
@@ -1058,7 +1058,7 @@
         /// </remarks>
 
         var element =
-            dom.createElementNS && dom.createElementNS(nampespaceURI, qualifiedName) ||
+            (dom.createElementNS && dom.createElementNS(nampespaceURI, qualifiedName)) ||
             dom.createNode(1, qualifiedName, nampespaceURI || undefined);
 
         return xmlAppendChildren(element, children || []);
@@ -1071,7 +1071,7 @@
         /// <param name="prefix" type="String">Namespace prefix.</param>
         /// <returns>DOM attribute node for the namespace declaration.</returns>
 
-        return xmlNewAttribute(dom, xmlnsNS, xmlQualifiedName("xmlns", prefix), namespaceURI);
+        return xmlNewAttribute(dom, xmlnsNS, xmlQualifiedName('xmlns', prefix), namespaceURI);
     };
 
     var xmlNewFragment = function (dom, text) {
@@ -1080,10 +1080,10 @@
         /// <param name="text" type="String" mayBeNull="false">XML text to be represented by the XmlFragment.</param>
         /// <returns>New DOM document fragment object.</returns>
 
-        var value = "<c>" + text + "</c>";
+        var value = '<c>' + text + '</c>';
         var tempDom = xmlParse(value);
         var tempRoot = tempDom.documentElement;
-        var imported = ("importNode" in dom) ? dom.importNode(tempRoot, true) : tempRoot;
+        var imported = 'importNode' in dom ? dom.importNode(tempRoot, true) : tempRoot;
         var fragment = dom.createDocumentFragment();
 
         var importedChild = imported.firstChild;
@@ -1119,8 +1119,8 @@
         ///     will be created.
         /// </remarks>
 
-        var name = "";
-        var parts = path.split("/");
+        var name = '';
+        var parts = path.split('/');
         var xmlFindNode = xmlFirstChildElement;
         var xmlNewNode = xmlNewElement;
         var xmlNode = root;
@@ -1128,7 +1128,7 @@
         var i, len;
         for (i = 0, len = parts.length; i < len; i++) {
             name = parts[i];
-            if (name.charAt(0) === "@") {
+            if (name.charAt(0) === '@') {
                 name = name.substring(1);
                 xmlFindNode = xmlAttributeNode;
                 xmlNewNode = xmlNewAttribute;
@@ -1161,7 +1161,7 @@
             return domNode.xml;
         }
 
-        throw { message: "XML serialization unsupported" };
+        throw { message: 'XML serialization unsupported' };
     };
 
     var xmlSerializeDescendants = function (domNode) {
@@ -1170,9 +1170,10 @@
         /// <returns type="String">The XML representation of all the descendants of the node.</returns>
 
         var children = domNode.childNodes;
-        var i, len = children.length;
+        var i,
+            len = children.length;
         if (len === 0) {
-            return "";
+            return '';
         }
 
         // Some implementations of the XMLSerializer don't deal very well with fragments that
@@ -1182,7 +1183,7 @@
 
         var dom = domNode.ownerDocument;
         var fragment = dom.createDocumentFragment();
-        var fragmentRoot = dom.createElement("c");
+        var fragmentRoot = dom.createElement('c');
 
         fragment.appendChild(fragmentRoot);
         // Move the children to the fragment tree.
@@ -1216,11 +1217,8 @@
             return serializer.serializeToString(domNode);
         }
 
-        throw { message: "XML serialization unsupported" };
+        throw { message: 'XML serialization unsupported' };
     };
-
-
-
 
     var forwardCall = function (thisValue, name, returnValue) {
         /// <summary>Creates a new function to forward a call.</summary>
@@ -1309,7 +1307,6 @@
             /// <summary>Invokes success callbacks for this deferred object.</summary>
             /// <remarks>All arguments are forwarded to success callbacks.</remarks>
 
-
             if (this._done) {
                 var i, len;
                 for (i = 0, len = this._done.length; i < len; i++) {
@@ -1354,9 +1351,9 @@
             /// <returns>An object with only the promise object.</returns>
 
             var result = {};
-            result.then = forwardCall(this, "then", result);
+            result.then = forwardCall(this, 'then', result);
             return result;
-        }
+        },
     };
 
     var createDeferred = function () {
@@ -1373,9 +1370,6 @@
         }
     };
 
-
-
-
     var dataItemTypeName = function (value, metadata) {
         /// <summary>Gets the type name of a data item value that belongs to a feed, an entry, a complex type property, or a collection property.</summary>
         /// <param name="value">Value of the data item from which the type name is going to be retrieved.</param>
@@ -1390,48 +1384,48 @@
         return valueTypeName || (metadata ? metadata.type : null);
     };
 
-    var EDM = "Edm.";
-    var EDM_BINARY = EDM + "Binary";
-    var EDM_BOOLEAN = EDM + "Boolean";
-    var EDM_BYTE = EDM + "Byte";
-    var EDM_DATETIME = EDM + "DateTime";
-    var EDM_DATETIMEOFFSET = EDM + "DateTimeOffset";
-    var EDM_DECIMAL = EDM + "Decimal";
-    var EDM_DOUBLE = EDM + "Double";
-    var EDM_GUID = EDM + "Guid";
-    var EDM_INT16 = EDM + "Int16";
-    var EDM_INT32 = EDM + "Int32";
-    var EDM_INT64 = EDM + "Int64";
-    var EDM_SBYTE = EDM + "SByte";
-    var EDM_SINGLE = EDM + "Single";
-    var EDM_STRING = EDM + "String";
-    var EDM_TIME = EDM + "Time";
+    var EDM = 'Edm.';
+    var EDM_BINARY = EDM + 'Binary';
+    var EDM_BOOLEAN = EDM + 'Boolean';
+    var EDM_BYTE = EDM + 'Byte';
+    var EDM_DATETIME = EDM + 'DateTime';
+    var EDM_DATETIMEOFFSET = EDM + 'DateTimeOffset';
+    var EDM_DECIMAL = EDM + 'Decimal';
+    var EDM_DOUBLE = EDM + 'Double';
+    var EDM_GUID = EDM + 'Guid';
+    var EDM_INT16 = EDM + 'Int16';
+    var EDM_INT32 = EDM + 'Int32';
+    var EDM_INT64 = EDM + 'Int64';
+    var EDM_SBYTE = EDM + 'SByte';
+    var EDM_SINGLE = EDM + 'Single';
+    var EDM_STRING = EDM + 'String';
+    var EDM_TIME = EDM + 'Time';
 
-    var EDM_GEOGRAPHY = EDM + "Geography";
-    var EDM_GEOGRAPHY_POINT = EDM_GEOGRAPHY + "Point";
-    var EDM_GEOGRAPHY_LINESTRING = EDM_GEOGRAPHY + "LineString";
-    var EDM_GEOGRAPHY_POLYGON = EDM_GEOGRAPHY + "Polygon";
-    var EDM_GEOGRAPHY_COLLECTION = EDM_GEOGRAPHY + "Collection";
-    var EDM_GEOGRAPHY_MULTIPOLYGON = EDM_GEOGRAPHY + "MultiPolygon";
-    var EDM_GEOGRAPHY_MULTILINESTRING = EDM_GEOGRAPHY + "MultiLineString";
-    var EDM_GEOGRAPHY_MULTIPOINT = EDM_GEOGRAPHY + "MultiPoint";
+    var EDM_GEOGRAPHY = EDM + 'Geography';
+    var EDM_GEOGRAPHY_POINT = EDM_GEOGRAPHY + 'Point';
+    var EDM_GEOGRAPHY_LINESTRING = EDM_GEOGRAPHY + 'LineString';
+    var EDM_GEOGRAPHY_POLYGON = EDM_GEOGRAPHY + 'Polygon';
+    var EDM_GEOGRAPHY_COLLECTION = EDM_GEOGRAPHY + 'Collection';
+    var EDM_GEOGRAPHY_MULTIPOLYGON = EDM_GEOGRAPHY + 'MultiPolygon';
+    var EDM_GEOGRAPHY_MULTILINESTRING = EDM_GEOGRAPHY + 'MultiLineString';
+    var EDM_GEOGRAPHY_MULTIPOINT = EDM_GEOGRAPHY + 'MultiPoint';
 
-    var EDM_GEOMETRY = EDM + "Geometry";
-    var EDM_GEOMETRY_POINT = EDM_GEOMETRY + "Point";
-    var EDM_GEOMETRY_LINESTRING = EDM_GEOMETRY + "LineString";
-    var EDM_GEOMETRY_POLYGON = EDM_GEOMETRY + "Polygon";
-    var EDM_GEOMETRY_COLLECTION = EDM_GEOMETRY + "Collection";
-    var EDM_GEOMETRY_MULTIPOLYGON = EDM_GEOMETRY + "MultiPolygon";
-    var EDM_GEOMETRY_MULTILINESTRING = EDM_GEOMETRY + "MultiLineString";
-    var EDM_GEOMETRY_MULTIPOINT = EDM_GEOMETRY + "MultiPoint";
+    var EDM_GEOMETRY = EDM + 'Geometry';
+    var EDM_GEOMETRY_POINT = EDM_GEOMETRY + 'Point';
+    var EDM_GEOMETRY_LINESTRING = EDM_GEOMETRY + 'LineString';
+    var EDM_GEOMETRY_POLYGON = EDM_GEOMETRY + 'Polygon';
+    var EDM_GEOMETRY_COLLECTION = EDM_GEOMETRY + 'Collection';
+    var EDM_GEOMETRY_MULTIPOLYGON = EDM_GEOMETRY + 'MultiPolygon';
+    var EDM_GEOMETRY_MULTILINESTRING = EDM_GEOMETRY + 'MultiLineString';
+    var EDM_GEOMETRY_MULTIPOINT = EDM_GEOMETRY + 'MultiPoint';
 
-    var GEOJSON_POINT = "Point";
-    var GEOJSON_LINESTRING = "LineString";
-    var GEOJSON_POLYGON = "Polygon";
-    var GEOJSON_MULTIPOINT = "MultiPoint";
-    var GEOJSON_MULTILINESTRING = "MultiLineString";
-    var GEOJSON_MULTIPOLYGON = "MultiPolygon";
-    var GEOJSON_GEOMETRYCOLLECTION = "GeometryCollection";
+    var GEOJSON_POINT = 'Point';
+    var GEOJSON_LINESTRING = 'LineString';
+    var GEOJSON_POLYGON = 'Polygon';
+    var GEOJSON_MULTIPOINT = 'MultiPoint';
+    var GEOJSON_MULTILINESTRING = 'MultiLineString';
+    var GEOJSON_MULTIPOLYGON = 'MultiPolygon';
+    var GEOJSON_GEOMETRYCOLLECTION = 'GeometryCollection';
 
     var primitiveEdmTypes = [
         EDM_STRING,
@@ -1448,7 +1442,7 @@
         EDM_BYTE,
         EDM_INT16,
         EDM_SBYTE,
-        EDM_BINARY
+        EDM_BINARY,
     ];
 
     var geometryEdmTypes = [
@@ -1459,7 +1453,7 @@
         EDM_GEOMETRY_COLLECTION,
         EDM_GEOMETRY_MULTIPOLYGON,
         EDM_GEOMETRY_MULTILINESTRING,
-        EDM_GEOMETRY_MULTIPOINT
+        EDM_GEOMETRY_MULTIPOINT,
     ];
 
     var geographyEdmTypes = [
@@ -1470,7 +1464,7 @@
         EDM_GEOGRAPHY_COLLECTION,
         EDM_GEOGRAPHY_MULTIPOLYGON,
         EDM_GEOGRAPHY_MULTILINESTRING,
-        EDM_GEOGRAPHY_MULTIPOINT
+        EDM_GEOGRAPHY_MULTIPOINT,
     ];
 
     var forEachSchema = function (metadata, callback) {
@@ -1513,13 +1507,13 @@
 
         // Avoid generating milliseconds if not necessary.
         if (ms === 0) {
-            ms = "";
+            ms = '';
         } else {
-            ms = "." + formatNumberWidth(ms.toString(), 3);
+            ms = '.' + formatNumberWidth(ms.toString(), 3);
         }
         if (ns > 0) {
-            if (ms === "") {
-                ms = ".000";
+            if (ms === '') {
+                ms = '.000';
             }
             ms += formatNumberWidth(ns.toString(), 4);
         }
@@ -1532,44 +1526,52 @@
         /// <returns type="String">Formatted text.</returns>
         /// <remarks>If the value is already as string it's returned as-is.</remarks>
 
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
             return value;
         }
 
         var hasOffset = isDateTimeOffset(value);
         var offset = getCanonicalTimezone(value.__offset);
-        if (hasOffset && offset !== "Z") {
+        if (hasOffset && offset !== 'Z') {
             // We're about to change the value, so make a copy.
             value = new Date(value.valueOf());
 
             var timezone = parseTimezone(offset);
-            var hours = value.getUTCHours() + (timezone.d * timezone.h);
-            var minutes = value.getUTCMinutes() + (timezone.d * timezone.m);
+            var hours = value.getUTCHours() + timezone.d * timezone.h;
+            var minutes = value.getUTCMinutes() + timezone.d * timezone.m;
 
             value.setUTCHours(hours, minutes);
         } else if (!hasOffset) {
             // Don't suffix a 'Z' for Edm.DateTime values.
-            offset = "";
+            offset = '';
         }
 
         var year = value.getUTCFullYear();
         var month = value.getUTCMonth() + 1;
-        var sign = "";
+        var sign = '';
         if (year <= 0) {
             year = -(year - 1);
-            sign = "-";
+            sign = '-';
         }
 
         var ms = formatMilliseconds(value.getUTCMilliseconds(), value.__ns);
 
-        return sign +
-            formatNumberWidth(year, 4) + "-" +
-            formatNumberWidth(month, 2) + "-" +
-            formatNumberWidth(value.getUTCDate(), 2) + "T" +
-            formatNumberWidth(value.getUTCHours(), 2) + ":" +
-            formatNumberWidth(value.getUTCMinutes(), 2) + ":" +
+        return (
+            sign +
+            formatNumberWidth(year, 4) +
+            '-' +
+            formatNumberWidth(month, 2) +
+            '-' +
+            formatNumberWidth(value.getUTCDate(), 2) +
+            'T' +
+            formatNumberWidth(value.getUTCHours(), 2) +
+            ':' +
+            formatNumberWidth(value.getUTCMinutes(), 2) +
+            ':' +
             formatNumberWidth(value.getUTCSeconds(), 2) +
-            ms + offset;
+            ms +
+            offset
+        );
     };
 
     var formatDuration = function (value) {
@@ -1579,9 +1581,9 @@
 
         var ms = value.ms;
 
-        var sign = "";
+        var sign = '';
         if (ms < 0) {
-            sign = "-";
+            sign = '-';
             ms = -ms;
         }
 
@@ -1594,12 +1596,19 @@
         var seconds = Math.floor(ms / 1000);
         ms -= seconds * 1000;
 
-        return sign + "P" +
-               formatNumberWidth(days, 2) + "DT" +
-               formatNumberWidth(hours, 2) + "H" +
-               formatNumberWidth(minutes, 2) + "M" +
-               formatNumberWidth(seconds, 2) +
-               formatMilliseconds(ms, value.ns) + "S";
+        return (
+            sign +
+            'P' +
+            formatNumberWidth(days, 2) +
+            'DT' +
+            formatNumberWidth(hours, 2) +
+            'H' +
+            formatNumberWidth(minutes, 2) +
+            'M' +
+            formatNumberWidth(seconds, 2) +
+            formatMilliseconds(ms, value.ns) +
+            'S'
+        );
     };
 
     var formatNumberWidth = function (value, width, append) {
@@ -1611,9 +1620,9 @@
         var result = value.toString(10);
         while (result.length < width) {
             if (append) {
-                result += "0";
+                result += '0';
             } else {
-                result = "0" + result;
+                result = '0' + result;
             }
         }
 
@@ -1625,7 +1634,7 @@
         /// <param name="timezone" type="String">Timezone representation.</param>
         /// <returns type="String">An 'Z' string if the timezone is absent or 0; the timezone otherwise.</returns>
 
-        return (!timezone || timezone === "Z" || timezone === "+00:00" || timezone === "-00:00") ? "Z" : timezone;
+        return !timezone || timezone === 'Z' || timezone === '+00:00' || timezone === '-00:00' ? 'Z' : timezone;
     };
 
     var getCollectionType = function (typeName) {
@@ -1633,9 +1642,9 @@
         /// <param name="typeName" type="String">Type name of the collection.</param>
         /// <returns type="String">Type of the collection; null if the type name is not a collection type.</returns>
 
-        if (typeof typeName === "string") {
-            var end = typeName.indexOf(")", 10);
-            if (typeName.indexOf("Collection(") === 0 && end > 0) {
+        if (typeof typeName === 'string') {
+            var end = typeName.indexOf(')', 10);
+            if (typeName.indexOf('Collection(') === 0 && end > 0) {
                 return typeName.substring(11, end);
             }
         }
@@ -1651,28 +1660,32 @@
         /// <param name="httpClient">HTTP client layer.</param>
         /// <param name="context">Context used for processing the request</param>
 
-        return httpClient.request(request, function (response) {
-            try {
-                if (response.headers) {
-                    normalizeHeaders(response.headers);
+        return httpClient.request(
+            request,
+            function (response) {
+                try {
+                    if (response.headers) {
+                        normalizeHeaders(response.headers);
+                    }
+
+                    if (response.data === undefined && response.statusCode !== 204) {
+                        handler.read(response, context);
+                    }
+                } catch (err) {
+                    if (err.request === undefined) {
+                        err.request = request;
+                    }
+                    if (err.response === undefined) {
+                        err.response = response;
+                    }
+                    error(err);
+                    return;
                 }
 
-                if (response.data === undefined && response.statusCode !== 204) {
-                    handler.read(response, context);
-                }
-            } catch (err) {
-                if (err.request === undefined) {
-                    err.request = request;
-                }
-                if (err.response === undefined) {
-                    err.response = response;
-                }
-                error(err);
-                return;
-            }
-
-            success(response.data, response);
-        }, error);
+                success(response.data, response);
+            },
+            error
+        );
     };
 
     var isBatch = function (value) {
@@ -1692,10 +1705,8 @@
         /// <param name="typeName" type="Sting">Type name of the value. This is used to disambiguate from a collection property value.</param>
         /// <returns type="Boolean">True is the value is a feed value; false otherwise.</returns>
 
-        var colData = value && value.results || value;
-        return !!colData &&
-            (isCollectionType(typeName)) ||
-            (!typeName && isArray(colData) && !isComplex(colData[0]));
+        var colData = (value && value.results) || value;
+        return (!!colData && isCollectionType(typeName)) || (!typeName && isArray(colData) && !isComplex(colData[0]));
     };
 
     var isCollectionType = function (typeName) {
@@ -1710,17 +1721,14 @@
         /// <param name="value">Value to test.</param>
         /// <returns type="Boolean">True is the value is a complex type value; false otherwise.</returns>
 
-        return !!value &&
-            isObject(value) &&
-            !isArray(value) &&
-            !isDate(value);
+        return !!value && isObject(value) && !isArray(value) && !isDate(value);
     };
 
     var isDateTimeOffset = function (value) {
         /// <summary>Checks whether a Date object is DateTimeOffset value</summary>
         /// <param name="value" type="Date" mayBeNull="false">Value to check.</param>
         /// <returns type="Boolean">true if the value is a DateTimeOffset, false otherwise.</returns>
-        return (value.__edmType === "Edm.DateTimeOffset" || (!value.__edmType && value.__offset));
+        return value.__edmType === 'Edm.DateTimeOffset' || (!value.__edmType && value.__offset);
     };
 
     var isDeferred = function (value) {
@@ -1741,7 +1749,7 @@
         /// <param name="value">Value to test.</param>
         /// <returns type="Boolean">True is the value is an entry object; false otherwise.</returns>
 
-        return isComplex(value) && value.__metadata && "uri" in value.__metadata;
+        return isComplex(value) && value.__metadata && 'uri' in value.__metadata;
     };
 
     var isFeed = function (value, typeName) {
@@ -1750,11 +1758,8 @@
         /// <param name="typeName" type="Sting">Type name of the value. This is used to disambiguate from a collection property value.</param>
         /// <returns type="Boolean">True is the value is a feed value; false otherwise.</returns>
 
-        var feedData = value && value.results || value;
-        return isArray(feedData) && (
-            (!isCollectionType(typeName)) &&
-            (isComplex(feedData[0]))
-        );
+        var feedData = (value && value.results) || value;
+        return isArray(feedData) && !isCollectionType(typeName) && isComplex(feedData[0]);
     };
 
     var isGeographyEdmType = function (typeName) {
@@ -1794,10 +1799,7 @@
         /// </remarks>
         /// <returns type="Boolean">True is the value is a primitive type value.</returns>
 
-        return isDate(value) ||
-            typeof value === "string" ||
-            typeof value === "number" ||
-            typeof value === "boolean";
+        return isDate(value) || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
     };
 
     var isPrimitiveEdmType = function (typeName) {
@@ -1820,19 +1822,19 @@
         /// <returns type="String">String value describing the kind of the navigation property; null if the kind cannot be determined.</returns>
 
         if (isDeferred(value)) {
-            return "deferred";
+            return 'deferred';
         }
         if (isEntry(value)) {
-            return "entry";
+            return 'entry';
         }
         if (isFeed(value)) {
-            return "feed";
+            return 'feed';
         }
         if (propertyModel && propertyModel.relationship) {
             if (value === null || value === undefined || !isFeed(value)) {
-                return "entry";
+                return 'entry';
             }
-            return "feed";
+            return 'feed';
         }
         return null;
     };
@@ -1855,9 +1857,11 @@
         /// <param name="kind" type="String">Kind of object to look for as per EDM metadata.</param>
         /// <returns>An type description if the name is found; null otherwise.</returns>
 
-        return (name) ? forEachSchema(metadata, function (schema) {
-            return lookupInSchema(name, schema, kind);
-        }) : null;
+        return name
+            ? forEachSchema(metadata, function (schema) {
+                  return lookupInSchema(name, schema, kind);
+              })
+            : null;
     };
 
     var lookupEntitySet = function (entitySets, name) {
@@ -1877,7 +1881,7 @@
         /// <param name="metadata">Metadata store; one of edmx, schema, or an array of any of them.</param>
         /// <returns>A complex type description if the name is found; null otherwise.</returns>
 
-        return lookupInMetadata(name, metadata, "complexType");
+        return lookupInMetadata(name, metadata, 'complexType');
     };
 
     var lookupEntityType = function (name, metadata) {
@@ -1886,7 +1890,7 @@
         /// <param name="metadata">Metadata store; one of edmx, schema, or an array of any of them.</param>
         /// <returns>An entity type description if the name is found; null otherwise.</returns>
 
-        return lookupInMetadata(name, metadata, "entityType");
+        return lookupInMetadata(name, metadata, 'entityType');
     };
 
     var lookupDefaultEntityContainer = function (metadata) {
@@ -1908,7 +1912,7 @@
         /// <param name="metadata">Metadata store; one of edmx, schema, or an array of any of them.</param>
         /// <returns>An entity container description if the name is found; null otherwise.</returns>
 
-        return lookupInMetadata(name, metadata, "entityContainer");
+        return lookupInMetadata(name, metadata, 'entityContainer');
     };
 
     var lookupFunctionImport = function (functionImports, name) {
@@ -1933,7 +1937,7 @@
             var rel = navigationProperty.relationship;
             var association = forEachSchema(metadata, function (schema) {
                 // The name should be the namespace qualified name in 'ns'.'type' format.
-                var nameOnly = removeNamespace(schema["namespace"], rel);
+                var nameOnly = removeNamespace(schema['namespace'], rel);
                 var associations = schema.association;
                 if (nameOnly && associations) {
                     var i, len;
@@ -1981,7 +1985,9 @@
                 return null;
             });
             if (associationSet && associationSet.end[0] && associationSet.end[1]) {
-                return (associationSet.end[0].entitySet == sourceEntitySetName) ? associationSet.end[1].entitySet : associationSet.end[0].entitySet;
+                return associationSet.end[0].entitySet == sourceEntitySetName
+                    ? associationSet.end[1].entitySet
+                    : associationSet.end[0].entitySet;
             }
         }
         return null;
@@ -2000,7 +2006,11 @@
                 if (entitySets) {
                     for (var j = 0; j < entitySets.length; j++) {
                         if (entitySets[j].name == entitySetName) {
-                            return { entitySet: entitySets[j], containerName: containers[i].name, functionImport: containers[i].functionImport };
+                            return {
+                                entitySet: entitySets[j],
+                                containerName: containers[i].name,
+                                functionImport: containers[i].functionImport,
+                            };
                         }
                     }
                 }
@@ -2017,7 +2027,7 @@
         /// <param name="fullName" type="String">Full name in 'ns'.'name' form.</param>
         /// <returns type="String">The local name, null if it isn't found in the expected namespace.</returns>
 
-        if (fullName.indexOf(ns) === 0 && fullName.charAt(ns.length) === ".") {
+        if (fullName.indexOf(ns) === 0 && fullName.charAt(ns.length) === '.') {
             return fullName.substr(ns.length + 1);
         }
 
@@ -2033,7 +2043,7 @@
 
         if (name && schema) {
             // The name should be the namespace qualified name in 'ns'.'type' format.
-            var nameOnly = removeNamespace(schema["namespace"], name);
+            var nameOnly = removeNamespace(schema['namespace'], name);
             if (nameOnly) {
                 return find(schema[kind], function (item) {
                     return item.name === nameOnly;
@@ -2053,12 +2063,10 @@
             return left;
         }
 
-        var leftParts = left.split(".");
-        var rightParts = right.split(".");
+        var leftParts = left.split('.');
+        var rightParts = right.split('.');
 
-        var len = (leftParts.length >= rightParts.length) ?
-            leftParts.length :
-            rightParts.length;
+        var len = leftParts.length >= rightParts.length ? leftParts.length : rightParts.length;
 
         for (var i = 0; i < len; i++) {
             var leftVersion = leftParts[i] && parseInt10(leftParts[i]);
@@ -2073,10 +2081,10 @@
     };
 
     var normalHeaders = {
-        "accept": "Accept",
-        "content-type": "Content-Type",
-        "dataserviceversion": "DataServiceVersion",
-        "maxdataserviceversion": "MaxDataServiceVersion"
+        accept: 'Accept',
+        'content-type': 'Content-Type',
+        dataserviceversion: 'DataServiceVersion',
+        maxdataserviceversion: 'MaxDataServiceVersion',
     };
 
     var normalizeHeaders = function (headers) {
@@ -2099,13 +2107,12 @@
         /// <param name="propertyValue">Value to parse.</param>
         /// <returns type="Boolean">true if the property value is 'true'; false otherwise.</returns>
 
-        if (typeof propertyValue === "boolean") {
+        if (typeof propertyValue === 'boolean') {
             return propertyValue;
         }
 
-        return typeof propertyValue === "string" && propertyValue.toLowerCase() === "true";
+        return typeof propertyValue === 'string' && propertyValue.toLowerCase() === 'true';
     };
-
 
     // The captured indices for this expression are:
     // 0     - complete input
@@ -2123,13 +2130,13 @@
 
         // We cannot parse this in cases of failure to match or if offset information is specified.
         var parts = parseDateTimeRE.exec(value);
-        var offset = (parts) ? getCanonicalTimezone(parts[8]) : null;
+        var offset = parts ? getCanonicalTimezone(parts[8]) : null;
 
-        if (!parts || (!withOffset && offset !== "Z")) {
+        if (!parts || (!withOffset && offset !== 'Z')) {
             if (nullOnError) {
                 return null;
             }
-            throw { message: "Invalid date/time value" };
+            throw { message: 'Invalid date/time value' };
         }
 
         // Pre-parse years, account for year '0' being invalid in dateTime.
@@ -2148,7 +2155,7 @@
                 if (nullOnError) {
                     return null;
                 }
-                throw { message: "Cannot parse date/time value to given precision." };
+                throw { message: 'Cannot parse date/time value to given precision.' };
             }
 
             ns = formatNumberWidth(ms.substring(3), 4, true);
@@ -2162,11 +2169,11 @@
         var hours = parseInt10(parts[4]);
         var minutes = parseInt10(parts[5]);
         var seconds = parseInt10(parts[6]) || 0;
-        if (offset !== "Z") {
+        if (offset !== 'Z') {
             // The offset is reversed to get back the UTC date, which is
             // what the API will eventually have.
             var timezone = parseTimezone(offset);
-            var direction = -(timezone.d);
+            var direction = -timezone.d;
             hours += timezone.h * direction;
             minutes += timezone.m * direction;
         }
@@ -2174,21 +2181,21 @@
         // Set the date and time separately with setFullYear, so years 0-99 aren't biased like in Date.UTC.
         var result = new Date();
         result.setUTCFullYear(
-            year,                       // Year.
-            parseInt10(parts[2]) - 1,   // Month (zero-based for Date.UTC and setFullYear).
-            parseInt10(parts[3])        // Date.
-            );
+            year, // Year.
+            parseInt10(parts[2]) - 1, // Month (zero-based for Date.UTC and setFullYear).
+            parseInt10(parts[3]) // Date.
+        );
         result.setUTCHours(hours, minutes, seconds, ms);
 
         if (isNaN(result.valueOf())) {
             if (nullOnError) {
                 return null;
             }
-            throw { message: "Invalid date/time value" };
+            throw { message: 'Invalid date/time value' };
         }
 
         if (withOffset) {
-            result.__edmType = "Edm.DateTimeOffset";
+            result.__edmType = 'Edm.DateTimeOffset';
             result.__offset = offset;
         }
 
@@ -2229,7 +2236,7 @@
 
     var parseTimeRE = /^([+-])?P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)(?:\.(\d+))?S)?)?/;
 
-    var isEdmDurationValue = function(value) {
+    var isEdmDurationValue = function (value) {
         parseTimeRE.test(value);
     };
 
@@ -2244,18 +2251,18 @@
         var parts = parseTimeRE.exec(duration);
 
         if (parts === null) {
-            throw { message: "Invalid duration value." };
+            throw { message: 'Invalid duration value.' };
         }
 
-        var years = parts[2] || "0";
-        var months = parts[3] || "0";
+        var years = parts[2] || '0';
+        var months = parts[3] || '0';
         var days = parseInt10(parts[4] || 0);
         var hours = parseInt10(parts[5] || 0);
         var minutes = parseInt10(parts[6] || 0);
         var seconds = parseFloat(parts[7] || 0);
 
-        if (years !== "0" || months !== "0") {
-            throw { message: "Unsupported duration value." };
+        if (years !== '0' || months !== '0') {
+            throw { message: 'Unsupported duration value.' };
         }
 
         var ms = parts[8];
@@ -2264,7 +2271,7 @@
             ms = 0;
         } else {
             if (ms.length > 7) {
-                throw { message: "Cannot parse duration value to given precision." };
+                throw { message: 'Cannot parse duration value to given precision.' };
             }
 
             ns = formatNumberWidth(ms.substring(3), 4, true);
@@ -2276,11 +2283,11 @@
 
         ms += seconds * 1000 + minutes * 60000 + hours * 3600000 + days * 86400000;
 
-        if (parts[1] === "-") {
+        if (parts[1] === '-') {
             ms = -ms;
         }
 
-        var result = { ms: ms, __edmType: "Edm.Time" };
+        var result = { ms: ms, __edmType: 'Edm.Time' };
 
         if (ns) {
             result.ns = ns;
@@ -2297,10 +2304,10 @@
         /// </returns>
 
         var direction = timezone.substring(0, 1);
-        direction = (direction === "+") ? 1 : -1;
+        direction = direction === '+' ? 1 : -1;
 
         var offsetHours = parseInt10(timezone.substring(1));
-        var offsetMinutes = parseInt10(timezone.substring(timezone.indexOf(":") + 1));
+        var offsetMinutes = parseInt10(timezone.substring(timezone.indexOf(':') + 1));
         return { d: direction, h: offsetHours, m: offsetMinutes };
     };
 
@@ -2312,7 +2319,7 @@
 
         // Default to GET if no method has been specified.
         if (!request.method) {
-            request.method = "GET";
+            request.method = 'GET';
         }
 
         if (!request.headers) {
@@ -2330,7 +2337,7 @@
         }
 
         if (!assigned(request.headers.MaxDataServiceVersion)) {
-            request.headers.MaxDataServiceVersion = handler.maxDataServiceVersion || "1.0";
+            request.headers.MaxDataServiceVersion = handler.maxDataServiceVersion || '1.0';
         }
     };
 
@@ -2343,7 +2350,7 @@
         /// <returns type="Object">The object with traversed properties.</returns>
         /// <remarks>Unlike the JSON reviver, this won't delete null members.</remarks>
 
-        if (item && typeof item === "object") {
+        if (item && typeof item === 'object') {
             for (var name in item) {
                 var value = item[name];
                 var result = traverseInternal(value, name, callback);
@@ -2370,9 +2377,8 @@
         /// <returns type="Object">The traversed object.</returns>
         /// <remarks>Unlike the JSON reviver, this won't delete null members.</remarks>
 
-        return callback("", traverseInternal(item, "", callback));
+        return callback('', traverseInternal(item, '', callback));
     };
-
 
     var ticks = 0;
 
@@ -2388,7 +2394,7 @@
         //
         // We allow data to come in a different format, as the servers SHOULD honor the Accept
         // request but may in practice return content with a different MIME type.
-        if (request.method && request.method !== "GET") {
+        if (request.method && request.method !== 'GET') {
             return false;
         }
 
@@ -2399,13 +2405,16 @@
         /// <summary>Creates an IFRAME tag for loading the JSONP script</summary>
         /// <param name="url" type="String">The source URL of the script</param>
         /// <returns type="HTMLElement">The IFRAME tag</returns>
-        var iframe = window.document.createElement("IFRAME");
-        iframe.style.display = "none";
+        var iframe = window.document.createElement('IFRAME');
+        iframe.style.display = 'none';
 
-        var attributeEncodedUrl = url.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/\</g, "&lt;");
-        var html = "<html><head><script type=\"text/javascript\" src=\"" + attributeEncodedUrl + "\"><\/script><\/head><body><\/body><\/html>";
+        var attributeEncodedUrl = url.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/\</g, '&lt;');
+        var html =
+            '<html><head><script type="text/javascript" src="' +
+            attributeEncodedUrl +
+            '"></script></head><body></body></html>';
 
-        var body = window.document.getElementsByTagName("BODY")[0];
+        var body = window.document.getElementsByTagName('BODY')[0];
         body.appendChild(iframe);
 
         writeHtmlToIFrame(iframe, html);
@@ -2421,16 +2430,16 @@
         var exception;
         if (window.ActiveXObject) {
             try {
-                return new window.ActiveXObject("Msxml2.XMLHTTP.6.0");
+                return new window.ActiveXObject('Msxml2.XMLHTTP.6.0');
             } catch (_) {
                 try {
-                    return new window.ActiveXObject("Msxml2.XMLHTTP.3.0");
+                    return new window.ActiveXObject('Msxml2.XMLHTTP.3.0');
                 } catch (e) {
                     exception = e;
                 }
             }
         } else {
-            exception = { message: "XMLHttpRequest not supported" };
+            exception = { message: 'XMLHttpRequest not supported' };
         }
         throw exception;
     };
@@ -2440,9 +2449,7 @@
         /// <param name="url" type="String">URL to check.</param>
         /// <returns type="Boolean">true if the url is an absolute URL; false otherwise.</returns>
 
-        return url.indexOf("http://") === 0 ||
-            url.indexOf("https://") === 0 ||
-            url.indexOf("file://") === 0;
+        return url.indexOf('http://') === 0 || url.indexOf('https://') === 0 || url.indexOf('file://') === 0;
     };
 
     var isLocalUrl = function (url) {
@@ -2456,8 +2463,8 @@
 
         // URL-embedded username and password will not be recognized as same-origin URLs.
         var location = window.location;
-        var locationDomain = location.protocol + "//" + location.host + "/";
-        return (url.indexOf(locationDomain) === 0);
+        var locationDomain = location.protocol + '//' + location.host + '/';
+        return url.indexOf(locationDomain) === 0;
     };
 
     var removeCallback = function (name, tick) {
@@ -2479,7 +2486,7 @@
         /// <param name="iframe" type="Object">The iframe to remove.</param>
         /// <returns type="Object">Null value to be assigned to iframe reference.</returns>
         if (iframe) {
-            writeHtmlToIFrame(iframe, "");
+            writeHtmlToIFrame(iframe, '');
             iframe.parentNode.removeChild(iframe);
         }
 
@@ -2495,7 +2502,7 @@
         var i, len;
         for (i = 0, len = responseHeaders.length; i < len; i++) {
             if (responseHeaders[i]) {
-                var header = responseHeaders[i].split(": ");
+                var header = responseHeaders[i].split(': ');
                 headers[header[0]] = header[1];
             }
         }
@@ -2505,16 +2512,16 @@
         /// <summary>Writes HTML to an IFRAME document.</summary>
         /// <param name="iframe" type="HTMLElement">The IFRAME element to write to.</param>
         /// <param name="html" type="String">The HTML to write.</param>
-        var frameDocument = (iframe.contentWindow) ? iframe.contentWindow.document : iframe.contentDocument.document;
+        var frameDocument = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument.document;
         frameDocument.open();
         frameDocument.write(html);
         frameDocument.close();
     };
 
     odata.defaultHttpClient = {
-        callbackParameterName: "$callback",
+        callbackParameterName: '$callback',
 
-        formatQueryString: "$format=json",
+        formatQueryString: '$format=json',
 
         enableJsonpCallback: false,
 
@@ -2542,7 +2549,7 @@
                     xhr = null;
                 }
 
-                error({ message: "Request aborted" });
+                error({ message: 'Request aborted' });
             };
 
             var handleTimeout = function () {
@@ -2550,7 +2557,7 @@
                 if (!done) {
                     done = true;
                     xhr = null;
-                    error({ message: "Request timed out" });
+                    error({ message: 'Request timed out' });
                 }
             };
 
@@ -2560,7 +2567,6 @@
             var callbackParameterName = defined(request.callbackParameterName, this.callbackParameterName);
             var formatQueryString = defined(request.formatQueryString, this.formatQueryString);
             if (!enableJsonpCallback || isLocalUrl(url)) {
-
                 xhr = createXmlHttpRequest();
                 xhr.onreadystatechange = function () {
                     if (done || xhr === null || xhr.readyState !== 4) {
@@ -2572,24 +2578,30 @@
                     var statusCode = xhr.status;
                     if (statusCode === 1223) {
                         statusCode = 204;
-                        statusText = "No Content";
+                        statusText = 'No Content';
                     }
 
                     var headers = [];
                     readResponseHeaders(xhr, headers);
 
-                    var response = { requestUri: url, statusCode: statusCode, statusText: statusText, headers: headers, body: xhr.responseText };
+                    var response = {
+                        requestUri: url,
+                        statusCode: statusCode,
+                        statusText: statusText,
+                        headers: headers,
+                        body: xhr.responseText,
+                    };
 
                     done = true;
                     xhr = null;
                     if (statusCode >= 200 && statusCode <= 299) {
                         success(response);
                     } else {
-                        error({ message: "HTTP request failed", request: request, response: response });
+                        error({ message: 'HTTP request failed', request: request, response: response });
                     }
                 };
 
-                xhr.open(request.method || "GET", url, true, request.user, request.password);
+                xhr.open(request.method || 'GET', url, true, request.user, request.password);
 
                 // Set the name/value pairs.
                 if (request.headers) {
@@ -2607,7 +2619,7 @@
                 xhr.send(request.body);
             } else {
                 if (!canUseJSONP(request)) {
-                    throw { message: "Request is not local and cannot be done through JSONP." };
+                    throw { message: 'Request is not local and cannot be done through JSONP.' };
                 }
 
                 var tick = ticks;
@@ -2615,7 +2627,7 @@
                 var tickText = tick.toString();
                 var succeeded = false;
                 var timeoutId;
-                name = "handleJSONP_" + tickText;
+                name = 'handleJSONP_' + tickText;
                 window[name] = function (data) {
                     iframe = removeIFrame(iframe);
                     if (!done) {
@@ -2629,13 +2641,15 @@
                             data = window.JSON.parse(window.JSON.stringify(data));
                         }
 
-
                         var headers;
                         // Adding dataServiceVersion in case of json light ( data.d doesn't exist )
                         if (data.d === undefined) {
-                            headers = { "Content-Type": "application/json;odata=minimalmetadata", dataServiceVersion: "3.0" };
+                            headers = {
+                                'Content-Type': 'application/json;odata=minimalmetadata',
+                                dataServiceVersion: '3.0',
+                            };
                         } else {
-                            headers = { "Content-Type": "application/json" };
+                            headers = { 'Content-Type': 'application/json' };
                         }
                         // Call the success callback in the context of the parent window, instead of the IFRAME
                         delay(function () {
@@ -2646,33 +2660,31 @@
                 };
 
                 // Default to two minutes before timing out, 1000 ms * 60 * 2 = 120000.
-                var timeoutMS = (request.timeoutMS) ? request.timeoutMS : 120000;
+                var timeoutMS = request.timeoutMS ? request.timeoutMS : 120000;
                 timeoutId = window.setTimeout(handleTimeout, timeoutMS);
 
-                var queryStringParams = callbackParameterName + "=parent." + name;
+                var queryStringParams = callbackParameterName + '=parent.' + name;
                 if (this.formatQueryString) {
-                    queryStringParams += "&" + formatQueryString;
+                    queryStringParams += '&' + formatQueryString;
                 }
 
-                var qIndex = url.indexOf("?");
+                var qIndex = url.indexOf('?');
                 if (qIndex === -1) {
-                    url = url + "?" + queryStringParams;
+                    url = url + '?' + queryStringParams;
                 } else if (qIndex === url.length - 1) {
                     url = url + queryStringParams;
                 } else {
-                    url = url + "&" + queryStringParams;
+                    url = url + '&' + queryStringParams;
                 }
 
                 iframe = createIFrame(url);
             }
 
             return result;
-        }
+        },
     };
 
-
-
-    var MAX_DATA_SERVICE_VERSION = "3.0";
+    var MAX_DATA_SERVICE_VERSION = '3.0';
 
     var contentType = function (str) {
         /// <summary>Parses a string into an object with media type and properties.</summary>
@@ -2683,12 +2695,12 @@
             return null;
         }
 
-        var contentTypeParts = str.split(";");
+        var contentTypeParts = str.split(';');
         var properties = {};
 
         var i, len;
         for (i = 1, len = contentTypeParts.length; i < len; i++) {
-            var contentTypeParams = contentTypeParts[i].split("=");
+            var contentTypeParams = contentTypeParts[i].split('=');
             properties[trimString(contentTypeParams[0])] = contentTypeParams[1];
         }
 
@@ -2707,7 +2719,7 @@
         var result = contentType.mediaType;
         var property;
         for (property in contentType.properties) {
-            result += ";" + property + "=" + contentType.properties[property];
+            result += ';' + property + '=' + contentType.properties[property];
         }
         return result;
     };
@@ -2725,7 +2737,7 @@
         extend(rwContext, {
             contentType: contentType,
             dataServiceVersion: dataServiceVersion,
-            handler: handler
+            handler: handler,
         });
 
         return rwContext;
@@ -2756,8 +2768,8 @@
 
         if (request) {
             var headers = request.headers;
-            var dsv = headers["DataServiceVersion"];
-            headers["DataServiceVersion"] = dsv ? maxVersion(dsv, version) : version;
+            var dsv = headers['DataServiceVersion'];
+            headers['DataServiceVersion'] = dsv ? maxVersion(dsv, version) : version;
         }
     };
 
@@ -2776,7 +2788,7 @@
         /// <param name="requestOrResponse">Object representing a request or a response.</param>
         /// <returns type="Object">Object with 'mediaType' and a 'properties' dictionary; null in case that the header is not found or doesn't have a value.</returns>
 
-        return contentType(getRequestOrResponseHeader(requestOrResponse, "Content-Type"));
+        return contentType(getRequestOrResponseHeader(requestOrResponse, 'Content-Type'));
     };
 
     var versionRE = /^\s?(\d+\.\d+);?.*$/;
@@ -2785,7 +2797,7 @@
         /// <param name="requestOrResponse">Object representing a request or a response.</param>
         /// <returns type="String">Data service version; undefined if the header cannot be found.</returns>
 
-        var value = getRequestOrResponseHeader(requestOrResponse, "DataServiceVersion");
+        var value = getRequestOrResponseHeader(requestOrResponse, 'DataServiceVersion');
         if (value) {
             var matches = versionRE.exec(value);
             if (matches && matches.length) {
@@ -2820,7 +2832,7 @@
         }
 
         var cType = getContentType(response);
-        var version = getDataServiceVersion(response) || "3.0";
+        var version = getDataServiceVersion(response) || '3.0';
         var body = response.body;
 
         if (!assigned(body)) {
@@ -2858,10 +2870,10 @@
             request.body = serializeCallback(handler, request.data, writeContext);
 
             if (request.body !== undefined) {
-                fixDataServiceVersionHeader(request, writeContext.dataServiceVersion || "1.0");
+                fixDataServiceVersionHeader(request, writeContext.dataServiceVersion || '1.0');
 
-                fixRequestHeader(request, "Content-Type", contentTypeToString(writeContext.contentType));
-                fixRequestHeader(request, "MaxDataServiceVersion", handler.maxDataServiceVersion);
+                fixRequestHeader(request, 'Content-Type', contentTypeToString(writeContext.contentType));
+                fixRequestHeader(request, 'MaxDataServiceVersion', handler.maxDataServiceVersion);
                 return true;
             }
         }
@@ -2887,7 +2899,7 @@
 
             write: function (request, context) {
                 return handlerWrite(this, serializeCallback, request, context);
-            }
+            },
         };
     };
 
@@ -2903,14 +2915,13 @@
         }
     };
 
-    odata.textHandler = handler(textParse, textSerialize, "text/plain", MAX_DATA_SERVICE_VERSION);
+    odata.textHandler = handler(textParse, textSerialize, 'text/plain', MAX_DATA_SERVICE_VERSION);
 
+    var gmlOpenGis = http + 'www.opengis.net'; // http://www.opengis.net
+    var gmlXmlNs = gmlOpenGis + '/gml'; // http://www.opengis.net/gml
+    var gmlSrsPrefix = gmlOpenGis + '/def/crs/EPSG/0/'; // http://www.opengis.net/def/crs/EPSG/0/
 
-    var gmlOpenGis = http + "www.opengis.net";           // http://www.opengis.net
-    var gmlXmlNs = gmlOpenGis + "/gml";                 // http://www.opengis.net/gml
-    var gmlSrsPrefix = gmlOpenGis + "/def/crs/EPSG/0/"; // http://www.opengis.net/def/crs/EPSG/0/
-
-    var gmlPrefix = "gml";
+    var gmlPrefix = 'gml';
 
     var gmlCreateGeoJSONOBject = function (type, member, data) {
         /// <summary>Creates a GeoJSON object with the specified type, member and value.</summary>
@@ -2955,7 +2966,7 @@
         /// <returns type="Object">GeoJSON object.</returns>
 
         var coordinates = gmlReadODataMultiItemValue(domElement, member, members, valueReader, isGeography);
-        return gmlCreateGeoJSONOBject(type, "coordinates", coordinates);
+        return gmlCreateGeoJSONOBject(type, 'coordinates', coordinates);
     };
 
     var gmlReadODataMultiItemValue = function (domElement, member, members, valueReader, isGeography) {
@@ -3021,8 +3032,14 @@
         /// </remarks>
         /// <returns type="Object">MultiGeometry object in GeoJSON format.</returns>
 
-        var geometries = gmlReadODataMultiItemValue(domElement, "geometryMember", "geometryMembers", gmlReadODataSpatialValue, isGeography);
-        return gmlCreateGeoJSONOBject(GEOJSON_GEOMETRYCOLLECTION, "geometries", geometries);
+        var geometries = gmlReadODataMultiItemValue(
+            domElement,
+            'geometryMember',
+            'geometryMembers',
+            gmlReadODataSpatialValue,
+            isGeography
+        );
+        return gmlCreateGeoJSONOBject(GEOJSON_GEOMETRYCOLLECTION, 'geometries', geometries);
     };
 
     var gmlReadODataLineString = function (domElement, isGeography) {
@@ -3035,7 +3052,11 @@
         /// </remarks>
         /// <returns type="Object">LineString object in GeoJSON format.</returns>
 
-        return gmlCreateGeoJSONOBject(GEOJSON_LINESTRING, "coordinates", gmlReadODataLineValue(domElement, isGeography));
+        return gmlCreateGeoJSONOBject(
+            GEOJSON_LINESTRING,
+            'coordinates',
+            gmlReadODataLineValue(domElement, isGeography)
+        );
     };
 
     var gmlReadODataMultiLineString = function (domElement, isGeography) {
@@ -3048,7 +3069,14 @@
         /// </remarks>
         /// <returns type="Object">MultiLineString object in GeoJSON format.</returns>
 
-        return gmlReadODataMultiItem(domElement, GEOJSON_MULTILINESTRING, "curveMember", "curveMembers", gmlReadODataLineValue, isGeography);
+        return gmlReadODataMultiItem(
+            domElement,
+            GEOJSON_MULTILINESTRING,
+            'curveMember',
+            'curveMembers',
+            gmlReadODataLineValue,
+            isGeography
+        );
     };
 
     var gmlReadODataMultiPoint = function (domElement, isGeography) {
@@ -3061,7 +3089,14 @@
         /// </remarks>
         /// <returns type="Object">MultiPoint object in GeoJSON format.</returns>
 
-        return gmlReadODataMultiItem(domElement, GEOJSON_MULTIPOINT, "pointMember", "pointMembers", gmlReadODataPointValue, isGeography);
+        return gmlReadODataMultiItem(
+            domElement,
+            GEOJSON_MULTIPOINT,
+            'pointMember',
+            'pointMembers',
+            gmlReadODataPointValue,
+            isGeography
+        );
     };
 
     var gmlReadODataMultiPolygon = function (domElement, isGeography) {
@@ -3074,7 +3109,14 @@
         /// </remarks>
         /// <returns type="Object">MultiPolygon object in GeoJSON format.</returns>
 
-        return gmlReadODataMultiItem(domElement, GEOJSON_MULTIPOLYGON, "surfaceMember", "surfaceMembers", gmlReadODataPolygonValue, isGeography);
+        return gmlReadODataMultiItem(
+            domElement,
+            GEOJSON_MULTIPOLYGON,
+            'surfaceMember',
+            'surfaceMembers',
+            gmlReadODataPolygonValue,
+            isGeography
+        );
     };
 
     var gmlReadODataPoint = function (domElement, isGeography) {
@@ -3087,7 +3129,7 @@
         /// </remarks>
         /// <returns type="Object">Point object in GeoJSON format.</returns>
 
-        return gmlCreateGeoJSONOBject(GEOJSON_POINT, "coordinates", gmlReadODataPointValue(domElement, isGeography));
+        return gmlCreateGeoJSONOBject(GEOJSON_POINT, 'coordinates', gmlReadODataPointValue(domElement, isGeography));
     };
 
     var gmlReadODataPolygon = function (domElement, isGeography) {
@@ -3100,7 +3142,11 @@
         /// </remarks>
         /// <returns type="Object">Polygon object in GeoJSON format.</returns>
 
-        return gmlCreateGeoJSONOBject(GEOJSON_POLYGON, "coordinates", gmlReadODataPolygonValue(domElement, isGeography));
+        return gmlCreateGeoJSONOBject(
+            GEOJSON_POLYGON,
+            'coordinates',
+            gmlReadODataPolygonValue(domElement, isGeography)
+        );
     };
 
     var gmlReadODataLineValue = function (domElement, isGeography) {
@@ -3124,15 +3170,15 @@
 
             var localName = xmlLocalName(child);
 
-            if (localName === "posList") {
+            if (localName === 'posList') {
                 coordinates = gmlReadODataPosListValue(child, isGeography);
                 return;
             }
-            if (localName === "pointProperty") {
+            if (localName === 'pointProperty') {
                 coordinates.push(gmlReadODataPointWrapperValue(child, isGeography));
                 return;
             }
-            if (localName === "pos") {
+            if (localName === 'pos') {
                 coordinates.push(gmlReadODataPosValue(child, isGeography));
                 return;
             }
@@ -3151,7 +3197,7 @@
         /// </remarks>
         /// <returns type="Array">Array of doubles containing the point coordinates.</returns>
 
-        var pos = xmlFirstChildElement(domElement, gmlXmlNs, "pos");
+        var pos = xmlFirstChildElement(domElement, gmlXmlNs, 'pos');
         return pos ? gmlReadODataPosValue(pos, isGeography) : [];
     };
 
@@ -3165,7 +3211,7 @@
         /// </remarks>
         /// <returns type="Array">Array of doubles containing the point coordinates.</returns>
 
-        var point = xmlFirstChildElement(domElement, gmlXmlNs, "Point");
+        var point = xmlFirstChildElement(domElement, gmlXmlNs, 'Point');
         return point ? gmlReadODataPointValue(point, isGeography) : [];
     };
 
@@ -3188,12 +3234,12 @@
 
             // Only the exterior and the interior rings are interesting
             var localName = xmlLocalName(child);
-            if (localName === "exterior") {
+            if (localName === 'exterior') {
                 exteriorFound = true;
                 coordinates.unshift(gmlReadODataPolygonRingValue(child, isGeography));
                 return;
             }
-            if (localName === "interior") {
+            if (localName === 'interior') {
                 coordinates.push(gmlReadODataPolygonRingValue(child, isGeography));
                 return;
             }
@@ -3219,7 +3265,7 @@
 
         var value = [];
         xmlChildElements(domElement, function (child) {
-            if (xmlNamespaceURI(child) !== gmlXmlNs || xmlLocalName(child) !== "LinearRing") {
+            if (xmlNamespaceURI(child) !== gmlXmlNs || xmlLocalName(child) !== 'LinearRing') {
                 return;
             }
             value = gmlReadODataLineValue(child, isGeography);
@@ -3235,7 +3281,7 @@
         ///    When using a geographic reference system, the first component of all the coordinates in each <pos> element in the GML DOM tree is the Latitude and
         ///    will be deserialized as the second component of each <pos> element in the GML DOM tree.
         ///
-        ///    The positions described by the list are assumed to be 2D, so 
+        ///    The positions described by the list are assumed to be 2D, so
         ///    an exception will be thrown if the list has an odd number elements.
         /// </remarks>
         /// <returns type="Array">Array containing an array of doubles for each coordinate in the list.</returns>
@@ -3244,7 +3290,7 @@
         var len = coordinates.length;
 
         if (len % 2 !== 0) {
-            throw { message: "GML posList element has an uneven number of numeric values" };
+            throw { message: 'GML posList element has an uneven number of numeric values' };
         }
 
         var value = [];
@@ -3266,7 +3312,7 @@
         /// <returns type="Array">Array of doubles containing the coordinates.</returns>
 
         var value = [];
-        var delims = " \t\r\n";
+        var delims = ' \t\r\n';
         var text = xmlInnerText(domElement);
 
         if (text) {
@@ -3303,29 +3349,29 @@
         var reader;
 
         switch (localName) {
-            case "Point":
+            case 'Point':
                 reader = gmlReadODataPoint;
                 break;
-            case "Polygon":
+            case 'Polygon':
                 reader = gmlReadODataPolygon;
                 break;
-            case "LineString":
+            case 'LineString':
                 reader = gmlReadODataLineString;
                 break;
-            case "MultiPoint":
+            case 'MultiPoint':
                 reader = gmlReadODataMultiPoint;
                 break;
-            case "MultiCurve":
+            case 'MultiCurve':
                 reader = gmlReadODataMultiLineString;
                 break;
-            case "MultiSurface":
+            case 'MultiSurface':
                 reader = gmlReadODataMultiPolygon;
                 break;
-            case "MultiGeometry":
+            case 'MultiGeometry':
                 reader = gmlReadODataCollection;
                 break;
             default:
-                throw { message: "Unsupported element: " + localName, element: domElement };
+                throw { message: 'Unsupported element: ' + localName, element: domElement };
         }
 
         var value = reader(domElement, isGeography);
@@ -3333,21 +3379,20 @@
         // WCF Data Services qualifies the srsName attribute withing the GML namespace; however
         // other end points might no do this as per the standard.
 
-        var srsName = xmlAttributeValue(domElement, "srsName", gmlXmlNs) ||
-                      xmlAttributeValue(domElement, "srsName");
+        var srsName = xmlAttributeValue(domElement, 'srsName', gmlXmlNs) || xmlAttributeValue(domElement, 'srsName');
 
         if (srsName) {
             if (srsName.indexOf(gmlSrsPrefix) !== 0) {
-                throw { message: "Unsupported srs name: " + srsName, element: domElement };
+                throw { message: 'Unsupported srs name: ' + srsName, element: domElement };
             }
 
             var crsId = srsName.substring(gmlSrsPrefix.length);
             if (crsId) {
                 value.crs = {
-                    type: "name",
+                    type: 'name',
                     properties: {
-                        name: "EPSG:" + crsId
-                    }
+                        name: 'EPSG:' + crsId,
+                    },
                 };
             }
         }
@@ -3399,12 +3444,12 @@
         // Set the srsName attribute if applicable.
         var crs = value.crs;
         if (crs) {
-            if (crs.type === "name") {
+            if (crs.type === 'name') {
                 var properties = crs.properties;
                 var name = properties && properties.name;
-                if (name && name.indexOf("ESPG:") === 0 && name.length > 5) {
+                if (name && name.indexOf('ESPG:') === 0 && name.length > 5) {
                     var crsId = name.substring(5);
-                    var srsName = xmlNewAttribute(dom, null, "srsName", gmlPrefix + crsId);
+                    var srsName = xmlNewAttribute(dom, null, 'srsName', gmlPrefix + crsId);
                     xmlAppendChild(gml, srsName);
                 }
             }
@@ -3444,7 +3489,7 @@
         // swapped with the latitude.
         posValue = isGeography ? gmlSwapLatLong(posValue) : posValue;
 
-        return gmlNewODataElement(dom, "pos", posValue.join(" "));
+        return gmlNewODataElement(dom, 'pos', posValue.join(' '));
     };
 
     var gmlNewODataLineElement = function (dom, name, coordinates, isGeography) {
@@ -3467,7 +3512,7 @@
             }
 
             if (len === 0) {
-                xmlAppendChild(element, gmlNewODataElement(dom, "posList"));
+                xmlAppendChild(element, gmlNewODataElement(dom, 'posList'));
             }
         }
         return element;
@@ -3484,7 +3529,7 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON Point.</returns>
 
-        return gmlNewODataElement(dom, "Point", gmlNewODataPosElement(dom, coordinates, isGeography));
+        return gmlNewODataElement(dom, 'Point', gmlNewODataPosElement(dom, coordinates, isGeography));
     };
 
     var gmlNewODataLineStringElement = function (dom, coordinates, isGeography) {
@@ -3498,7 +3543,7 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON LineString.</returns>
 
-        return gmlNewODataLineElement(dom, "LineString", coordinates, isGeography);
+        return gmlNewODataLineElement(dom, 'LineString', coordinates, isGeography);
     };
 
     var gmlNewODataPolygonRingElement = function (dom, name, coordinates, isGeography) {
@@ -3515,7 +3560,7 @@
 
         var ringElement = gmlNewODataElement(dom, name);
         if (isArray(coordinates) && coordinates.length > 0) {
-            var linearRing = gmlNewODataLineElement(dom, "LinearRing", coordinates, isGeography);
+            var linearRing = gmlNewODataLineElement(dom, 'LinearRing', coordinates, isGeography);
             xmlAppendChild(ringElement, linearRing);
         }
         return ringElement;
@@ -3533,14 +3578,14 @@
         /// <returns>New DOM element in the GML namespace.</returns>
 
         var len = coordinates && coordinates.length;
-        var element = gmlNewODataElement(dom, "Polygon");
+        var element = gmlNewODataElement(dom, 'Polygon');
 
         if (isArray(coordinates) && len > 0) {
-            xmlAppendChild(element, gmlNewODataPolygonRingElement(dom, "exterior", coordinates[0], isGeography));
+            xmlAppendChild(element, gmlNewODataPolygonRingElement(dom, 'exterior', coordinates[0], isGeography));
 
             var i;
             for (i = 1; i < len; i++) {
-                xmlAppendChild(element, gmlNewODataPolygonRingElement(dom, "interior", coordinates[i], isGeography));
+                xmlAppendChild(element, gmlNewODataPolygonRingElement(dom, 'interior', coordinates[i], isGeography));
             }
         }
         return element;
@@ -3625,7 +3670,14 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON MultiPoint.</returns>
 
-        return gmlNewODataMultiItem(dom, "MultiPoint", "pointMembers", value.coordinates, gmlNewODataPointElement, isGeography);
+        return gmlNewODataMultiItem(
+            dom,
+            'MultiPoint',
+            'pointMembers',
+            value.coordinates,
+            gmlNewODataPointElement,
+            isGeography
+        );
     };
 
     var gmlNewODataMultiLineString = function (dom, value, isGeography) {
@@ -3639,7 +3691,14 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON MultiLineString.</returns>
 
-        return gmlNewODataMultiItem(dom, "MultiCurve", "curveMembers", value.coordinates, gmlNewODataLineStringElement, isGeography);
+        return gmlNewODataMultiItem(
+            dom,
+            'MultiCurve',
+            'curveMembers',
+            value.coordinates,
+            gmlNewODataLineStringElement,
+            isGeography
+        );
     };
 
     var gmlNewODataMultiPolygon = function (dom, value, isGeography) {
@@ -3653,7 +3712,14 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON MultiPolygon.</returns>
 
-        return gmlNewODataMultiItem(dom, "MultiSurface", "surfaceMembers", value.coordinates, gmlNewODataPolygonElement, isGeography);
+        return gmlNewODataMultiItem(
+            dom,
+            'MultiSurface',
+            'surfaceMembers',
+            value.coordinates,
+            gmlNewODataPolygonElement,
+            isGeography
+        );
     };
 
     var gmlNewODataGeometryCollectionItem = function (dom, value, isGeography) {
@@ -3681,34 +3747,39 @@
         /// </remarks>
         /// <returns>New DOM element in the GML namespace for the GeoJSON GeometryCollection.</returns>
 
-        return gmlNewODataMultiItem(dom, "MultiGeometry", "geometryMembers", value.geometries, gmlNewODataGeometryCollectionItem, isGeography);
+        return gmlNewODataMultiItem(
+            dom,
+            'MultiGeometry',
+            'geometryMembers',
+            value.geometries,
+            gmlNewODataGeometryCollectionItem,
+            isGeography
+        );
     };
 
+    var xmlMediaType = 'application/xml';
 
+    var ado = http + 'schemas.microsoft.com/ado/'; // http://schemas.microsoft.com/ado/
+    var adoDs = ado + '2007/08/dataservices'; // http://schemas.microsoft.com/ado/2007/08/dataservices
 
-    var xmlMediaType = "application/xml";
-
-    var ado = http + "schemas.microsoft.com/ado/";      // http://schemas.microsoft.com/ado/
-    var adoDs = ado + "2007/08/dataservices";           // http://schemas.microsoft.com/ado/2007/08/dataservices
-
-    var edmxNs = ado + "2007/06/edmx";                  // http://schemas.microsoft.com/ado/2007/06/edmx
-    var edmNs1 = ado + "2006/04/edm";                   // http://schemas.microsoft.com/ado/2006/04/edm
-    var edmNs1_1 = ado + "2007/05/edm";                 // http://schemas.microsoft.com/ado/2007/05/edm
-    var edmNs1_2 = ado + "2008/01/edm";                 // http://schemas.microsoft.com/ado/2008/01/edm
+    var edmxNs = ado + '2007/06/edmx'; // http://schemas.microsoft.com/ado/2007/06/edmx
+    var edmNs1 = ado + '2006/04/edm'; // http://schemas.microsoft.com/ado/2006/04/edm
+    var edmNs1_1 = ado + '2007/05/edm'; // http://schemas.microsoft.com/ado/2007/05/edm
+    var edmNs1_2 = ado + '2008/01/edm'; // http://schemas.microsoft.com/ado/2008/01/edm
 
     // There are two valid namespaces for Edm 2.0
-    var edmNs2a = ado + "2008/09/edm";                  // http://schemas.microsoft.com/ado/2008/09/edm
-    var edmNs2b = ado + "2009/08/edm";                  // http://schemas.microsoft.com/ado/2009/08/edm
+    var edmNs2a = ado + '2008/09/edm'; // http://schemas.microsoft.com/ado/2008/09/edm
+    var edmNs2b = ado + '2009/08/edm'; // http://schemas.microsoft.com/ado/2009/08/edm
 
-    var edmNs3 = ado + "2009/11/edm";                   // http://schemas.microsoft.com/ado/2009/11/edm
+    var edmNs3 = ado + '2009/11/edm'; // http://schemas.microsoft.com/ado/2009/11/edm
 
-    var odataXmlNs = adoDs;                             // http://schemas.microsoft.com/ado/2007/08/dataservices
-    var odataMetaXmlNs = adoDs + "/metadata";           // http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
-    var odataRelatedPrefix = adoDs + "/related/";       // http://schemas.microsoft.com/ado/2007/08/dataservices/related
-    var odataScheme = adoDs + "/scheme";                // http://schemas.microsoft.com/ado/2007/08/dataservices/scheme
+    var odataXmlNs = adoDs; // http://schemas.microsoft.com/ado/2007/08/dataservices
+    var odataMetaXmlNs = adoDs + '/metadata'; // http://schemas.microsoft.com/ado/2007/08/dataservices/metadata
+    var odataRelatedPrefix = adoDs + '/related/'; // http://schemas.microsoft.com/ado/2007/08/dataservices/related
+    var odataScheme = adoDs + '/scheme'; // http://schemas.microsoft.com/ado/2007/08/dataservices/scheme
 
-    var odataPrefix = "d";
-    var odataMetaPrefix = "m";
+    var odataPrefix = 'd';
+    var odataMetaPrefix = 'm';
 
     var createAttributeExtension = function (domNode, useNamespaceURI) {
         /// <summary>Creates an extension object for the specified attribute.</summary>
@@ -3717,13 +3788,13 @@
         /// <remarks>
         ///    The useNamespaceURI flag is used to prevent a breaking change from older versions of datajs in which extension
         ///    objects created for Atom extension attributes have the namespaceURI property instead of the namespace one.
-        ///    
+        ///
         ///    This flag and the namespaceURI property should be deprecated in future major versions of the library.
         /// </remarks>
         /// <returns type="Object">The new extension object.</returns>
 
         var extension = { name: xmlLocalName(domNode), value: domNode.value };
-        extension[useNamespaceURI ? "namespaceURI" : "namespace"] = xmlNamespaceURI(domNode);
+        extension[useNamespaceURI ? 'namespaceURI' : 'namespace'] = xmlNamespaceURI(domNode);
 
         return extension;
     };
@@ -3735,11 +3806,10 @@
         /// <remarks>
         ///    The useNamespaceURI flag is used to prevent a breaking change from older versions of datajs in which extension
         ///    objects created for Atom extension attributes have the namespaceURI property instead of the namespace one.
-        ///    
+        ///
         ///    This flag and the namespaceURI property should be deprecated in future major versions of the library.
         /// </remarks>
         /// <returns type="Object">The new extension object.</returns>
-
 
         var attributeExtensions = [];
         var childrenExtensions = [];
@@ -3765,10 +3835,10 @@
             name: xmlLocalName(domNode),
             value: xmlInnerText(domNode),
             attributes: attributeExtensions,
-            children: childrenExtensions
+            children: childrenExtensions,
         };
 
-        extension[useNamespaceURI ? "namespaceURI" : "namespace"] = xmlNamespaceURI(domNode);
+        extension[useNamespaceURI ? 'namespaceURI' : 'namespace'] = xmlNamespaceURI(domNode);
         return extension;
     };
 
@@ -3777,7 +3847,7 @@
         /// <param name="domElement">DOM element possibliy represnting a collection item.</param>
         /// <returns type="Boolean">True if the domeElement belongs to the OData metadata namespace and its local name is "element"; false otherwise.</returns>
 
-        return xmlNamespaceURI(domElement) === odataXmlNs && xmlLocalName(domElement) === "element";
+        return xmlNamespaceURI(domElement) === odataXmlNs && xmlLocalName(domElement) === 'element';
     };
 
     var makePropertyMetadata = function (type, extensions) {
@@ -3807,7 +3877,7 @@
             var sibling = xmlSiblingElement(firstChild, odataXmlNs);
             if (sibling && isCollectionItemElement(sibling)) {
                 // More than one <element> tag have been found, it can be safely assumed that this is a collection property.
-                return "Collection()";
+                return 'Collection()';
             }
         }
 
@@ -3829,12 +3899,12 @@
             var value = xmlNodeValue(attribute);
 
             if (nsURI === odataMetaXmlNs) {
-                if (localName === "null") {
-                    isNull = (value.toLowerCase() === "true");
+                if (localName === 'null') {
+                    isNull = value.toLowerCase() === 'true';
                     return;
                 }
 
-                if (localName === "type") {
+                if (localName === 'type') {
                     type = value;
                     return;
                 }
@@ -3846,7 +3916,7 @@
             }
         });
 
-        return { type: (!type && isNull ? EDM_STRING : type), isNull: isNull, extensions: extensions };
+        return { type: !type && isNull ? EDM_STRING : type, isNull: isNull, extensions: extensions };
     };
 
     var xmlReadODataProperty = function (domElement) {
@@ -3866,7 +3936,9 @@
         var propertyType = propertyAttributes.type;
 
         var propertyMetadata = makePropertyMetadata(propertyType, propertyAttributes.extensions);
-        var propertyValue = propertyIsNull ? null : xmlReadODataPropertyValue(domElement, propertyType, propertyMetadata);
+        var propertyValue = propertyIsNull
+            ? null
+            : xmlReadODataPropertyValue(domElement, propertyType, propertyMetadata);
 
         return { name: propertyName, value: propertyValue, metadata: propertyMetadata };
     };
@@ -3923,7 +3995,7 @@
         /// <param name="propertyType" type="String">Property type name.</param>
         /// <returns>EDM property value.</returns>
 
-        var propertyValue = xmlNodeValue(domNode) || "";
+        var propertyValue = xmlNodeValue(domNode) || '';
 
         switch (propertyType) {
             case EDM_BOOLEAN:
@@ -3953,7 +4025,7 @@
         return propertyValue;
     };
 
-    var xmlReadODataComplexPropertyValue = function(domElement, propertyType, propertyMetadata) {
+    var xmlReadODataComplexPropertyValue = function (domElement, propertyType, propertyMetadata) {
         /// <summary>Reads the value of a complex type property in an OData XML document.</summary>
         /// <param name="property">DOM element for the complex type property.</param>
         /// <param name="propertyType" type="String">Property type name.</param>
@@ -3961,7 +4033,7 @@
         /// <returns type="Object">Complex type property value.</returns>
 
         var propertyValue = { __metadata: { type: propertyType } };
-        xmlChildElements(domElement, function(child) {
+        xmlChildElements(domElement, function (child) {
             var childProperty = xmlReadODataProperty(child);
             var childPropertyName = childProperty.name;
 
@@ -3981,7 +4053,7 @@
         /// <returns type="Object">Collection property value.</returns>
 
         var items = [];
-        var itemsMetadata = propertyMetadata.elements = [];
+        var itemsMetadata = (propertyMetadata.elements = []);
         var collectionType = getCollectionType(propertyType);
 
         xmlChildElements(domElement, function (child) {
@@ -3998,7 +4070,7 @@
             }
         });
 
-        return { __metadata: { type: propertyType === "Collection()" ? null : propertyType }, results: items };
+        return { __metadata: { type: propertyType === 'Collection()' ? null : propertyType }, results: items };
     };
 
     var readODataXmlDocument = function (xmlRoot, baseURI) {
@@ -4011,10 +4083,10 @@
             baseURI = xmlBaseURI(xmlRoot, baseURI);
             var localName = xmlLocalName(xmlRoot);
 
-            if (localName === "links") {
+            if (localName === 'links') {
                 return readLinks(xmlRoot, baseURI);
             }
-            if (localName === "uri") {
+            if (localName === 'uri') {
                 return readUri(xmlRoot, baseURI);
             }
         }
@@ -4030,7 +4102,7 @@
         var uris = [];
 
         xmlChildElements(linksElement, function (child) {
-            if (xmlLocalName(child) === "uri" && xmlNamespaceURI(child) === odataXmlNs) {
+            if (xmlLocalName(child) === 'uri' && xmlNamespaceURI(child) === odataXmlNs) {
                 uris.push(readUri(child, baseURI));
             }
         });
@@ -4044,7 +4116,7 @@
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the XML payload.</param>
         /// <returns type="Object">A new object representing the uri.</returns>
 
-        var uri = xmlInnerText(uriElement) || "";
+        var uri = xmlInnerText(uriElement) || '';
         return { uri: normalizeURI(uri, baseURI) };
     };
 
@@ -4170,7 +4242,7 @@
         /// </remarks>
         /// <returns>New DOM element in the OData namespace for the entry property.</returns>
 
-        var typeAttribute = typeName ? xmlNewODataMetaAttribute(dom, "type", typeName) : null;
+        var typeAttribute = typeName ? xmlNewODataMetaAttribute(dom, 'type', typeName) : null;
         var property = xmlNewODataElement(dom, name, typeAttribute);
         return xmlAppendChildren(property, children);
     };
@@ -4188,7 +4260,7 @@
 
         var propertyValue = xmlNewODataPrimitiveValue(value, typeName);
         var property = xmlNewODataProperty(dom, name, typeName, propertyValue);
-        return xmlNewODataElementInfo(property, /*dataServiceVersion*/"1.0");
+        return xmlNewODataElementInfo(property, /*dataServiceVersion*/ '1.0');
     };
 
     var xmlNewODataNullProperty = function (dom, name, typeName, model) {
@@ -4201,18 +4273,26 @@
         ///     If no typeName is specified, then it will be assumed that this is a primitive type property.
         /// </remarks>
         /// <returns type="Object">
-        ///     Object containing the new DOM element in the OData namespace for the null property and the 
+        ///     Object containing the new DOM element in the OData namespace for the null property and the
         ///     required data service version for this property.
         /// </returns>
 
-        var nullAttribute = xmlNewODataMetaAttribute(dom, "null", "true");
+        var nullAttribute = xmlNewODataMetaAttribute(dom, 'null', 'true');
         var property = xmlNewODataProperty(dom, name, typeName, nullAttribute);
-        var dataServiceVersion = lookupComplexType(typeName, model) ? "2.0" : "1.0";
+        var dataServiceVersion = lookupComplexType(typeName, model) ? '2.0' : '1.0';
 
         return xmlNewODataElementInfo(property, dataServiceVersion);
     };
 
-    var xmlNewODataCollectionProperty = function (dom, name, value, typeName, collectionMetadata, collectionModel, model) {
+    var xmlNewODataCollectionProperty = function (
+        dom,
+        name,
+        value,
+        typeName,
+        collectionMetadata,
+        collectionModel,
+        model
+    ) {
         /// <summary>Creates a new DOM element for a collection property in an OData XML document.</summary>
         /// <param name="dom">DOM document used for creating the new DOM Element.</param>
         /// <param name="name" type="String">Property name.</param>
@@ -4228,7 +4308,7 @@
 
         var itemTypeName = getCollectionType(typeName);
         var items = isArray(value) ? value : value.results;
-        var itemMetadata = typeName ? { type: itemTypeName} : {};
+        var itemMetadata = typeName ? { type: itemTypeName } : {};
         itemMetadata.properties = collectionMetadata.properties;
 
         var xmlProperty = xmlNewODataProperty(dom, name, itemTypeName ? typeName : null);
@@ -4236,11 +4316,11 @@
         var i, len;
         for (i = 0, len = items.length; i < len; i++) {
             var itemValue = items[i];
-            var item = xmlNewODataDataElement(dom, "element", itemValue, itemMetadata, collectionModel, model);
+            var item = xmlNewODataDataElement(dom, 'element', itemValue, itemMetadata, collectionModel, model);
 
             xmlAppendChild(xmlProperty, item.element);
         }
-        return xmlNewODataElementInfo(xmlProperty, /*dataServiceVersion*/"3.0");
+        return xmlNewODataElementInfo(xmlProperty, /*dataServiceVersion*/ '3.0');
     };
 
     var xmlNewODataComplexProperty = function (dom, name, value, typeName, propertyMetadata, propertyModel, model) {
@@ -4261,10 +4341,10 @@
         var complexTypePropertiesMetadata = propertyMetadata.properties || {};
         var complexTypeModel = lookupComplexType(typeName, model) || {};
 
-        var dataServiceVersion = "1.0";
+        var dataServiceVersion = '1.0';
 
         for (var key in value) {
-            if (key !== "__metadata") {
+            if (key !== '__metadata') {
                 var memberValue = value[key];
                 var memberModel = lookupProperty(complexTypeModel.property, key);
                 var memberMetadata = complexTypePropertiesMetadata[key] || {};
@@ -4293,7 +4373,7 @@
         var gmlRoot = gmlNewODataSpatialValue(dom, value, geoJsonType, isGeography);
         var xmlProperty = xmlNewODataProperty(dom, name, typeName, gmlRoot);
 
-        return xmlNewODataElementInfo(xmlProperty, "3.0");
+        return xmlNewODataElementInfo(xmlProperty, '3.0');
     };
 
     var xmlNewODataDataElement = function (dom, name, value, dataItemMetadata, dataItemModel, model) {
@@ -4347,7 +4427,7 @@
 
         if (data && isObject(data)) {
             var dom = xmlDom();
-            return xmlAppendChild(dom, xmlNewODataElement(dom, "uri", data.uri));
+            return xmlAppendChild(dom, xmlNewODataElement(dom, 'uri', data.uri));
         }
         // Allow for undefined to be returned.
     };
@@ -4376,7 +4456,7 @@
         /// <param name="context" type="Object">Object with parsing context.</param>
         /// <returns>A text representation of the data object; undefined if not applicable.</returns>
 
-        var cType = context.contentType = context.contentType || contentType(xmlMediaType);
+        var cType = (context.contentType = context.contentType || contentType(xmlMediaType));
         if (cType && cType.mediaType === xmlMediaType) {
             return xmlSerialize(odataNewLinkDocument(data));
         }
@@ -4385,18 +4465,16 @@
 
     odata.xmlHandler = handler(xmlParser, xmlSerializer, xmlMediaType, MAX_DATA_SERVICE_VERSION);
 
+    var atomPrefix = 'a';
 
+    var atomXmlNs = w3org + '2005/Atom'; // http://www.w3.org/2005/Atom
+    var appXmlNs = w3org + '2007/app'; // http://www.w3.org/2007/app
 
-    var atomPrefix = "a";
+    var odataEditMediaPrefix = adoDs + '/edit-media/'; // http://schemas.microsoft.com/ado/2007/08/dataservices/edit-media
+    var odataMediaResourcePrefix = adoDs + '/mediaresource/'; // http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource
+    var odataRelatedLinksPrefix = adoDs + '/relatedlinks/'; // http://schemas.microsoft.com/ado/2007/08/dataservices/relatedlinks
 
-    var atomXmlNs = w3org + "2005/Atom";                    // http://www.w3.org/2005/Atom
-    var appXmlNs = w3org + "2007/app";                      // http://www.w3.org/2007/app
-
-    var odataEditMediaPrefix = adoDs + "/edit-media/";        // http://schemas.microsoft.com/ado/2007/08/dataservices/edit-media
-    var odataMediaResourcePrefix = adoDs + "/mediaresource/"; // http://schemas.microsoft.com/ado/2007/08/dataservices/mediaresource
-    var odataRelatedLinksPrefix = adoDs + "/relatedlinks/";   // http://schemas.microsoft.com/ado/2007/08/dataservices/relatedlinks
-
-    var atomAcceptTypes = ["application/atom+xml", "application/atomsvc+xml", "application/xml"];
+    var atomAcceptTypes = ['application/atom+xml', 'application/atomsvc+xml', 'application/xml'];
     var atomMediaType = atomAcceptTypes[0];
 
     // These are the namespaces that are not considered ATOM extension namespaces.
@@ -4404,17 +4482,17 @@
 
     // These are entity property mapping paths that have well-known paths.
     var knownCustomizationPaths = {
-        SyndicationAuthorEmail: "author/email",
-        SyndicationAuthorName: "author/name",
-        SyndicationAuthorUri: "author/uri",
-        SyndicationContributorEmail: "contributor/email",
-        SyndicationContributorName: "contributor/name",
-        SyndicationContributorUri: "contributor/uri",
-        SyndicationPublished: "published",
-        SyndicationRights: "rights",
-        SyndicationSummary: "summary",
-        SyndicationTitle: "title",
-        SyndicationUpdated: "updated"
+        SyndicationAuthorEmail: 'author/email',
+        SyndicationAuthorName: 'author/name',
+        SyndicationAuthorUri: 'author/uri',
+        SyndicationContributorEmail: 'contributor/email',
+        SyndicationContributorName: 'contributor/name',
+        SyndicationContributorUri: 'contributor/uri',
+        SyndicationPublished: 'published',
+        SyndicationRights: 'rights',
+        SyndicationSummary: 'summary',
+        SyndicationTitle: 'title',
+        SyndicationUpdated: 'updated',
     };
 
     var expandedFeedCustomizationPath = function (path) {
@@ -4430,7 +4508,7 @@
         /// <param type="String" name="nsURI">Namespace to check.</param>
         /// <returns type="Boolean">true if nsURI is an extension namespace to ATOM; false otherwise.</returns>
 
-        return !(contains(nonExtensionNamepaces, nsURI));
+        return !contains(nonExtensionNamepaces, nsURI);
     };
 
     var atomFeedCustomization = function (customizationModel, entityType, model, propertyName, suffix) {
@@ -4442,20 +4520,20 @@
         /// <param name="suffix" type="String" optional="true">Suffix to feed customization properties in the conceptual schema.</param>
         /// <returns type="Object">Object that describes an applicable feed customization.</returns>
 
-        suffix = suffix || "";
-        var targetPath = customizationModel["FC_TargetPath" + suffix];
+        suffix = suffix || '';
+        var targetPath = customizationModel['FC_TargetPath' + suffix];
         if (!targetPath) {
             return null;
         }
 
-        var sourcePath = customizationModel["FC_SourcePath" + suffix];
+        var sourcePath = customizationModel['FC_SourcePath' + suffix];
         var targetXmlPath = expandedFeedCustomizationPath(targetPath);
 
-        var propertyPath = propertyName ? propertyName + (sourcePath ? "/" + sourcePath : "") : sourcePath;
+        var propertyPath = propertyName ? propertyName + (sourcePath ? '/' + sourcePath : '') : sourcePath;
         var propertyType = propertyPath && lookupPropertyType(model, entityType, propertyPath);
-        var nsURI = customizationModel["FC_NsUri" + suffix] || null;
-        var nsPrefix = customizationModel["FC_NsPrefix" + suffix] || null;
-        var keepinContent = customizationModel["FC_KeepInContent" + suffix] || "";
+        var nsURI = customizationModel['FC_NsUri' + suffix] || null;
+        var nsPrefix = customizationModel['FC_NsPrefix' + suffix] || null;
+        var keepinContent = customizationModel['FC_KeepInContent' + suffix] || '';
 
         if (targetPath !== targetXmlPath) {
             nsURI = atomXmlNs;
@@ -4463,13 +4541,13 @@
         }
 
         return {
-            contentKind: customizationModel["FC_ContentKind" + suffix],
-            keepInContent: keepinContent.toLowerCase() === "true",
+            contentKind: customizationModel['FC_ContentKind' + suffix],
+            keepInContent: keepinContent.toLowerCase() === 'true',
             nsPrefix: nsPrefix,
             nsURI: nsURI,
             propertyPath: propertyPath,
             propertyType: propertyType,
-            entryPath: targetXmlPath
+            entryPath: targetXmlPath,
         };
     };
 
@@ -4492,12 +4570,12 @@
             for (i = 0, len = properties.length; i < len; i++) {
                 var property = properties[i];
                 var suffixCounter = 0;
-                var suffix = "";
+                var suffix = '';
 
-                while (customization = atomFeedCustomization(property, entityType, model, property.name, suffix)) {
+                while ((customization = atomFeedCustomization(property, entityType, model, property.name, suffix))) {
                     callback(customization);
                     suffixCounter++;
-                    suffix = "_" + suffixCounter;
+                    suffix = '_' + suffixCounter;
                 }
             }
             entityType = lookupEntityType(entityType.baseType, model);
@@ -4525,7 +4603,7 @@
         /// <param name="domElement">DOM element not part of the atom namespace.</param>
         /// <returns type="Object">Object representing the extension element.</returns>
 
-        return createElementExtension(domElement, /*addNamespaceURI*/true);
+        return createElementExtension(domElement, /*addNamespaceURI*/ true);
     };
 
     var atomReadDocument = function (domElement, baseURI, model) {
@@ -4539,16 +4617,16 @@
         var localName = xmlLocalName(domElement);
 
         // Handle service documents.
-        if (nsURI === appXmlNs && localName === "service") {
+        if (nsURI === appXmlNs && localName === 'service') {
             return atomReadServiceDocument(domElement, baseURI);
         }
 
         // Handle feed and entry elements.
         if (nsURI === atomXmlNs) {
-            if (localName === "feed") {
+            if (localName === 'feed') {
                 return atomReadFeed(domElement, baseURI, model);
             }
-            if (localName === "entry") {
+            if (localName === 'entry') {
                 return atomReadEntry(domElement, baseURI, model);
             }
         }
@@ -4570,11 +4648,11 @@
             var value = xmlNodeValue(attribute);
 
             if (nsURI === null) {
-                if (localName === "title" || localName === "metadata") {
+                if (localName === 'title' || localName === 'metadata') {
                     result[localName] = value;
                     return;
                 }
-                if (localName === "target") {
+                if (localName === 'target') {
                     result.target = normalizeURI(value, xmlBaseURI(domElement, baseURI));
                     return;
                 }
@@ -4593,7 +4671,7 @@
         /// <param name="baseURI" type="String">Base URI for normalizing the action or target url.</param>
         /// <param name="parentMetadata" type="Object">Object to update with the action metadata.</param>
 
-        var actions = parentMetadata.actions = parentMetadata.actions || [];
+        var actions = (parentMetadata.actions = parentMetadata.actions || []);
         actions.push(atomReadAdvertisedActionOrFunction(domElement, baseURI));
     };
 
@@ -4603,7 +4681,7 @@
         /// <param name="baseURI" type="String">Base URI for normalizing the action or target url.</param>
         /// <param name="parentMetadata" type="Object">Object to update with the action metadata.</param>
 
-        var functions = parentMetadata.functions = parentMetadata.functions || [];
+        var functions = (parentMetadata.functions = parentMetadata.functions || []);
         functions.push(atomReadAdvertisedActionOrFunction(domElement, baseURI));
     };
 
@@ -4627,15 +4705,15 @@
             var localName = xmlLocalName(child);
 
             if (nsURI === odataMetaXmlNs) {
-                if (localName === "count") {
+                if (localName === 'count') {
                     feed.__count = parseInt(xmlInnerText(child), 10);
                     return;
                 }
-                if (localName === "action") {
+                if (localName === 'action') {
                     atomReadAdvertisedAction(child, baseURI, feedMetadata);
                     return;
                 }
-                if (localName === "function") {
+                if (localName === 'function') {
                     atomReadAdvertisedFunction(child, baseURI, feedMetadata);
                     return;
                 }
@@ -4648,21 +4726,21 @@
 
             // The element should belong to the ATOM namespace.
 
-            if (localName === "entry") {
+            if (localName === 'entry') {
                 results.push(atomReadEntry(child, baseURI, model));
                 return;
             }
-            if (localName === "link") {
+            if (localName === 'link') {
                 atomReadFeedLink(child, feed, baseURI);
                 return;
             }
-            if (localName === "id") {
+            if (localName === 'id') {
                 feedMetadata.uri = normalizeURI(xmlInnerText(child), baseURI);
                 feedMetadata.uri_extensions = atomReadExtensionAttributes(child);
                 return;
             }
-            if (localName === "title") {
-                feedMetadata.title = xmlInnerText(child) || "";
+            if (localName === 'title') {
+                feedMetadata.title = xmlInnerText(child) || '';
                 feedMetadata.title_extensions = atomReadExtensionAttributes(child);
                 return;
             }
@@ -4683,12 +4761,12 @@
         var extensions = link.extensions;
         var metadata = feed.__metadata;
 
-        if (rel === "next") {
+        if (rel === 'next') {
             feed.__next = href;
             metadata.next_extensions = extensions;
             return;
         }
-        if (rel === "self") {
+        if (rel === 'self') {
             metadata.self = href;
             metadata.self_extensions = extensions;
             return;
@@ -4711,11 +4789,11 @@
             var localName = xmlLocalName(attribute);
             var value = attribute.value;
 
-            if (localName === "href") {
+            if (localName === 'href') {
                 link.href = normalizeURI(value, baseURI);
                 return;
             }
-            if (localName === "type" || localName === "rel") {
+            if (localName === 'type' || localName === 'rel') {
                 link[localName] = value;
                 return;
             }
@@ -4726,7 +4804,7 @@
         });
 
         if (!link.href) {
-            throw { error: "href attribute missing on link element", element: domElement };
+            throw { error: 'href attribute missing on link element', element: domElement };
         }
 
         return link;
@@ -4774,7 +4852,7 @@
         } else {
             var parts = path.split('/');
             var i, len;
-            for (i = 0, len = (parts.length - 1); i < len; i++) {
+            for (i = 0, len = parts.length - 1; i < len; i++) {
                 // We construct each step of the way if the property is missing;
                 // if it's already initialized to null, we stop further processing.
                 var next = target[parts[i]];
@@ -4791,9 +4869,9 @@
         }
 
         if (propertyType) {
-            var metadata = target.__metadata = target.__metadata || {};
-            var properties = metadata.properties = metadata.properties || {};
-            var property = properties[propertyName] = properties[propertyName] || {};
+            var metadata = (target.__metadata = target.__metadata || {});
+            var properties = (metadata.properties = metadata.properties || {});
+            var property = (properties[propertyName] = properties[propertyName] || {});
             property.type = propertyType;
         }
     };
@@ -4825,12 +4903,12 @@
         var propertyType = customization.propertyType;
         var propertyValue;
 
-        if (customization.contentKind === "xhtml") {
+        if (customization.contentKind === 'xhtml') {
             // Treat per XHTML in http://tools.ietf.org/html/rfc4287#section-3.1.1, including the DIV
             // in the content.
             propertyValue = xmlSerializeDescendants(xmlNode);
         } else {
-            propertyValue = xmlReadODataEdmPropertyValue(xmlNode, propertyType || "Edm.String");
+            propertyValue = xmlReadODataEdmPropertyValue(xmlNode, propertyType || 'Edm.String');
         }
         // Set the value on the entry.
         atomSetEntryValueByPath(propertyPath, entry, propertyValue, propertyType);
@@ -4843,7 +4921,7 @@
         /// <param name="path" type="String" mayBeNull="false">Property path to look at.</param>
         /// <returns type="String">The name of the property type; possibly null.</returns>
 
-        var parts = path.split("/");
+        var parts = path.split('/');
         var i, len;
         while (owningType) {
             // Keep track of the type being traversed, necessary for complex types.
@@ -4893,7 +4971,7 @@
         var entryMetadata = {};
         var entry = { __metadata: entryMetadata };
 
-        var etag = xmlAttributeValue(domElement, "etag", odataMetaXmlNs);
+        var etag = xmlAttributeValue(domElement, 'etag', odataMetaXmlNs);
         if (etag) {
             entryMetadata.etag = etag;
         }
@@ -4905,19 +4983,19 @@
             var localName = xmlLocalName(child);
 
             if (nsURI === atomXmlNs) {
-                if (localName === "id") {
+                if (localName === 'id') {
                     atomReadEntryId(child, entryMetadata, baseURI);
                     return;
                 }
-                if (localName === "category") {
+                if (localName === 'category') {
                     atomReadEntryType(child, entryMetadata);
                     return;
                 }
-                if (localName === "content") {
+                if (localName === 'content') {
                     atomReadEntryContent(child, entry, entryMetadata, baseURI);
                     return;
                 }
-                if (localName === "link") {
+                if (localName === 'link') {
                     atomReadEntryLink(child, entry, entryMetadata, baseURI, model);
                     return;
                 }
@@ -4925,15 +5003,15 @@
             }
 
             if (nsURI === odataMetaXmlNs) {
-                if (localName === "properties") {
+                if (localName === 'properties') {
                     atomReadEntryStructuralObject(child, entry, entryMetadata);
                     return;
                 }
-                if (localName === "action") {
+                if (localName === 'action') {
                     atomReadAdvertisedAction(child, baseURI, entryMetadata);
                     return;
                 }
-                if (localName === "function") {
+                if (localName === 'function') {
                     atomReadAdvertisedFunction(child, baseURI, entryMetadata);
                     return;
                 }
@@ -4963,9 +5041,13 @@
         /// <param name="domElement">ATOM category DOM element.</param>
         /// <param name="entryMetadata">Entry metadata object to update with the type information.</param>
 
-        if (xmlAttributeValue(domElement, "scheme") === odataScheme) {
+        if (xmlAttributeValue(domElement, 'scheme') === odataScheme) {
             if (entryMetadata.type) {
-                throw { message: "Invalid AtomPub document: multiple category elements defining the entry type were encounterd withing an entry", element: domElement };
+                throw {
+                    message:
+                        'Invalid AtomPub document: multiple category elements defining the entry type were encounterd withing an entry',
+                    element: domElement,
+                };
             }
 
             var typeExtensions = [];
@@ -4974,7 +5056,7 @@
                 var localName = xmlLocalName(attribute);
 
                 if (!nsURI) {
-                    if (localName !== "scheme" && localName !== "term") {
+                    if (localName !== 'scheme' && localName !== 'term') {
                         typeExtensions.push(createAttributeExtension(attribute, true));
                     }
                     return;
@@ -4985,7 +5067,7 @@
                 }
             });
 
-            entryMetadata.type = xmlAttributeValue(domElement, "term");
+            entryMetadata.type = xmlAttributeValue(domElement, 'term');
             entryMetadata.type_extensions = typeExtensions;
         }
     };
@@ -4997,14 +5079,15 @@
         /// <param name="entryMetadata">Entry metadata object to update with the content information.</param>
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the Atom entry content.</param>
 
-        var src = xmlAttributeValue(domElement, "src");
-        var type = xmlAttributeValue(domElement, "type");
+        var src = xmlAttributeValue(domElement, 'src');
+        var type = xmlAttributeValue(domElement, 'type');
 
         if (src) {
             if (!type) {
                 throw {
-                    message: "Invalid AtomPub document: content element must specify the type attribute if the src attribute is also specified",
-                    element: domElement
+                    message:
+                        'Invalid AtomPub document: content element must specify the type attribute if the src attribute is also specified',
+                    element: domElement,
                 };
             }
 
@@ -5014,10 +5097,14 @@
 
         xmlChildElements(domElement, function (child) {
             if (src) {
-                throw { message: "Invalid AtomPub document: content element must not have child elements if the src attribute is specified", element: domElement };
+                throw {
+                    message:
+                        'Invalid AtomPub document: content element must not have child elements if the src attribute is specified',
+                    element: domElement,
+                };
             }
 
-            if (xmlNamespaceURI(child) === odataMetaXmlNs && xmlLocalName(child) === "properties") {
+            if (xmlNamespaceURI(child) === odataMetaXmlNs && xmlLocalName(child) === 'properties') {
                 atomReadEntryStructuralObject(child, entry, entryMetadata);
             }
         });
@@ -5037,19 +5124,19 @@
         var href = link.href;
         var extensions = link.extensions;
 
-        if (rel === "self") {
+        if (rel === 'self') {
             entryMetadata.self = href;
             entryMetadata.self_link_extensions = extensions;
             return;
         }
 
-        if (rel === "edit") {
+        if (rel === 'edit') {
             entryMetadata.edit = href;
             entryMetadata.edit_link_extensions = extensions;
             return;
         }
 
-        if (rel === "edit-media") {
+        if (rel === 'edit-media') {
             entryMetadata.edit_media = link.href;
             entryMetadata.edit_media_extensions = extensions;
             atomReadLinkMediaEtag(link, entryMetadata);
@@ -5089,7 +5176,7 @@
 
         // Set the extra property information on the entry object metadata.
         entryMetadata.properties = entryMetadata.properties || {};
-        var propertyMetadata = entryMetadata.properties[propertyName] = entryMetadata.properties[propertyName] || {};
+        var propertyMetadata = (entryMetadata.properties[propertyName] = entryMetadata.properties[propertyName] || {});
 
         propertyMetadata.associationuri = link.href;
         propertyMetadata.associationuri_extensions = link.extensions;
@@ -5105,14 +5192,14 @@
 
         // Get any inline data.
         var inlineData;
-        var inlineElement = xmlFirstChildElement(domElement, odataMetaXmlNs, "inline");
+        var inlineElement = xmlFirstChildElement(domElement, odataMetaXmlNs, 'inline');
         if (inlineElement) {
             var inlineDocRoot = xmlFirstChildElement(inlineElement);
             var inlineBaseURI = xmlBaseURI(inlineElement, link.baseURI);
             inlineData = inlineDocRoot ? atomReadDocument(inlineDocRoot, inlineBaseURI, model) : null;
         } else {
             // If the link has no inline content, we consider it deferred.
-            inlineData = { __deferred: { uri: link.href} };
+            inlineData = { __deferred: { uri: link.href } };
         }
 
         var propertyName = link.rel.substring(odataRelatedPrefix.length);
@@ -5122,7 +5209,7 @@
 
         // Set the extra property information on the entry object metadata.
         entryMetadata.properties = entryMetadata.properties || {};
-        var propertyMetadata = entryMetadata.properties[propertyName] = entryMetadata.properties[propertyName] || {};
+        var propertyMetadata = (entryMetadata.properties[propertyName] = entryMetadata.properties[propertyName] || {});
 
         propertyMetadata.extensions = link.extensions;
     };
@@ -5206,7 +5293,7 @@
         var extensions = link.extensions;
         var i, len;
         for (i = 0, len = extensions.length; i < len; i++) {
-            if (extensions[i].namespaceURI === odataMetaXmlNs && extensions[i].name === "etag") {
+            if (extensions[i].namespaceURI === odataMetaXmlNs && extensions[i].name === 'etag') {
                 mediaResource.media_etag = extensions[i].value;
                 extensions.splice(i, 1);
                 return;
@@ -5227,7 +5314,7 @@
             var property = xmlReadODataProperty(child);
             if (property) {
                 var propertyName = property.name;
-                var propertiesMetadata = parentMetadata.properties = parentMetadata.properties || {};
+                var propertiesMetadata = (parentMetadata.properties = parentMetadata.properties || {});
                 propertiesMetadata[propertyName] = property.metadata;
                 parent[propertyName] = property.value;
             }
@@ -5246,7 +5333,7 @@
         baseURI = xmlBaseURI(domElement, baseURI);
         // Find all the workspace elements.
         xmlChildElements(domElement, function (child) {
-            if (xmlNamespaceURI(child) === appXmlNs && xmlLocalName(child) === "workspace") {
+            if (xmlNamespaceURI(child) === appXmlNs && xmlLocalName(child) === 'workspace') {
                 workspaces.push(atomReadServiceDocumentWorkspace(child, baseURI));
                 return;
             }
@@ -5256,7 +5343,7 @@
         // AtomPub (RFC 5023 Section 8.3.1) says a service document MUST contain one or
         // more workspaces. Throw if we don't find any.
         if (workspaces.length === 0) {
-            throw { message: "Invalid AtomPub service document: No workspace element found.", element: domElement };
+            throw { message: 'Invalid AtomPub service document: No workspace element found.', element: domElement };
         }
 
         return { workspaces: workspaces, extensions: extensions };
@@ -5279,9 +5366,13 @@
             var localName = xmlLocalName(child);
 
             if (nsURI === atomXmlNs) {
-                if (localName === "title") {
+                if (localName === 'title') {
                     if (title !== undefined) {
-                        throw { message: "Invalid AtomPub service document: workspace has more than one child title element", element: child };
+                        throw {
+                            message:
+                                'Invalid AtomPub service document: workspace has more than one child title element',
+                            element: child,
+                        };
                     }
 
                     title = xmlInnerText(child);
@@ -5290,7 +5381,7 @@
             }
 
             if (nsURI === appXmlNs) {
-                if (localName === "collection") {
+                if (localName === 'collection') {
                     collections.push(atomReadServiceDocumentCollection(child, baseURI));
                 }
                 return;
@@ -5298,7 +5389,7 @@
             extensions.push(atomReadExtensionElement(child));
         });
 
-        return { title: title || "", collections: collections, extensions: extensions };
+        return { title: title || '', collections: collections, extensions: extensions };
     };
 
     var atomReadServiceDocumentCollection = function (domElement, baseURI) {
@@ -5307,11 +5398,13 @@
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the AtomPub service document collection.</param>
         /// <returns type="Object">An object that contains the properties of the collection.</returns>
 
-
-        var href = xmlAttributeValue(domElement, "href");
+        var href = xmlAttributeValue(domElement, 'href');
 
         if (!href) {
-            throw { message: "Invalid AtomPub service document: collection has no href attribute", element: domElement };
+            throw {
+                message: 'Invalid AtomPub service document: collection has no href attribute',
+                element: domElement,
+            };
         }
 
         baseURI = xmlBaseURI(domElement, baseURI);
@@ -5324,9 +5417,13 @@
             var localName = xmlLocalName(child);
 
             if (nsURI === atomXmlNs) {
-                if (localName === "title") {
+                if (localName === 'title') {
                     if (title !== undefined) {
-                        throw { message: "Invalid AtomPub service document: collection has more than one child title element", element: child };
+                        throw {
+                            message:
+                                'Invalid AtomPub service document: collection has more than one child title element',
+                            element: child,
+                        };
                     }
                     title = xmlInnerText(child);
                 }
@@ -5342,7 +5439,7 @@
         // a title element. It's likely to be problematic if the service doc doesn't
         // have one so here we throw.
         if (!title) {
-            throw { message: "Invalid AtomPub service document: collection has no title element", element: domElement };
+            throw { message: 'Invalid AtomPub service document: collection has no title element', element: domElement };
         }
 
         return { title: title, href: href, extensions: extensions };
@@ -5390,8 +5487,9 @@
         for (i = 0, len = attributes.length; i < len && isEmpty; i++) {
             var attribute = attributes[i];
 
-            isEmpty = isEmpty && isXmlNSDeclaration(attribute) ||
-                 (xmlNamespaceURI(attribute) == odataMetaXmlNs && xmlLocalName(attribute) === "type");
+            isEmpty =
+                (isEmpty && isXmlNSDeclaration(attribute)) ||
+                (xmlNamespaceURI(attribute) == odataMetaXmlNs && xmlLocalName(attribute) === 'type');
         }
         return isEmpty;
     };
@@ -5411,31 +5509,29 @@
         var linkType = null;
         var linkContent = null;
         var linkContentBodyData = null;
-        var href = "";
+        var href = '';
 
-        if (kind !== "deferred") {
-            linkType = atomNewAttribute(dom, "type", "application/atom+xml;type=" + kind);
-            linkContent = xmlNewODataMetaElement(dom, "inline");
+        if (kind !== 'deferred') {
+            linkType = atomNewAttribute(dom, 'type', 'application/atom+xml;type=' + kind);
+            linkContent = xmlNewODataMetaElement(dom, 'inline');
 
             if (value) {
-                href = value.__metadata && value.__metadata.uri || "";
-                linkContentBodyData =
-                    atomNewODataFeed(dom, value, model) ||
-                    atomNewODataEntry(dom, value, model);
+                href = (value.__metadata && value.__metadata.uri) || '';
+                linkContentBodyData = atomNewODataFeed(dom, value, model) || atomNewODataEntry(dom, value, model);
                 xmlAppendChild(linkContent, linkContentBodyData.element);
             }
         } else {
             href = value.__deferred.uri;
         }
 
-        var navProp = atomNewElement(dom, "link", [
-            atomNewAttribute(dom, "href", href),
-            atomNewAttribute(dom, "rel", normalizeURI(name, odataRelatedPrefix)),
+        var navProp = atomNewElement(dom, 'link', [
+            atomNewAttribute(dom, 'href', href),
+            atomNewAttribute(dom, 'rel', normalizeURI(name, odataRelatedPrefix)),
             linkType,
-            linkContent
+            linkContent,
         ]);
 
-        return xmlNewODataElementInfo(navProp, linkContentBodyData ? linkContentBodyData.dsv : "1.0");
+        return xmlNewODataElementInfo(navProp, linkContentBodyData ? linkContentBodyData.dsv : '1.0');
     };
 
     var atomNewODataEntryDataItem = function (dom, name, value, dataItemMetadata, dataItemModel, model) {
@@ -5477,18 +5573,18 @@
         /// <returns type="String">Data service version required by the applied customization</returns>
 
         var atomProperty = xmlFindElementByPath(entryProperties, odataXmlNs, customization.propertyPath);
-        var atomPropertyNullAttribute = atomProperty && xmlAttributeNode(atomProperty, "null", odataMetaXmlNs);
+        var atomPropertyNullAttribute = atomProperty && xmlAttributeNode(atomProperty, 'null', odataMetaXmlNs);
         var atomPropertyValue;
-        var dataServiceVersion = "1.0";
+        var dataServiceVersion = '1.0';
 
-        if (atomPropertyNullAttribute && atomPropertyNullAttribute.value === "true") {
+        if (atomPropertyNullAttribute && atomPropertyNullAttribute.value === 'true') {
             return dataServiceVersion;
         }
 
         if (atomProperty) {
-            atomPropertyValue = xmlInnerText(atomProperty) || "";
+            atomPropertyValue = xmlInnerText(atomProperty) || '';
             if (!customization.keepInContent) {
-                dataServiceVersion = "2.0";
+                dataServiceVersion = '2.0';
                 var parent = atomProperty.parentNode;
                 var candidate = parent;
 
@@ -5501,8 +5597,13 @@
             }
         }
 
-        var targetNode = xmlNewNodeByPath(dom, entry,
-            customization.nsURI, customization.nsPrefix, customization.entryPath);
+        var targetNode = xmlNewNodeByPath(
+            dom,
+            entry,
+            customization.nsURI,
+            customization.nsPrefix,
+            customization.entryPath
+        );
 
         if (targetNode.nodeType === 2) {
             targetNode.value = atomPropertyValue;
@@ -5511,8 +5612,8 @@
 
         var contentKind = customization.contentKind;
         xmlAppendChildren(targetNode, [
-                contentKind && xmlNewAttribute(dom, null, "type", contentKind),
-                contentKind === "xhtml" ? xmlNewFragment(dom, atomPropertyValue) : atomPropertyValue
+            contentKind && xmlNewAttribute(dom, null, 'type', contentKind),
+            contentKind === 'xhtml' ? xmlNewFragment(dom, atomPropertyValue) : atomPropertyValue,
         ]);
 
         return dataServiceVersion;
@@ -5535,36 +5636,39 @@
         var typeName = payloadMetadata.type;
         var entityType = lookupEntityType(typeName, model);
 
-        var properties = xmlNewODataMetaElement(dom, "properties");
-        var entry = atomNewElement(dom, "entry", [
-            atomNewElement(dom, "author",
-                atomNewElement(dom, "name")
-            ),
-            etag && xmlNewODataMetaAttribute(dom, "etag", etag),
-            uri && atomNewElement(dom, "id", uri),
-            typeName && atomNewElement(dom, "category", [
-                atomNewAttribute(dom, "term", typeName),
-                atomNewAttribute(dom, "scheme", odataScheme)
-            ]),
-        // TODO: MLE support goes here.
-            atomNewElement(dom, "content", [
-                atomNewAttribute(dom, "type", "application/xml"),
-                properties
-            ])
+        var properties = xmlNewODataMetaElement(dom, 'properties');
+        var entry = atomNewElement(dom, 'entry', [
+            atomNewElement(dom, 'author', atomNewElement(dom, 'name')),
+            etag && xmlNewODataMetaAttribute(dom, 'etag', etag),
+            uri && atomNewElement(dom, 'id', uri),
+            typeName &&
+                atomNewElement(dom, 'category', [
+                    atomNewAttribute(dom, 'term', typeName),
+                    atomNewAttribute(dom, 'scheme', odataScheme),
+                ]),
+            // TODO: MLE support goes here.
+            atomNewElement(dom, 'content', [atomNewAttribute(dom, 'type', 'application/xml'), properties]),
         ]);
 
-        var dataServiceVersion = "1.0";
+        var dataServiceVersion = '1.0';
         for (var name in data) {
-            if (name !== "__metadata") {
+            if (name !== '__metadata') {
                 var entryDataItemMetadata = propertiesMetadata[name] || {};
-                var entryDataItemModel = entityType && (
-                    lookupProperty(entityType.property, name) ||
-                    lookupProperty(entityType.navigationProperty, name));
+                var entryDataItemModel =
+                    entityType &&
+                    (lookupProperty(entityType.property, name) || lookupProperty(entityType.navigationProperty, name));
 
-                var entryDataItem = atomNewODataEntryDataItem(dom, name, data[name], entryDataItemMetadata, entryDataItemModel, model);
+                var entryDataItem = atomNewODataEntryDataItem(
+                    dom,
+                    name,
+                    data[name],
+                    entryDataItemMetadata,
+                    entryDataItemModel,
+                    model
+                );
                 if (entryDataItem) {
                     var entryElement = entryDataItem.element;
-                    var entryElementParent = (xmlNamespaceURI(entryElement) === atomXmlNs) ? entry : properties;
+                    var entryElementParent = xmlNamespaceURI(entryElement) === atomXmlNs ? entry : properties;
 
                     xmlAppendChild(entryElementParent, entryElement);
                     dataServiceVersion = maxVersion(dataServiceVersion, entryDataItem.dsv);
@@ -5595,8 +5699,8 @@
             return null;
         }
 
-        var dataServiceVersion = "1.0";
-        var atomFeed = atomNewElement(dom, "feed");
+        var dataServiceVersion = '1.0';
+        var atomFeed = atomNewElement(dom, 'feed');
 
         var i, len;
         for (i = 0, len = entries.length; i < len; i++) {
@@ -5616,8 +5720,7 @@
         /// </returns>
 
         if (data) {
-            var atomRootWriter = isFeed(data) && atomNewODataFeed ||
-                isObject(data) && atomNewODataEntry;
+            var atomRootWriter = (isFeed(data) && atomNewODataFeed) || (isObject(data) && atomNewODataEntry);
 
             if (atomRootWriter) {
                 var dom = xmlDom();
@@ -5627,7 +5730,7 @@
                     var atomRootElement = atomRootData.element;
                     xmlAppendChildren(atomRootElement, [
                         xmlNewNSDeclaration(dom, odataMetaXmlNs, odataMetaPrefix),
-                        xmlNewNSDeclaration(dom, odataXmlNs, odataPrefix)
+                        xmlNewNSDeclaration(dom, odataXmlNs, odataPrefix),
                     ]);
                     return xmlNewODataElementInfo(xmlAppendChild(dom, atomRootElement), atomRootData.dsv);
                 }
@@ -5659,20 +5762,18 @@
         /// <param name="context" type="Object">Object with parsing context.</param>
         /// <returns>An text representation of the data object; undefined if not applicable.</returns>
 
-        var cType = context.contentType = context.contentType || contentType(atomMediaType);
+        var cType = (context.contentType = context.contentType || contentType(atomMediaType));
         if (cType && cType.mediaType === atomMediaType) {
             var atomDoc = atomNewODataDocument(data, context.metadata);
             if (atomDoc) {
-                context.dataServiceVersion = maxVersion(context.dataServiceVersion || "1.0", atomDoc.dsv);
+                context.dataServiceVersion = maxVersion(context.dataServiceVersion || '1.0', atomDoc.dsv);
                 return xmlSerialize(atomDoc.element);
             }
         }
         // Allow undefined to be returned.
     };
 
-    odata.atomHandler = handler(atomParser, atomSerializer, atomAcceptTypes.join(","), MAX_DATA_SERVICE_VERSION);
-
-
+    odata.atomHandler = handler(atomParser, atomSerializer, atomAcceptTypes.join(','), MAX_DATA_SERVICE_VERSION);
 
     var schemaElement = function (attributes, elements, text, ns) {
         /// <summary>Creates an object that describes an element in an schema.</summary>
@@ -5689,7 +5790,7 @@
             attributes: attributes,
             elements: elements,
             text: text || false,
-            ns: ns
+            ns: ns,
         };
     };
 
@@ -5698,236 +5799,312 @@
     var schema = {
         elements: {
             Annotations: schemaElement(
-            /*attributes*/["Target", "Qualifier"],
-            /*elements*/["TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Target', 'Qualifier'],
+                /*elements*/ ['TypeAnnotation*', 'ValueAnnotation*']
             ),
             Association: schemaElement(
-            /*attributes*/["Name"],
-            /*elements*/["End*", "ReferentialConstraint", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name'],
+                /*elements*/ ['End*', 'ReferentialConstraint', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
             AssociationSet: schemaElement(
-            /*attributes*/["Name", "Association"],
-            /*elements*/["End*", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'Association'],
+                /*elements*/ ['End*', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
-            Binary: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            Bool: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
+            Binary: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            Bool: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
             Collection: schemaElement(
-            /*attributes*/null,
-            /*elements*/["String*", "Int*", "Float*", "Decimal*", "Bool*", "DateTime*", "DateTimeOffset*", "Guid*", "Binary*", "Time*", "Collection*", "Record*"]
+                /*attributes*/ null,
+                /*elements*/ [
+                    'String*',
+                    'Int*',
+                    'Float*',
+                    'Decimal*',
+                    'Bool*',
+                    'DateTime*',
+                    'DateTimeOffset*',
+                    'Guid*',
+                    'Binary*',
+                    'Time*',
+                    'Collection*',
+                    'Record*',
+                ]
             ),
             CollectionType: schemaElement(
-            /*attributes*/["ElementType", "Nullable", "DefaultValue", "MaxLength", "FixedLength", "Precision", "Scale", "Unicode", "Collation", "SRID"],
-            /*elements*/["CollectionType", "ReferenceType", "RowType", "TypeRef"]
+                /*attributes*/ [
+                    'ElementType',
+                    'Nullable',
+                    'DefaultValue',
+                    'MaxLength',
+                    'FixedLength',
+                    'Precision',
+                    'Scale',
+                    'Unicode',
+                    'Collation',
+                    'SRID',
+                ],
+                /*elements*/ ['CollectionType', 'ReferenceType', 'RowType', 'TypeRef']
             ),
             ComplexType: schemaElement(
-            /*attributes*/["Name", "BaseType", "Abstract"],
-            /*elements*/["Property*", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'BaseType', 'Abstract'],
+                /*elements*/ ['Property*', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
-            DateTime: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            DateTimeOffset: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            Decimal: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            DefiningExpression: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            Dependent: schemaElement(
-            /*attributes*/["Role"],
-            /*elements*/["PropertyRef*"]
-            ),
-            Documentation: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            End: schemaElement(
-            /*attributes*/["Type", "Role", "Multiplicity", "EntitySet"],
-            /*elements*/["OnDelete"]
-            ),
+            DateTime: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            DateTimeOffset: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            Decimal: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            DefiningExpression: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            Dependent: schemaElement(/*attributes*/ ['Role'], /*elements*/ ['PropertyRef*']),
+            Documentation: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            End: schemaElement(/*attributes*/ ['Type', 'Role', 'Multiplicity', 'EntitySet'], /*elements*/ ['OnDelete']),
             EntityContainer: schemaElement(
-            /*attributes*/["Name", "Extends"],
-            /*elements*/["EntitySet*", "AssociationSet*", "FunctionImport*", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'Extends'],
+                /*elements*/ ['EntitySet*', 'AssociationSet*', 'FunctionImport*', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
             EntitySet: schemaElement(
-            /*attributes*/["Name", "EntityType"],
-            /*elements*/["TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'EntityType'],
+                /*elements*/ ['TypeAnnotation*', 'ValueAnnotation*']
             ),
             EntityType: schemaElement(
-            /*attributes*/["Name", "BaseType", "Abstract", "OpenType"],
-            /*elements*/["Key", "Property*", "NavigationProperty*", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'BaseType', 'Abstract', 'OpenType'],
+                /*elements*/ ['Key', 'Property*', 'NavigationProperty*', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
-            EnumType: schemaElement(
-            /*attributes*/["Name", "UnderlyingType", "IsFlags"],
-            /*elements*/["Member*"]
-            ),
-            Float: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
+            EnumType: schemaElement(/*attributes*/ ['Name', 'UnderlyingType', 'IsFlags'], /*elements*/ ['Member*']),
+            Float: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
             Function: schemaElement(
-            /*attributes*/["Name", "ReturnType"],
-            /*elements*/["Parameter*", "DefiningExpression", "ReturnType", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'ReturnType'],
+                /*elements*/ ['Parameter*', 'DefiningExpression', 'ReturnType', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
             FunctionImport: schemaElement(
-            /*attributes*/["Name", "ReturnType", "EntitySet", "IsSideEffecting", "IsComposable", "IsBindable", "EntitySetPath"],
-            /*elements*/["Parameter*", "ReturnType", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ [
+                    'Name',
+                    'ReturnType',
+                    'EntitySet',
+                    'IsSideEffecting',
+                    'IsComposable',
+                    'IsBindable',
+                    'EntitySetPath',
+                ],
+                /*elements*/ ['Parameter*', 'ReturnType', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
-            Guid: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            Int: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            Key: schemaElement(
-            /*attributes*/null,
-            /*elements*/["PropertyRef*"]
-            ),
+            Guid: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            Int: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            Key: schemaElement(/*attributes*/ null, /*elements*/ ['PropertyRef*']),
             LabeledElement: schemaElement(
-            /*attributes*/["Name"],
-            /*elements*/["Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time", "Collection", "Record", "LabeledElement", "Null"]
+                /*attributes*/ ['Name'],
+                /*elements*/ [
+                    'Path',
+                    'String',
+                    'Int',
+                    'Float',
+                    'Decimal',
+                    'Bool',
+                    'DateTime',
+                    'DateTimeOffset',
+                    'Guid',
+                    'Binary',
+                    'Time',
+                    'Collection',
+                    'Record',
+                    'LabeledElement',
+                    'Null',
+                ]
             ),
-            Member: schemaElement(
-            /*attributes*/["Name", "Value"]
-            ),
+            Member: schemaElement(/*attributes*/ ['Name', 'Value']),
             NavigationProperty: schemaElement(
-            /*attributes*/["Name", "Relationship", "ToRole", "FromRole", "ContainsTarget"],
-            /*elements*/["TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'Relationship', 'ToRole', 'FromRole', 'ContainsTarget'],
+                /*elements*/ ['TypeAnnotation*', 'ValueAnnotation*']
             ),
-            Null: schemaElement(
-            /*attributes*/null,
-            /*elements*/null
-            ),
-            OnDelete: schemaElement(
-            /*attributes*/["Action"]
-            ),
-            Path: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
+            Null: schemaElement(/*attributes*/ null, /*elements*/ null),
+            OnDelete: schemaElement(/*attributes*/ ['Action']),
+            Path: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
             Parameter: schemaElement(
-            /*attributes*/["Name", "Type", "Mode", "Nullable", "DefaultValue", "MaxLength", "FixedLength", "Precision", "Scale", "Unicode", "Collation", "ConcurrencyMode", "SRID"],
-            /*elements*/["CollectionType", "ReferenceType", "RowType", "TypeRef", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ [
+                    'Name',
+                    'Type',
+                    'Mode',
+                    'Nullable',
+                    'DefaultValue',
+                    'MaxLength',
+                    'FixedLength',
+                    'Precision',
+                    'Scale',
+                    'Unicode',
+                    'Collation',
+                    'ConcurrencyMode',
+                    'SRID',
+                ],
+                /*elements*/ [
+                    'CollectionType',
+                    'ReferenceType',
+                    'RowType',
+                    'TypeRef',
+                    'TypeAnnotation*',
+                    'ValueAnnotation*',
+                ]
             ),
-            Principal: schemaElement(
-            /*attributes*/["Role"],
-            /*elements*/["PropertyRef*"]
-            ),
+            Principal: schemaElement(/*attributes*/ ['Role'], /*elements*/ ['PropertyRef*']),
             Property: schemaElement(
-            /*attributes*/["Name", "Type", "Nullable", "DefaultValue", "MaxLength", "FixedLength", "Precision", "Scale", "Unicode", "Collation", "ConcurrencyMode", "CollectionKind", "SRID"],
-            /*elements*/["CollectionType", "ReferenceType", "RowType", "TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ [
+                    'Name',
+                    'Type',
+                    'Nullable',
+                    'DefaultValue',
+                    'MaxLength',
+                    'FixedLength',
+                    'Precision',
+                    'Scale',
+                    'Unicode',
+                    'Collation',
+                    'ConcurrencyMode',
+                    'CollectionKind',
+                    'SRID',
+                ],
+                /*elements*/ ['CollectionType', 'ReferenceType', 'RowType', 'TypeAnnotation*', 'ValueAnnotation*']
             ),
-            PropertyRef: schemaElement(
-            /*attributes*/["Name"]
-            ),
+            PropertyRef: schemaElement(/*attributes*/ ['Name']),
             PropertyValue: schemaElement(
-            /*attributes*/["Property", "Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time"],
-            /*Elements*/["Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time", "Collection", "Record", "LabeledElement", "Null"]
+                /*attributes*/ [
+                    'Property',
+                    'Path',
+                    'String',
+                    'Int',
+                    'Float',
+                    'Decimal',
+                    'Bool',
+                    'DateTime',
+                    'DateTimeOffset',
+                    'Guid',
+                    'Binary',
+                    'Time',
+                ],
+                /*Elements*/ [
+                    'Path',
+                    'String',
+                    'Int',
+                    'Float',
+                    'Decimal',
+                    'Bool',
+                    'DateTime',
+                    'DateTimeOffset',
+                    'Guid',
+                    'Binary',
+                    'Time',
+                    'Collection',
+                    'Record',
+                    'LabeledElement',
+                    'Null',
+                ]
             ),
-            ReferenceType: schemaElement(
-            /*attributes*/["Type"]
-            ),
-            ReferentialConstraint: schemaElement(
-            /*attributes*/null,
-            /*elements*/["Principal", "Dependent"]
-            ),
+            ReferenceType: schemaElement(/*attributes*/ ['Type']),
+            ReferentialConstraint: schemaElement(/*attributes*/ null, /*elements*/ ['Principal', 'Dependent']),
             ReturnType: schemaElement(
-            /*attributes*/["ReturnType", "Type", "EntitySet"],
-            /*elements*/["CollectionType", "ReferenceType", "RowType"]
+                /*attributes*/ ['ReturnType', 'Type', 'EntitySet'],
+                /*elements*/ ['CollectionType', 'ReferenceType', 'RowType']
             ),
-            RowType: schemaElement(
-            /*elements*/["Property*"]
-            ),
-            String: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
+            RowType: schemaElement(/*elements*/ ['Property*']),
+            String: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
             Schema: schemaElement(
-            /*attributes*/["Namespace", "Alias"],
-            /*elements*/["Using*", "EntityContainer*", "EntityType*", "Association*", "ComplexType*", "Function*", "ValueTerm*", "Annotations*"]
+                /*attributes*/ ['Namespace', 'Alias'],
+                /*elements*/ [
+                    'Using*',
+                    'EntityContainer*',
+                    'EntityType*',
+                    'Association*',
+                    'ComplexType*',
+                    'Function*',
+                    'ValueTerm*',
+                    'Annotations*',
+                ]
             ),
-            Time: schemaElement(
-            /*attributes*/null,
-            /*elements*/null,
-            /*text*/true
-            ),
-            TypeAnnotation: schemaElement(
-            /*attributes*/["Term", "Qualifier"],
-            /*elements*/["PropertyValue*"]
-            ),
+            Time: schemaElement(/*attributes*/ null, /*elements*/ null, /*text*/ true),
+            TypeAnnotation: schemaElement(/*attributes*/ ['Term', 'Qualifier'], /*elements*/ ['PropertyValue*']),
             TypeRef: schemaElement(
-            /*attributes*/["Type", "Nullable", "DefaultValue", "MaxLength", "FixedLength", "Precision", "Scale", "Unicode", "Collation", "SRID"]
+                /*attributes*/ [
+                    'Type',
+                    'Nullable',
+                    'DefaultValue',
+                    'MaxLength',
+                    'FixedLength',
+                    'Precision',
+                    'Scale',
+                    'Unicode',
+                    'Collation',
+                    'SRID',
+                ]
             ),
-            Using: schemaElement(
-            /*attributes*/["Namespace", "Alias"]
-            ),
+            Using: schemaElement(/*attributes*/ ['Namespace', 'Alias']),
             ValueAnnotation: schemaElement(
-            /*attributes*/["Term", "Qualifier", "Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time"],
-            /*Elements*/["Path", "String", "Int", "Float", "Decimal", "Bool", "DateTime", "DateTimeOffset", "Guid", "Binary", "Time", "Collection", "Record", "LabeledElement", "Null"]
+                /*attributes*/ [
+                    'Term',
+                    'Qualifier',
+                    'Path',
+                    'String',
+                    'Int',
+                    'Float',
+                    'Decimal',
+                    'Bool',
+                    'DateTime',
+                    'DateTimeOffset',
+                    'Guid',
+                    'Binary',
+                    'Time',
+                ],
+                /*Elements*/ [
+                    'Path',
+                    'String',
+                    'Int',
+                    'Float',
+                    'Decimal',
+                    'Bool',
+                    'DateTime',
+                    'DateTimeOffset',
+                    'Guid',
+                    'Binary',
+                    'Time',
+                    'Collection',
+                    'Record',
+                    'LabeledElement',
+                    'Null',
+                ]
             ),
             ValueTerm: schemaElement(
-            /*attributes*/["Name", "Type"],
-            /*elements*/["TypeAnnotation*", "ValueAnnotation*"]
+                /*attributes*/ ['Name', 'Type'],
+                /*elements*/ ['TypeAnnotation*', 'ValueAnnotation*']
             ),
 
             // See http://msdn.microsoft.com/en-us/library/dd541238(v=prot.10) for an EDMX reference.
             Edmx: schemaElement(
-            /*attributes*/["Version"],
-            /*elements*/["DataServices", "Reference*", "AnnotationsReference*"],
-            /*text*/false,
-            /*ns*/edmxNs
+                /*attributes*/ ['Version'],
+                /*elements*/ ['DataServices', 'Reference*', 'AnnotationsReference*'],
+                /*text*/ false,
+                /*ns*/ edmxNs
             ),
-            DataServices: schemaElement(
-            /*attributes*/null,
-            /*elements*/["Schema*"],
-            /*text*/false,
-            /*ns*/edmxNs
-            )
-        }
+            DataServices: schemaElement(/*attributes*/ null, /*elements*/ ['Schema*'], /*text*/ false, /*ns*/ edmxNs),
+        },
     };
 
     // See http://msdn.microsoft.com/en-us/library/ee373839.aspx for a feed customization reference.
-    var customizationAttributes = ["m:FC_ContentKind", "m:FC_KeepInContent", "m:FC_NsPrefix", "m:FC_NsUri", "m:FC_SourcePath", "m:FC_TargetPath"];
+    var customizationAttributes = [
+        'm:FC_ContentKind',
+        'm:FC_KeepInContent',
+        'm:FC_NsPrefix',
+        'm:FC_NsUri',
+        'm:FC_SourcePath',
+        'm:FC_TargetPath',
+    ];
     schema.elements.Property.attributes = schema.elements.Property.attributes.concat(customizationAttributes);
     schema.elements.EntityType.attributes = schema.elements.EntityType.attributes.concat(customizationAttributes);
 
     // See http://msdn.microsoft.com/en-us/library/dd541284(PROT.10).aspx for an EDMX reference.
-    schema.elements.Edmx = { attributes: ["Version"], elements: ["DataServices"], ns: edmxNs };
-    schema.elements.DataServices = { elements: ["Schema*"], ns: edmxNs };
+    schema.elements.Edmx = { attributes: ['Version'], elements: ['DataServices'], ns: edmxNs };
+    schema.elements.DataServices = { elements: ['Schema*'], ns: edmxNs };
 
     // See http://msdn.microsoft.com/en-us/library/dd541233(v=PROT.10) for Conceptual Schema Definition Language Document for Data Services.
-    schema.elements.EntityContainer.attributes.push("m:IsDefaultEntityContainer");
-    schema.elements.Property.attributes.push("m:MimeType");
-    schema.elements.FunctionImport.attributes.push("m:HttpMethod");
-    schema.elements.FunctionImport.attributes.push("m:IsAlwaysBindable");
-    schema.elements.EntityType.attributes.push("m:HasStream");
-    schema.elements.DataServices.attributes = ["m:DataServiceVersion", "m:MaxDataServiceVersion"];
+    schema.elements.EntityContainer.attributes.push('m:IsDefaultEntityContainer');
+    schema.elements.Property.attributes.push('m:MimeType');
+    schema.elements.FunctionImport.attributes.push('m:HttpMethod');
+    schema.elements.FunctionImport.attributes.push('m:IsAlwaysBindable');
+    schema.elements.EntityType.attributes.push('m:HasStream');
+    schema.elements.DataServices.attributes = ['m:DataServiceVersion', 'm:MaxDataServiceVersion'];
 
     var scriptCase = function (text) {
         /// <summary>Converts a Pascal-case identifier into a camel-case identifier.</summary>
@@ -5957,8 +6134,8 @@
         /// <param name="candidateName">XML element name to consider.</param>
         /// <returns type="Object">The schema that describes the specified element; null if not found.</returns>
 
-        if (candidateName === "Documentation") {
-            return { isArray: true, propertyName: "documentation" };
+        if (candidateName === 'Documentation') {
+            return { isArray: true, propertyName: 'documentation' };
         }
 
         var elements = parentSchema.elements;
@@ -5970,7 +6147,7 @@
         for (i = 0, len = elements.length; i < len; i++) {
             var elementName = elements[i];
             var multipleElements = false;
-            if (elementName.charAt(elementName.length - 1) === "*") {
+            if (elementName.charAt(elementName.length - 1) === '*') {
                 multipleElements = true;
                 elementName = elementName.substr(0, elementName.length - 1);
             }
@@ -5995,12 +6172,14 @@
         /// <param name="nsURI" type="String">Namespace URI to check.</param>
         /// <returns type="Boolean">true if nsURI is a known CSDL namespace; false otherwise.</returns>
 
-        return nsURI === edmNs1 ||
-               nsURI === edmNs1_1 ||
-               nsURI === edmNs1_2 ||
-               nsURI === edmNs2a ||
-               nsURI === edmNs2b ||
-               nsURI === edmNs3;
+        return (
+            nsURI === edmNs1 ||
+            nsURI === edmNs1_1 ||
+            nsURI === edmNs1_2 ||
+            nsURI === edmNs2a ||
+            nsURI === edmNs2b ||
+            nsURI === edmNs3
+        );
     };
 
     var parseConceptualModelElement = function (element) {
@@ -6027,7 +6206,6 @@
         var extensions = [];
         var attributes = elementSchema.attributes || [];
         xmlAttributes(element, function (attribute) {
-
             var localName = xmlLocalName(attribute);
             var nsURI = xmlNamespaceURI(attribute);
             var value = attribute.value;
@@ -6042,9 +6220,9 @@
             var schemaName = null;
             var handled = false;
             if (isEdmNamespace(nsURI) || nsURI === null) {
-                schemaName = "";
+                schemaName = '';
             } else if (nsURI === odataMetaXmlNs) {
-                schemaName = "m:";
+                schemaName = 'm:';
             }
 
             if (schemaName !== null) {
@@ -6112,56 +6290,54 @@
 
     odata.metadataHandler = handler(metadataParser, null, xmlMediaType, MAX_DATA_SERVICE_VERSION);
 
+    var PAYLOADTYPE_OBJECT = 'o';
+    var PAYLOADTYPE_FEED = 'f';
+    var PAYLOADTYPE_PRIMITIVE = 'p';
+    var PAYLOADTYPE_COLLECTION = 'c';
+    var PAYLOADTYPE_SVCDOC = 's';
+    var PAYLOADTYPE_LINKS = 'l';
 
+    var odataNs = 'odata';
+    var odataAnnotationPrefix = odataNs + '.';
 
-    var PAYLOADTYPE_OBJECT = "o";
-    var PAYLOADTYPE_FEED = "f";
-    var PAYLOADTYPE_PRIMITIVE = "p";
-    var PAYLOADTYPE_COLLECTION = "c";
-    var PAYLOADTYPE_SVCDOC = "s";
-    var PAYLOADTYPE_LINKS = "l";
-
-    var odataNs = "odata";
-    var odataAnnotationPrefix = odataNs + ".";
-
-    var bindAnnotation = "@" + odataAnnotationPrefix + "bind";
-    var metadataAnnotation = odataAnnotationPrefix + "metadata";
-    var navUrlAnnotation = odataAnnotationPrefix + "navigationLinkUrl";
-    var typeAnnotation = odataAnnotationPrefix + "type";
+    var bindAnnotation = '@' + odataAnnotationPrefix + 'bind';
+    var metadataAnnotation = odataAnnotationPrefix + 'metadata';
+    var navUrlAnnotation = odataAnnotationPrefix + 'navigationLinkUrl';
+    var typeAnnotation = odataAnnotationPrefix + 'type';
 
     var jsonLightNameMap = {
-        readLink: "self",
-        editLink: "edit",
-        nextLink: "__next",
-        mediaReadLink: "media_src",
-        mediaEditLink: "edit_media",
-        mediaContentType: "content_type",
-        mediaETag: "media_etag",
-        count: "__count",
-        media_src: "mediaReadLink",
-        edit_media: "mediaEditLink",
-        content_type: "mediaContentType",
-        media_etag: "mediaETag",
-        url: "uri"
+        readLink: 'self',
+        editLink: 'edit',
+        nextLink: '__next',
+        mediaReadLink: 'media_src',
+        mediaEditLink: 'edit_media',
+        mediaContentType: 'content_type',
+        mediaETag: 'media_etag',
+        count: '__count',
+        media_src: 'mediaReadLink',
+        edit_media: 'mediaEditLink',
+        content_type: 'mediaContentType',
+        media_etag: 'mediaETag',
+        url: 'uri',
     };
 
     var jsonLightAnnotations = {
-        metadata: "odata.metadata",
-        count: "odata.count",
-        next: "odata.nextLink",
-        id: "odata.id",
-        etag: "odata.etag",
-        read: "odata.readLink",
-        edit: "odata.editLink",
-        mediaRead: "odata.mediaReadLink",
-        mediaEdit: "odata.mediaEditLink",
-        mediaEtag: "odata.mediaETag",
-        mediaContentType: "odata.mediaContentType",
-        actions: "odata.actions",
-        functions: "odata.functions",
-        navigationUrl: "odata.navigationLinkUrl",
-        associationUrl: "odata.associationLinkUrl",
-        type: "odata.type"
+        metadata: 'odata.metadata',
+        count: 'odata.count',
+        next: 'odata.nextLink',
+        id: 'odata.id',
+        etag: 'odata.etag',
+        read: 'odata.readLink',
+        edit: 'odata.editLink',
+        mediaRead: 'odata.mediaReadLink',
+        mediaEdit: 'odata.mediaEditLink',
+        mediaEtag: 'odata.mediaETag',
+        mediaContentType: 'odata.mediaContentType',
+        actions: 'odata.actions',
+        functions: 'odata.functions',
+        navigationUrl: 'odata.navigationLinkUrl',
+        associationUrl: 'odata.associationLinkUrl',
+        type: 'odata.type',
     };
 
     var jsonLightAnnotationInfo = function (annotation) {
@@ -6169,15 +6345,15 @@
         /// <param name="annotation" type="String">JSON light payload annotation.</param>
         /// <returns type="Object">Object containing the annotation name and the target property name.</param>
 
-        if (annotation.indexOf(".") > 0) {
-            var targetEnd = annotation.indexOf("@");
+        if (annotation.indexOf('.') > 0) {
+            var targetEnd = annotation.indexOf('@');
             var target = targetEnd > -1 ? annotation.substring(0, targetEnd) : null;
             var name = annotation.substring(targetEnd + 1);
 
             return {
                 target: target,
                 name: name,
-                isOData: name.indexOf(odataAnnotationPrefix) === 0
+                isOData: name.indexOf(odataAnnotationPrefix) === 0,
             };
         }
         return null;
@@ -6197,11 +6373,13 @@
         /// </remarks>
         /// <returns type="String">Data item type name; null if the type name cannot be found.</returns>
 
-        return (isComplex(value) && value[typeAnnotation]) ||
-            (container && container[name + "@" + typeAnnotation]) ||
+        return (
+            (isComplex(value) && value[typeAnnotation]) ||
+            (container && container[name + '@' + typeAnnotation]) ||
             (dataItemModel && dataItemModel.type) ||
-            (lookupNavigationPropertyType(dataItemModel, model)) ||
-            null;
+            lookupNavigationPropertyType(dataItemModel, model) ||
+            null
+        );
     };
 
     var jsonLightDataItemModel = function (name, containerModel) {
@@ -6211,8 +6389,9 @@
         /// <returns type="Object">Object describing the data item; null if it cannot be found.</returns>
 
         if (containerModel) {
-            return lookupProperty(containerModel.property, name) ||
-                lookupProperty(containerModel.navigationProperty, name);
+            return (
+                lookupProperty(containerModel.property, name) || lookupProperty(containerModel.navigationProperty, name)
+            );
         }
         return null;
     };
@@ -6222,7 +6401,7 @@
         /// <param name="data" type="Object">JSON light object to test.</param>
         /// <returns type="Boolean">True if the data is JSON light entry object; false otherwise.</returns>
 
-        return isComplex(data) && ((odataAnnotationPrefix + "id") in data);
+        return isComplex(data) && odataAnnotationPrefix + 'id' in data;
     };
 
     var jsonLightIsNavigationProperty = function (name, data, dataItemModel) {
@@ -6232,7 +6411,7 @@
         /// <param name="dataItemModel" type="Object">Object describing the data item in an OData conceptual schema.</param>
         /// <returns type="Boolean">True if the data item is a navigation property; false otherwise.</returns>
 
-        if (!!data[name + "@" + navUrlAnnotation] || (dataItemModel && dataItemModel.relationship)) {
+        if (!!data[name + '@' + navUrlAnnotation] || (dataItemModel && dataItemModel.relationship)) {
             return true;
         }
 
@@ -6259,7 +6438,7 @@
         /// <returns>JSON light payload object with its annotations converted to either properties or metadata.</param>
 
         for (var name in data) {
-            if (name.indexOf(".") > 0 && name.charAt(0) !== "#") {
+            if (name.indexOf('.') > 0 && name.charAt(0) !== '#') {
                 var annotationInfo = jsonLightAnnotationInfo(name);
                 if (annotationInfo) {
                     var annotationName = annotationInfo.name;
@@ -6273,7 +6452,15 @@
                     }
 
                     if (annotationInfo.isOData) {
-                        jsonLightApplyPayloadODataAnnotation(annotationName, target, targetType, data[name], data, obj, baseURI);
+                        jsonLightApplyPayloadODataAnnotation(
+                            annotationName,
+                            target,
+                            targetType,
+                            data[name],
+                            data,
+                            obj,
+                            baseURI
+                        );
                     } else {
                         obj[name] = data[name];
                     }
@@ -6297,17 +6484,17 @@
         var annotation = name.substring(odataAnnotationPrefix.length);
 
         switch (annotation) {
-            case "navigationLinkUrl":
+            case 'navigationLinkUrl':
                 jsonLightApplyNavigationUrlAnnotation(annotation, target, targetType, value, data, obj, baseURI);
                 return;
-            case "nextLink":
-            case "count":
+            case 'nextLink':
+            case 'count':
                 jsonLightApplyFeedAnnotation(annotation, target, value, obj, baseURI);
                 return;
-            case "mediaReadLink":
-            case "mediaEditLink":
-            case "mediaContentType":
-            case "mediaETag":
+            case 'mediaReadLink':
+            case 'mediaEditLink':
+            case 'mediaContentType':
+            case 'mediaETag':
                 jsonLightApplyMediaAnnotation(annotation, target, targetType, value, obj, baseURI);
                 return;
             default:
@@ -6327,24 +6514,24 @@
         /// <param name="obj" type="Object">Object that will hold properties produced by the annotation.</param>
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the payload.</param>
 
-        var metadata = obj.__metadata = obj.__metadata || {};
+        var metadata = (obj.__metadata = obj.__metadata || {});
         var mappedName = jsonLightNameMap[name] || name;
 
-        if (name === "editLink") {
+        if (name === 'editLink') {
             metadata.uri = normalizeURI(value, baseURI);
             metadata[mappedName] = metadata.uri;
             return;
         }
 
-        if (name === "readLink" || name === "associationLinkUrl") {
+        if (name === 'readLink' || name === 'associationLinkUrl') {
             value = normalizeURI(value, baseURI);
         }
 
         if (target) {
-            var propertiesMetadata = metadata.properties = metadata.properties || {};
-            var propertyMetadata = propertiesMetadata[target] = propertiesMetadata[target] || {};
+            var propertiesMetadata = (metadata.properties = metadata.properties || {});
+            var propertyMetadata = (propertiesMetadata[target] = propertiesMetadata[target] || {});
 
-            if (name === "type") {
+            if (name === 'type') {
                 propertyMetadata[mappedName] = propertyMetadata[mappedName] || value;
                 return;
             }
@@ -6367,7 +6554,7 @@
 
         var mappedName = jsonLightNameMap[name];
         var feed = target ? obj[target] : obj;
-        feed[mappedName] = (name === "nextLink") ? normalizeURI(value, baseURI) : value;
+        feed[mappedName] = name === 'nextLink' ? normalizeURI(value, baseURI) : value;
     };
 
     var jsonLightApplyMediaAnnotation = function (name, target, targetType, value, obj, baseURI) {
@@ -6382,16 +6569,16 @@
         /// <param name="obj" type="Object">Object that will hold properties produced by the annotation.</param>
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the payload.</param>
 
-        var metadata = obj.__metadata = obj.__metadata || {};
+        var metadata = (obj.__metadata = obj.__metadata || {});
         var mappedName = jsonLightNameMap[name];
 
-        if (name === "mediaReadLink" || name === "mediaEditLink") {
+        if (name === 'mediaReadLink' || name === 'mediaEditLink') {
             value = normalizeURI(value, baseURI);
         }
 
         if (target) {
-            var propertiesMetadata = metadata.properties = metadata.properties || {};
-            var propertyMetadata = propertiesMetadata[target] = propertiesMetadata[target] || {};
+            var propertiesMetadata = (metadata.properties = metadata.properties || {});
+            var propertyMetadata = (propertiesMetadata[target] = propertiesMetadata[target] || {});
             propertyMetadata.type = propertyMetadata.type || targetType;
 
             obj.__metadata = metadata;
@@ -6416,9 +6603,9 @@
         /// <param name="obj" type="Object">Object that will hold properties produced by the annotation.</param>
         /// <param name="baseURI" type="String">Base URI for normalizing relative URIs found in the payload.</param>
 
-        var metadata = obj.__metadata = obj.__metadata || {};
-        var propertiesMetadata = metadata.properties = metadata.properties || {};
-        var propertyMetadata = propertiesMetadata[target] = propertiesMetadata[target] || {};
+        var metadata = (obj.__metadata = obj.__metadata || {});
+        var propertiesMetadata = (metadata.properties = metadata.properties || {});
+        var propertyMetadata = (propertiesMetadata[target] = propertiesMetadata[target] || {});
         var uri = normalizeURI(value, baseURI);
 
         if (data.hasOwnProperty(target)) {
@@ -6428,12 +6615,19 @@
             propertyMetadata.navigationLinkUrl = uri;
             return;
         }
-        obj[target] = { __deferred: { uri: uri} };
+        obj[target] = { __deferred: { uri: uri } };
         propertyMetadata.type = propertyMetadata.type || targetType;
     };
 
-
-    var jsonLightReadDataItemValue = function (value, typeName, dataItemMetadata, baseURI, dataItemModel, model, recognizeDates) {
+    var jsonLightReadDataItemValue = function (
+        value,
+        typeName,
+        dataItemMetadata,
+        baseURI,
+        dataItemModel,
+        model,
+        recognizeDates
+    ) {
         /// <summary>Converts the value of a data item in a JSON light object to its library representation.</summary>
         /// <param name="value">Data item value to convert.</param>
         /// <param name="typeName" type="String">Type name of the data item.</param>
@@ -6444,17 +6638,31 @@
         /// <param name="recognizeDates" type="Boolean" optional="true">Flag indicating whether datetime literal strings should be converted to JavaScript Date objects.</param>
         /// <returns>Data item value in its library representation.</param>
 
-        if (typeof value === "string") {
+        if (typeof value === 'string') {
             return jsonLightReadStringPropertyValue(value, typeName, recognizeDates);
         }
 
         if (!jsonLightIsPrimitiveType(typeName)) {
             if (isArray(value)) {
-                return jsonLightReadCollectionPropertyValue(value, typeName, dataItemMetadata, baseURI, model, recognizeDates);
+                return jsonLightReadCollectionPropertyValue(
+                    value,
+                    typeName,
+                    dataItemMetadata,
+                    baseURI,
+                    model,
+                    recognizeDates
+                );
             }
 
             if (isComplex(value)) {
-                return jsonLightReadComplexPropertyValue(value, typeName, dataItemMetadata, baseURI, model, recognizeDates);
+                return jsonLightReadComplexPropertyValue(
+                    value,
+                    typeName,
+                    dataItemMetadata,
+                    baseURI,
+                    model,
+                    recognizeDates
+                );
             }
         }
         return value;
@@ -6471,20 +6679,27 @@
             case EDM_TIME:
                 return parseDuration(value);
             case EDM_DATETIME:
-                return parseDateTime(value, /*nullOnError*/false);
+                return parseDateTime(value, /*nullOnError*/ false);
             case EDM_DATETIMEOFFSET:
-                return parseDateTimeOffset(value, /*nullOnError*/false);
+                return parseDateTimeOffset(value, /*nullOnError*/ false);
         }
 
         if (recognizeDates) {
-            return parseDateTime(value, /*nullOnError*/true) ||
-                   parseDateTimeOffset(value, /*nullOnError*/true) ||
-                   value;
+            return (
+                parseDateTime(value, /*nullOnError*/ true) || parseDateTimeOffset(value, /*nullOnError*/ true) || value
+            );
         }
         return value;
     };
 
-    var jsonLightReadCollectionPropertyValue = function (value, propertyType, propertyMetadata, baseURI, model, recognizeDates) {
+    var jsonLightReadCollectionPropertyValue = function (
+        value,
+        propertyType,
+        propertyMetadata,
+        baseURI,
+        model,
+        recognizeDates
+    ) {
         /// <summary>Converts the value of a collection property in a JSON light object into its library representation.</summary>
         /// <param name="value" type="Array">Collection property value to convert.</param>
         /// <param name="propertyType" type="String">Property type name.</param>
@@ -6502,7 +6717,15 @@
         for (i = 0, len = value.length; i < len; i++) {
             var itemType = jsonLightDataItemType(null, value[i]) || collectionType;
             var itemMetadata = { type: itemType };
-            var item = jsonLightReadDataItemValue(value[i], itemType, itemMetadata, baseURI, null, model, recognizeDates);
+            var item = jsonLightReadDataItemValue(
+                value[i],
+                itemType,
+                itemMetadata,
+                baseURI,
+                null,
+                model,
+                recognizeDates
+            );
 
             if (!jsonLightIsPrimitiveType(itemType) && !isPrimitive(value[i])) {
                 itemsMetadata.push(itemMetadata);
@@ -6517,7 +6740,14 @@
         return { __metadata: { type: propertyType }, results: items };
     };
 
-    var jsonLightReadComplexPropertyValue = function (value, propertyType, propertyMetadata, baseURI, model, recognizeDates) {
+    var jsonLightReadComplexPropertyValue = function (
+        value,
+        propertyType,
+        propertyMetadata,
+        baseURI,
+        model,
+        recognizeDates
+    ) {
         /// <summary>Converts the value of a comples property in a JSON light object into its library representation.</summary>
         /// <param name="value" type="Object">Complex property value to convert.</param>
         /// <param name="propertyType" type="String">Property type name.</param>
@@ -6579,8 +6809,8 @@
         var obj = { __metadata: metadata };
         var propertiesMetadata = {};
         var baseTypeModel;
-        if (isEntry && dataModel && objectInfo.entitySet && objectInfo.contentTypeOdata == "minimalmetadata") {
-            var serviceURI = baseURI.substring(0, baseURI.lastIndexOf("$metadata"));
+        if (isEntry && dataModel && objectInfo.entitySet && objectInfo.contentTypeOdata == 'minimalmetadata') {
+            var serviceURI = baseURI.substring(0, baseURI.lastIndexOf('$metadata'));
             baseTypeModel = null; // check if the key model is in a parent type.
             if (!dataModel.key) {
                 baseTypeModel = dataModel;
@@ -6601,7 +6831,7 @@
                         key: entryKey,
                         entitySet: objectInfo.entitySet,
                         functionImport: objectInfo.functionImport,
-                        containerName: objectInfo.containerName
+                        containerName: objectInfo.containerName,
                     };
                     jsonLightComputeUrisIfMissing(data, entryInfo, actualType, serviceURI, dataModel, baseTypeModel);
                 }
@@ -6609,18 +6839,18 @@
         }
 
         for (var name in data) {
-            if (name.indexOf("#") === 0) {
+            if (name.indexOf('#') === 0) {
                 // This is an advertised function or action.
                 jsonLightReadAdvertisedFunctionOrAction(name.substring(1), data[name], obj, baseURI, model);
             } else {
                 // Is name NOT an annotation?
-                if (name.indexOf(".") === -1) {
+                if (name.indexOf('.') === -1) {
                     if (!metadata.properties) {
                         metadata.properties = propertiesMetadata;
                     }
 
                     var propertyValue = data[name];
-                    var propertyModel = propertyModel = jsonLightDataItemModel(name, dataModel);
+                    var propertyModel = (propertyModel = jsonLightDataItemModel(name, dataModel));
                     baseTypeModel = dataModel;
                     while (!!dataModel && propertyModel === null && baseTypeModel.baseType) {
                         baseTypeModel = lookupEntityType(baseTypeModel.baseType, model);
@@ -6628,19 +6858,39 @@
                     }
                     var isNavigationProperty = jsonLightIsNavigationProperty(name, data, propertyModel);
                     var propertyType = jsonLightDataItemType(name, propertyValue, data, propertyModel, model);
-                    var propertyMetadata = propertiesMetadata[name] = propertiesMetadata[name] || { type: propertyType };
+                    var propertyMetadata = (propertiesMetadata[name] = propertiesMetadata[name] || {
+                        type: propertyType,
+                    });
                     if (isNavigationProperty) {
                         var propertyInfo = {};
                         if (objectInfo.entitySet !== undefined) {
-                            var navigationPropertyEntitySetName = lookupNavigationPropertyEntitySet(propertyModel, objectInfo.entitySet.name, model);
+                            var navigationPropertyEntitySetName = lookupNavigationPropertyEntitySet(
+                                propertyModel,
+                                objectInfo.entitySet.name,
+                                model
+                            );
                             propertyInfo = getEntitySetInfo(navigationPropertyEntitySetName, model);
                         }
                         propertyInfo.contentTypeOdata = objectInfo.contentTypeOdata;
                         propertyInfo.kind = objectInfo.kind;
                         propertyInfo.type = propertyType;
-                        obj[name] = jsonLightReadNavigationPropertyValue(propertyValue, propertyInfo, baseURI, model, recognizeDates);
+                        obj[name] = jsonLightReadNavigationPropertyValue(
+                            propertyValue,
+                            propertyInfo,
+                            baseURI,
+                            model,
+                            recognizeDates
+                        );
                     } else {
-                        obj[name] = jsonLightReadDataItemValue(propertyValue, propertyType, propertyMetadata, baseURI, propertyModel, model, recognizeDates);
+                        obj[name] = jsonLightReadDataItemValue(
+                            propertyValue,
+                            propertyType,
+                            propertyMetadata,
+                            baseURI,
+                            propertyModel,
+                            model,
+                            recognizeDates
+                        );
                     }
                 }
             }
@@ -6664,18 +6914,19 @@
         ///     as an advertised action and stored under obj.__metadata.actions.
         /// </remarks>
 
-        if (!name || !isArray(value) && !isComplex(value)) {
+        if (!name || (!isArray(value) && !isComplex(value))) {
             return;
         }
 
         var isFunction = false;
-        var nsEnd = name.lastIndexOf(".");
+        var nsEnd = name.lastIndexOf('.');
         var simpleName = name.substring(nsEnd + 1);
-        var containerName = (nsEnd > -1) ? name.substring(0, nsEnd) : "";
+        var containerName = nsEnd > -1 ? name.substring(0, nsEnd) : '';
 
-        var container = (simpleName === name || containerName.indexOf(".") === -1) ?
-            lookupDefaultEntityContainer(model) :
-            lookupEntityContainer(containerName, model);
+        var container =
+            simpleName === name || containerName.indexOf('.') === -1
+                ? lookupDefaultEntityContainer(model)
+                : lookupEntityContainer(containerName, model);
 
         if (container) {
             var functionImport = lookupFunctionImport(container.functionImport, simpleName);
@@ -6685,16 +6936,20 @@
         }
 
         var metadata = obj.__metadata;
-        var targetName = isFunction ? "functions" : "actions";
+        var targetName = isFunction ? 'functions' : 'actions';
         var metadataURI = normalizeURI(name, baseURI);
-        var items = (isArray(value)) ? value : [value];
+        var items = isArray(value) ? value : [value];
 
         var i, len;
         for (i = 0, len = items.length; i < len; i++) {
             var item = items[i];
             if (item) {
-                var targetCollection = metadata[targetName] = metadata[targetName] || [];
-                var actionOrFunction = { metadata: metadataURI, title: item.title, target: normalizeURI(item.target, baseURI) };
+                var targetCollection = (metadata[targetName] = metadata[targetName] || []);
+                var actionOrFunction = {
+                    metadata: metadataURI,
+                    title: item.title,
+                    target: normalizeURI(item.target, baseURI),
+                };
                 targetCollection.push(actionOrFunction);
             }
         }
@@ -6721,7 +6976,7 @@
 
         if (isComplex(data)) {
             for (var name in data) {
-                if (name.indexOf("#") === 0) {
+                if (name.indexOf('#') === 0) {
                     // This is an advertised function or action.
                     feed.__metadata = feed.__metadata || {};
                     jsonLightReadAdvertisedFunctionOrAction(name.substring(1), data[name], feed, baseURI, model);
@@ -6741,7 +6996,7 @@
         var entityInstanceKey;
         var entityKeys = entityModel.key.propertyRef;
         var type;
-        entityInstanceKey = "(";
+        entityInstanceKey = '(';
         if (entityKeys.length == 1) {
             type = lookupProperty(entityModel.property, entityKeys[0].name).type;
             entityInstanceKey += formatLiteral(data[entityKeys[0].name], type);
@@ -6749,18 +7004,17 @@
             var first = true;
             for (var i = 0; i < entityKeys.length; i++) {
                 if (!first) {
-                    entityInstanceKey += ",";
+                    entityInstanceKey += ',';
                 } else {
                     first = false;
                 }
                 type = lookupProperty(entityModel.property, entityKeys[i].name).type;
-                entityInstanceKey += entityKeys[i].name + "=" + formatLiteral(data[entityKeys[i].name], type);
+                entityInstanceKey += entityKeys[i].name + '=' + formatLiteral(data[entityKeys[i].name], type);
             }
         }
-        entityInstanceKey += ")";
+        entityInstanceKey += ')';
         return entityInstanceKey;
     };
-
 
     var jsonLightComputeUrisIfMissing = function (data, entryInfo, actualType, serviceURI, entityModel, baseTypeModel) {
         /// <summary>Compute the URI according to OData conventions if it doesn't exist</summary>
@@ -6771,18 +7025,22 @@
         /// <param name="entityModel" type="Object">Object describing an OData conceptual schema of the entry.</param>
         /// <param name="baseTypeModel" type="Object" optional="true">Object escribing an OData conceptual schema of the baseType if it exists.</param>
 
-        var lastIdSegment = data[jsonLightAnnotations.id] || data[jsonLightAnnotations.read] || data[jsonLightAnnotations.edit] || entryInfo.entitySet.name + entryInfo.key;
+        var lastIdSegment =
+            data[jsonLightAnnotations.id] ||
+            data[jsonLightAnnotations.read] ||
+            data[jsonLightAnnotations.edit] ||
+            entryInfo.entitySet.name + entryInfo.key;
         data[jsonLightAnnotations.id] = serviceURI + lastIdSegment;
         if (!data[jsonLightAnnotations.edit]) {
             data[jsonLightAnnotations.edit] = entryInfo.entitySet.name + entryInfo.key;
             if (entryInfo.entitySet.entityType != actualType) {
-                data[jsonLightAnnotations.edit] += "/" + actualType;
+                data[jsonLightAnnotations.edit] += '/' + actualType;
             }
         }
         data[jsonLightAnnotations.read] = data[jsonLightAnnotations.read] || data[jsonLightAnnotations.edit];
         if (!data[jsonLightAnnotations.etag]) {
             var etag = jsonLightComputeETag(data, entityModel, baseTypeModel);
-            if (!!etag) {
+            if (etag) {
                 data[jsonLightAnnotations.etag] = etag;
             }
         }
@@ -6798,12 +7056,11 @@
         /// <param name="entryInfo" type="Object">Object describing the entry model.</param>
         /// <param name="baseTypeModel" type="Object"  optional="true">Object describing an OData conceptual schema of the baseType if it exists.</param>
         /// <returns type="string">Etag value</returns>
-        var etag = "";
+        var etag = '';
         var propertyModel;
         for (var i = 0; entityModel.property && i < entityModel.property.length; i++) {
             propertyModel = entityModel.property[i];
             etag = jsonLightAppendValueToEtag(data, etag, propertyModel);
-
         }
         if (baseTypeModel) {
             for (i = 0; baseTypeModel.property && i < baseTypeModel.property.length; i++) {
@@ -6812,7 +7069,7 @@
             }
         }
         if (etag.length > 0) {
-            return etag + "\"";
+            return etag + '"';
         }
         return null;
     };
@@ -6824,16 +7081,16 @@
         /// <param name="propertyModel" type="Object">Object describing an OData conceptual schema of the property.</param>
         /// <returns type="string">Etag value</returns>
 
-        if (propertyModel.concurrencyMode == "Fixed") {
+        if (propertyModel.concurrencyMode == 'Fixed') {
             if (etag.length > 0) {
-                etag += ",";
+                etag += ',';
             } else {
-                etag += "W/\"";
+                etag += 'W/"';
             }
             if (data[propertyModel.name] !== null) {
                 etag += formatLiteral(data[propertyModel.name], propertyModel.type);
             } else {
-                etag += "null";
+                etag += 'null';
             }
         }
         return etag;
@@ -6845,18 +7102,20 @@
         /// <param name="entityModel" type="Object">Object describing the entry model.</param>
         /// <param name="baseTypeModel" type="Object"  optional="true">Object describing an OData conceptual schema of the baseType if it exists.</param>
 
-        var navigationLinkAnnotation = "@odata.navigationLinkUrl";
-        var associationLinkAnnotation = "@odata.associationLinkUrl";
+        var navigationLinkAnnotation = '@odata.navigationLinkUrl';
+        var associationLinkAnnotation = '@odata.associationLinkUrl';
         var navigationPropertyName, navigationPropertyAnnotation, associationPropertyAnnotation;
         for (var i = 0; entityModel.navigationProperty && i < entityModel.navigationProperty.length; i++) {
             navigationPropertyName = entityModel.navigationProperty[i].name;
             navigationPropertyAnnotation = navigationPropertyName + navigationLinkAnnotation;
             if (data[navigationPropertyAnnotation] === undefined) {
-                data[navigationPropertyAnnotation] = data[jsonLightAnnotations.edit] + "/" + encodeURIComponent(navigationPropertyName);
+                data[navigationPropertyAnnotation] =
+                    data[jsonLightAnnotations.edit] + '/' + encodeURIComponent(navigationPropertyName);
             }
             associationPropertyAnnotation = navigationPropertyName + associationLinkAnnotation;
             if (data[associationPropertyAnnotation] === undefined) {
-                data[associationPropertyAnnotation] = data[jsonLightAnnotations.edit] + "/$links/" + encodeURIComponent(navigationPropertyName);
+                data[associationPropertyAnnotation] =
+                    data[jsonLightAnnotations.edit] + '/$links/' + encodeURIComponent(navigationPropertyName);
             }
         }
 
@@ -6865,11 +7124,13 @@
                 navigationPropertyName = baseTypeModel.navigationProperty[i].name;
                 navigationPropertyAnnotation = navigationPropertyName + navigationLinkAnnotation;
                 if (data[navigationPropertyAnnotation] === undefined) {
-                    data[navigationPropertyAnnotation] = data[jsonLightAnnotations.edit] + "/" + encodeURIComponent(navigationPropertyName);
+                    data[navigationPropertyAnnotation] =
+                        data[jsonLightAnnotations.edit] + '/' + encodeURIComponent(navigationPropertyName);
                 }
                 associationPropertyAnnotation = navigationPropertyName + associationLinkAnnotation;
                 if (data[associationPropertyAnnotation] === undefined) {
-                    data[associationPropertyAnnotation] = data[jsonLightAnnotations.edit] + "/$links/" + encodeURIComponent(navigationPropertyName);
+                    data[associationPropertyAnnotation] =
+                        data[jsonLightAnnotations.edit] + '/$links/' + encodeURIComponent(navigationPropertyName);
                 }
             }
         }
@@ -6881,42 +7142,41 @@
         /// <param name="type">Edm type of the value</param>
         /// <returns type="string">Value after formatting</returns>
 
-        value = "" + formatRowLiteral(value, type);
+        value = '' + formatRowLiteral(value, type);
         value = encodeURIComponent(value.replace(/'/g, "''"));
-        switch ((type)) {
-            case "Edm.Binary":
+        switch (type) {
+            case 'Edm.Binary':
                 return "X'" + value + "'";
-            case "Edm.DateTime":
-                return "datetime" + "'" + value + "'";
-            case "Edm.DateTimeOffset":
-                return "datetimeoffset" + "'" + value + "'";
-            case "Edm.Decimal":
-                return value + "M";
-            case "Edm.Guid":
-                return "guid" + "'" + value + "'";
-            case "Edm.Int64":
-                return value + "L";
-            case "Edm.Float":
-                return value + "f";
-            case "Edm.Double":
-                return value + "D";
-            case "Edm.Geography":
-                return "geography" + "'" + value + "'";
-            case "Edm.Geometry":
-                return "geometry" + "'" + value + "'";
-            case "Edm.Time":
-                return "time" + "'" + value + "'";
-            case "Edm.String":
+            case 'Edm.DateTime':
+                return 'datetime' + "'" + value + "'";
+            case 'Edm.DateTimeOffset':
+                return 'datetimeoffset' + "'" + value + "'";
+            case 'Edm.Decimal':
+                return value + 'M';
+            case 'Edm.Guid':
+                return 'guid' + "'" + value + "'";
+            case 'Edm.Int64':
+                return value + 'L';
+            case 'Edm.Float':
+                return value + 'f';
+            case 'Edm.Double':
+                return value + 'D';
+            case 'Edm.Geography':
+                return 'geography' + "'" + value + "'";
+            case 'Edm.Geometry':
+                return 'geometry' + "'" + value + "'";
+            case 'Edm.Time':
+                return 'time' + "'" + value + "'";
+            case 'Edm.String':
                 return "'" + value + "'";
             default:
                 return value;
         }
     };
 
-
     var formatRowLiteral = function (value, type) {
         switch (type) {
-            case "Edm.Binary":
+            case 'Edm.Binary':
                 return convertByteArrayToHexString(value);
             default:
                 return value;
@@ -6930,12 +7190,16 @@
 
         var functionImport = entryInfo.functionImport || [];
         for (var i = 0; i < functionImport.length; i++) {
-            if (functionImport[i].isBindable && functionImport[i].parameter[0] && functionImport[i].parameter[0].type == entryInfo.entitySet.entityType) {
-                var functionImportAnnotation = "#" + entryInfo.containerName + "." + functionImport[i].name;
+            if (
+                functionImport[i].isBindable &&
+                functionImport[i].parameter[0] &&
+                functionImport[i].parameter[0].type == entryInfo.entitySet.entityType
+            ) {
+                var functionImportAnnotation = '#' + entryInfo.containerName + '.' + functionImport[i].name;
                 if (data[functionImportAnnotation] == undefined) {
                     data[functionImportAnnotation] = {
                         title: functionImport[i].name,
-                        target: data[jsonLightAnnotations.edit] + "/" + functionImport[i].name
+                        target: data[jsonLightAnnotations.edit] + '/' + functionImport[i].name,
                     };
                 }
             }
@@ -6949,8 +7213,10 @@
         /// <param name="baseTypeModel" type="Object"  optional="true">Object describing an OData conceptual schema of the baseType if it exists.</param>
 
         if (entityModel.hasStream || (baseTypeModel && baseTypeModel.hasStream)) {
-            data[jsonLightAnnotations.mediaEdit] = data[jsonLightAnnotations.mediaEdit] || data[jsonLightAnnotations.mediaEdit] + "/$value";
-            data[jsonLightAnnotations.mediaRead] = data[jsonLightAnnotations.mediaRead] || data[jsonLightAnnotations.mediaEdit];
+            data[jsonLightAnnotations.mediaEdit] =
+                data[jsonLightAnnotations.mediaEdit] || data[jsonLightAnnotations.mediaEdit] + '/$value';
+            data[jsonLightAnnotations.mediaRead] =
+                data[jsonLightAnnotations.mediaRead] || data[jsonLightAnnotations.mediaEdit];
         }
     };
 
@@ -6977,7 +7243,14 @@
         /// <returns type="Object">Top level collection property object.</param>
 
         var propertyMetadata = {};
-        var value = jsonLightReadCollectionPropertyValue(data.value, typeName, propertyMetadata, baseURI, model, recognizeDates);
+        var value = jsonLightReadCollectionPropertyValue(
+            data.value,
+            typeName,
+            propertyMetadata,
+            baseURI,
+            model,
+            recognizeDates
+        );
         extend(value.__metadata, propertyMetadata);
         return jsonLightReadDataAnnotations(data, value, baseURI);
     };
@@ -7016,7 +7289,7 @@
         var metadataProperties = metadata.properties || {};
 
         jsonLightRemoveTypePropertyMetadata(metadataProperties.url);
-        renameProperty(metadataProperties, "url", "uri");
+        renameProperty(metadataProperties, 'url', 'uri');
 
         return link;
     };
@@ -7044,7 +7317,7 @@
         var metadataProperties = metadata.properties || {};
 
         jsonLightRemoveTypePropertyMetadata(metadataProperties.value);
-        renameProperty(metadataProperties, "value", "collections");
+        renameProperty(metadataProperties, 'value', 'collections');
 
         var i, len;
         for (i = 0, len = items.length; i < len; i++) {
@@ -7058,8 +7331,8 @@
             jsonLightRemoveTypePropertyMetadata(metadataProperties.name);
             jsonLightRemoveTypePropertyMetadata(metadataProperties.url);
 
-            renameProperty(metadataProperties, "name", "title");
-            renameProperty(metadataProperties, "url", "href");
+            renameProperty(metadataProperties, 'name', 'title');
+            renameProperty(metadataProperties, 'url', 'href');
 
             collections.push(collection);
         }
@@ -7095,31 +7368,31 @@
         /// </returns>
 
         var metadataUri = data[metadataAnnotation];
-        if (!metadataUri || typeof metadataUri !== "string") {
+        if (!metadataUri || typeof metadataUri !== 'string') {
             return null;
         }
 
-        var fragmentStart = metadataUri.lastIndexOf("#");
+        var fragmentStart = metadataUri.lastIndexOf('#');
         if (fragmentStart === -1) {
             return jsonLightMakePayloadInfo(PAYLOADTYPE_SVCDOC);
         }
 
-        var elementStart = metadataUri.indexOf("@Element", fragmentStart);
+        var elementStart = metadataUri.indexOf('@Element', fragmentStart);
         var fragmentEnd = elementStart - 1;
 
         if (fragmentEnd < 0) {
-            fragmentEnd = metadataUri.indexOf("?", fragmentStart);
+            fragmentEnd = metadataUri.indexOf('?', fragmentStart);
             if (fragmentEnd === -1) {
                 fragmentEnd = metadataUri.length;
             }
         }
 
         var fragment = decodeURIComponent(metadataUri.substring(fragmentStart + 1, fragmentEnd));
-        if (fragment.indexOf("/$links/") > 0) {
+        if (fragment.indexOf('/$links/') > 0) {
             return jsonLightMakePayloadInfo(PAYLOADTYPE_LINKS);
         }
 
-        var fragmentParts = fragment.split("/");
+        var fragmentParts = fragment.split('/');
         if (fragmentParts.length >= 0) {
             var qualifiedName = fragmentParts[0];
             var typeCast = fragmentParts[1];
@@ -7135,17 +7408,18 @@
             var entityType = typeCast;
             var entitySet, functionImport, containerName;
             if (!typeCast) {
-                var nsEnd = qualifiedName.lastIndexOf(".");
+                var nsEnd = qualifiedName.lastIndexOf('.');
                 var simpleName = qualifiedName.substring(nsEnd + 1);
-                var container = (simpleName === qualifiedName) ?
-                    lookupDefaultEntityContainer(model) :
-                    lookupEntityContainer(qualifiedName.substring(0, nsEnd), model);
+                var container =
+                    simpleName === qualifiedName
+                        ? lookupDefaultEntityContainer(model)
+                        : lookupEntityContainer(qualifiedName.substring(0, nsEnd), model);
 
                 if (container) {
                     entitySet = lookupEntitySet(container.entitySet, simpleName);
                     functionImport = container.functionImport;
                     containerName = container.name;
-                    entityType = !!entitySet ? entitySet.entityType : null;
+                    entityType = entitySet ? entitySet.entityType : null;
                 }
             }
 
@@ -7194,7 +7468,7 @@
             return data;
         }
 
-        contentTypeOdata = contentTypeOdata || "minimalmetadata";
+        contentTypeOdata = contentTypeOdata || 'minimalmetadata';
         var baseURI = data[metadataAnnotation];
         var payloadInfo = jsonLightPayloadInfo(data, model, inferFeedAsComplexType);
         if (assigned(payloadInfo)) {
@@ -7221,7 +7495,7 @@
         return jsonLightReadObject(data, payloadInfo, baseURI, model, recognizeDates);
     };
 
-    var jsonLightSerializableMetadata = ["type", "etag", "media_src", "edit_media", "content_type", "media_etag"];
+    var jsonLightSerializableMetadata = ['type', 'etag', 'media_src', 'edit_media', 'content_type', 'media_etag'];
 
     var formatJsonLight = function (obj, context) {
         /// <summary>Converts an object in the library's internal representation to its json light representation.</summary>
@@ -7235,7 +7509,7 @@
         var metadata = obj.__metadata;
 
         var islinks = context && linksUriRE.test(context.request.requestUri);
-        formatJsonLightData(obj, (metadata && metadata.properties), data, islinks);
+        formatJsonLightData(obj, metadata && metadata.properties, data, islinks);
         return data;
     };
 
@@ -7264,12 +7538,12 @@
 
         for (var key in obj) {
             var value = obj[key];
-            if (key === "__metadata") {
+            if (key === '__metadata') {
                 // key is the object metadata.
                 formatJsonLightMetadata(value, data);
-            } else if (key.indexOf(".") === -1) {
+            } else if (key.indexOf('.') === -1) {
                 // key is an regular property or array element.
-                if (isLinks && key === "uri") {
+                if (isLinks && key === 'uri') {
                     formatJsonLightEntityLink(value, data);
                 } else {
                     formatJsonLightProperty(key, value, pMetadata, data, isLinks);
@@ -7288,7 +7562,7 @@
         /// <param name="data" type="Object">Object on which the formatted value is going to be stored.</param>
 
         // Get property type from property metadata
-        var propertyMetadata = pMetadata && pMetadata[name] || { properties: undefined, type: undefined };
+        var propertyMetadata = (pMetadata && pMetadata[name]) || { properties: undefined, type: undefined };
         var typeName = dataItemTypeName(value, propertyMetadata);
 
         if (isPrimitive(value) || !value) {
@@ -7317,7 +7591,6 @@
             formatJsonLightCollectionProperty(name, value, data);
             return;
         }
-
 
         // Format the complex property value in a new object in data[name].
         data[name] = {};
@@ -7419,18 +7692,15 @@
         /// <param name="data" type="Object">Object on which the annotation is going to be stored.</param>
 
         if (value !== undefined) {
-            if(target) {
-                data[target + "@" + qName] = value;
-            }
-            else {
+            if (target) {
+                data[target + '@' + qName] = value;
+            } else {
                 data[qName] = value;
             }
         }
     };
 
-
-
-    var jsonMediaType = "application/json";
+    var jsonMediaType = 'application/json';
     var jsonContentType = contentType(jsonMediaType);
 
     var jsonReadAdvertisedActionsOrFunctions = function (value) {
@@ -7458,7 +7728,7 @@
         /// </param>
         /// <returns type="Object">Transformed data.</returns>
 
-        if (value && typeof value === "object") {
+        if (value && typeof value === 'object') {
             var dataTypeName;
             var valueMetadata = value.__metadata;
 
@@ -7483,15 +7753,15 @@
                         var propertyName = property.name;
                         propertyValue = value[propertyName];
 
-                        if (property.type === "Edm.DateTime" || property.type === "Edm.DateTimeOffset") {
+                        if (property.type === 'Edm.DateTime' || property.type === 'Edm.DateTimeOffset') {
                             if (propertyValue) {
                                 propertyValue = dateParser(propertyValue);
                                 if (!propertyValue) {
-                                    throw { message: "Invalid date/time value" };
+                                    throw { message: 'Invalid date/time value' };
                                 }
                                 value[propertyName] = propertyValue;
                             }
-                        } else if (property.type === "Edm.Time") {
+                        } else if (property.type === 'Edm.Time') {
                             value[propertyName] = parseDuration(propertyValue);
                         }
                     }
@@ -7499,7 +7769,7 @@
             } else if (recognizeDates) {
                 for (var name in value) {
                     propertyValue = value[name];
-                    if (typeof propertyValue === "string") {
+                    if (typeof propertyValue === 'string') {
                         value[name] = dateParser(propertyValue) || propertyValue;
                     }
                 }
@@ -7515,7 +7785,7 @@
 
         if (contentType) {
             var odata = contentType.properties.odata;
-            return odata === "nometadata" || odata === "minimalmetadata" || odata === "fullmetadata";
+            return odata === 'nometadata' || odata === 'minimalmetadata' || odata === 'fullmetadata';
         }
         return false;
     };
@@ -7532,7 +7802,7 @@
             var title = data.EntitySets[i];
             var collection = {
                 title: title,
-                href: normalizeURI(title, baseURI)
+                href: normalizeURI(title, baseURI),
             };
 
             workspace.collections.push(collection);
@@ -7560,16 +7830,16 @@
 
         var sign;
         if (minutes < 0) {
-            sign = "-";
+            sign = '-';
             minutes = -minutes;
         } else {
-            sign = "+";
+            sign = '+';
         }
 
         var hours = Math.floor(minutes / 60);
-        minutes = minutes - (60 * hours);
+        minutes = minutes - 60 * hours;
 
-        return sign + formatNumberWidth(hours, 2) + ":" + formatNumberWidth(minutes, 2);
+        return sign + formatNumberWidth(hours, 2) + ':' + formatNumberWidth(minutes, 2);
     };
 
     var parseJsonDateString = function (value) {
@@ -7583,7 +7853,7 @@
             var result = new Date(parseInt10(arr[1]));
             if (arr[2]) {
                 var mins = parseInt10(arr[3]);
-                if (arr[2] === "-") {
+                if (arr[2] === '-') {
                     mins = -mins;
                 }
 
@@ -7591,7 +7861,7 @@
                 // what the API will eventually have.
                 var current = result.getUTCMinutes();
                 result.setUTCMinutes(current - mins);
-                result.__edmType = "Edm.DateTimeOffset";
+                result.__edmType = 'Edm.DateTimeOffset';
                 result.__offset = minutesToOffset(mins);
             }
             if (!isNaN(result.valueOf())) {
@@ -7616,15 +7886,24 @@
         /// <returns>An object representation of the OData payload.</returns>
 
         var recognizeDates = defined(context.recognizeDates, handler.recognizeDates);
-        var inferJsonLightFeedAsObject = defined(context.inferJsonLightFeedAsObject, handler.inferJsonLightFeedAsObject);
+        var inferJsonLightFeedAsObject = defined(
+            context.inferJsonLightFeedAsObject,
+            handler.inferJsonLightFeedAsObject
+        );
         var model = context.metadata;
         var dataServiceVersion = context.dataServiceVersion;
         var dateParser = parseJsonDateString;
-        var json = (typeof text === "string" && text) ? window.JSON.parse(text) : text;
+        var json = typeof text === 'string' && text ? window.JSON.parse(text) : text;
 
-        if ((maxVersion("3.0", dataServiceVersion) === dataServiceVersion)) {
+        if (maxVersion('3.0', dataServiceVersion) === dataServiceVersion) {
             if (isJsonLight(context.contentType)) {
-                return jsonLightReadPayload(json, model, recognizeDates, inferJsonLightFeedAsObject, context.contentType.properties.odata);
+                return jsonLightReadPayload(
+                    json,
+                    model,
+                    recognizeDates,
+                    inferJsonLightFeedAsObject,
+                    context.contentType.properties.odata
+                );
             }
             dateParser = parseDateTime;
         }
@@ -7665,19 +7944,19 @@
         /// <param name="context" type="Object">Object with serialization context.</param>
         /// <returns type="String">The string representation of data.</returns>
 
-        var dataServiceVersion = context.dataServiceVersion || "1.0";
+        var dataServiceVersion = context.dataServiceVersion || '1.0';
         var useJsonLight = defined(context.useJsonLight, handler.useJsonLight);
-        var cType = context.contentType = context.contentType || jsonContentType;
+        var cType = (context.contentType = context.contentType || jsonContentType);
 
         if (cType && cType.mediaType === jsonContentType.mediaType) {
             var json = data;
             if (useJsonLight || isJsonLight(cType)) {
-                context.dataServiceVersion = maxVersion(dataServiceVersion, "3.0");
+                context.dataServiceVersion = maxVersion(dataServiceVersion, '3.0');
                 json = formatJsonLight(data, context);
                 return jsonToString(json);
             }
-            if (maxVersion("3.0", dataServiceVersion) === dataServiceVersion) {
-                cType.properties.odata = "verbose";
+            if (maxVersion('3.0', dataServiceVersion) === dataServiceVersion) {
+                cType.properties.odata = 'verbose';
                 context.contentType = cType;
             }
             return jsonToString(json);
@@ -7694,7 +7973,7 @@
         ///   It should never be called directly.
         /// </remarks>
 
-        if (value && value.__edmType === "Edm.Time") {
+        if (value && value.__edmType === 'Edm.Time') {
             return formatDuration(value);
         } else {
             return value;
@@ -7722,11 +8001,11 @@
         /// <param name="dataVersion" optional="true" type="String">Version the data is in (possibly unknown).</param>
 
         // Strip the trailing comma if there.
-        if (dataVersion && dataVersion.lastIndexOf(";") === dataVersion.length - 1) {
+        if (dataVersion && dataVersion.lastIndexOf(';') === dataVersion.length - 1) {
             dataVersion = dataVersion.substr(0, dataVersion.length - 1);
         }
 
-        if (!dataVersion || dataVersion === "1.0") {
+        if (!dataVersion || dataVersion === '1.0') {
             if (isArray(data)) {
                 data = { results: data };
             }
@@ -7742,10 +8021,7 @@
 
     odata.jsonHandler = jsonHandler;
 
-
-
-
-    var batchMediaType = "multipart/mixed";
+    var batchMediaType = 'multipart/mixed';
     var responseStatusRegex = /^HTTP\/1\.\d (\d{3}) (.*)$/i;
     var responseHeaderRegex = /^([^()<>@,;:\\"\/[\]?={} \t]+)\s?:\s?(.*)/;
 
@@ -7755,7 +8031,9 @@
         /// </summary>
         /// <returns type="String">A 16-bit number in hex format.</returns>
 
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substr(1);
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substr(1);
     };
 
     var createBoundary = function (prefix) {
@@ -7765,7 +8043,7 @@
         /// <param name="prefix" type="String" optional="true">String to use as the start of the boundary string</param>
         /// <returns type="String">Boundary string of the format: <prefix><hex16>-<hex16>-<hex16></returns>
 
-        return prefix + hex16() + "-" + hex16() + "-" + hex16();
+        return prefix + hex16() + '-' + hex16() + '-' + hex16();
     };
 
     var partHandler = function (context) {
@@ -7796,7 +8074,7 @@
         /// <param name="context" type="Object">Object with parsing context.</param>
         /// <returns>An object representation of the batch.</returns>
 
-        var boundary = context.contentType.properties["boundary"];
+        var boundary = context.contentType.properties['boundary'];
         return { __batchResponses: readBatch(text, { boundaries: [boundary], handlerContext: context }) };
     };
 
@@ -7807,7 +8085,7 @@
         /// <param name="context" type="Object">Object with parsing context.</param>
         /// <returns>An text representation of the batch object; undefined if not applicable.</returns>
 
-        var cType = context.contentType = context.contentType || contentType(batchMediaType);
+        var cType = (context.contentType = context.contentType || contentType(batchMediaType));
         if (cType.mediaType === batchMediaType) {
             return writeBatch(data, context);
         }
@@ -7821,7 +8099,7 @@
         /// <param name="context">Context used for parsing.</param>
         /// <returns>Array of objects representing the individual responses.</returns>
 
-        var delimiter = "--" + currentBoundary(context);
+        var delimiter = '--' + currentBoundary(context);
 
         // Move beyond the delimiter and read the complete batch
         readTo(text, context, delimiter);
@@ -7833,13 +8111,13 @@
         var responses = [];
         var partEnd;
 
-        while (partEnd !== "--" && context.position < text.length) {
+        while (partEnd !== '--' && context.position < text.length) {
             var partHeaders = readHeaders(text, context);
-            var partContentType = contentType(partHeaders["Content-Type"]);
+            var partContentType = contentType(partHeaders['Content-Type']);
 
             var changeResponses;
             if (partContentType && partContentType.mediaType === batchMediaType) {
-                context.boundaries.push(partContentType.properties["boundary"]);
+                context.boundaries.push(partContentType.properties['boundary']);
                 try {
                     changeResponses = readBatch(text, context);
                 } catch (e) {
@@ -7848,10 +8126,10 @@
                 }
                 responses.push({ __changeResponses: changeResponses });
                 context.boundaries.pop();
-                readTo(text, context, "--" + currentBoundary(context));
+                readTo(text, context, '--' + currentBoundary(context));
             } else {
-                if (!partContentType || partContentType.mediaType !== "application/http") {
-                    throw { message: "invalid MIME part type " };
+                if (!partContentType || partContentType.mediaType !== 'application/http') {
+                    throw { message: 'invalid MIME part type ' };
                 }
                 // Skip empty line
                 readLine(text, context);
@@ -7862,7 +8140,7 @@
                         partHandler(context.handlerContext).read(response, context.handlerContext);
                     } else {
                         // Keep track of failed responses and continue processing the batch.
-                        response = { message: "HTTP request failed", response: response };
+                        response = { message: 'HTTP request failed', response: response };
                     }
                 } catch (e) {
                     response = e;
@@ -7942,7 +8220,7 @@
             statusCode: statusCode,
             statusText: statusText,
             headers: headers,
-            body: readTo(text, context, "\r\n" + delimiter)
+            body: readTo(text, context, '\r\n' + delimiter),
         };
     };
 
@@ -7954,7 +8232,7 @@
         /// <param name="context" optional="false">Context used for reading the input string.</param>
         /// <returns type="String">Substring to the first ocurrence of a line break or null if none can be found. </returns>
 
-        return readTo(text, context, "\r\n");
+        return readTo(text, context, '\r\n');
     };
 
     var readTo = function (text, context, str) {
@@ -7990,16 +8268,15 @@
         /// <returns type="String">String representing the batch request</returns>
 
         if (!isBatch(data)) {
-            throw { message: "Data is not a batch object." };
+            throw { message: 'Data is not a batch object.' };
         }
 
-        var batchBoundary = createBoundary("batch_");
+        var batchBoundary = createBoundary('batch_');
         var batchParts = data.__batchRequests;
-        var batch = "";
+        var batch = '';
         var i, len;
         for (i = 0, len = batchParts.length; i < len; i++) {
-            batch += writeBatchPartDelimiter(batchBoundary, false) +
-                     writeBatchPart(batchParts[i], context);
+            batch += writeBatchPartDelimiter(batchBoundary, false) + writeBatchPart(batchParts[i], context);
         }
         batch += writeBatchPartDelimiter(batchBoundary, true);
 
@@ -8018,12 +8295,12 @@
         /// <param name="close" type="Boolean">Flag indicating that a close delimiter string should be generated</param>
         /// <returns type="String">Delimiter string</returns>
 
-        var result = "\r\n--" + boundary;
+        var result = '\r\n--' + boundary;
         if (close) {
-            result += "--";
+            result += '--';
         }
 
-        return result + "\r\n";
+        return result + '\r\n';
     };
 
     var writeBatchPart = function (part, context, nested) {
@@ -8043,20 +8320,20 @@
         var result;
         if (isArray(changeSet)) {
             if (nested) {
-                throw { message: "Not Supported: change set nested in other change set" };
+                throw { message: 'Not Supported: change set nested in other change set' };
             }
 
-            var changeSetBoundary = createBoundary("changeset_");
-            result = "Content-Type: " + batchMediaType + "; boundary=" + changeSetBoundary + "\r\n";
+            var changeSetBoundary = createBoundary('changeset_');
+            result = 'Content-Type: ' + batchMediaType + '; boundary=' + changeSetBoundary + '\r\n';
             var i, len;
             for (i = 0, len = changeSet.length; i < len; i++) {
-                result += writeBatchPartDelimiter(changeSetBoundary, false) +
-                     writeBatchPart(changeSet[i], context, true);
+                result +=
+                    writeBatchPartDelimiter(changeSetBoundary, false) + writeBatchPart(changeSet[i], context, true);
             }
 
             result += writeBatchPartDelimiter(changeSetBoundary, true);
         } else {
-            result = "Content-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\n";
+            result = 'Content-Type: application/http\r\nContent-Transfer-Encoding: binary\r\n\r\n';
             var partContext = extend({}, context);
             partContext.handler = handler;
             partContext.request = part;
@@ -8076,14 +8353,14 @@
         /// <param name="request" optional="false">Request object to serialize</param>
         /// <returns type="String">String representing the serialized request</returns>
 
-        var result = (request.method ? request.method : "GET") + " " + request.requestUri + " HTTP/1.1\r\n";
+        var result = (request.method ? request.method : 'GET') + ' ' + request.requestUri + ' HTTP/1.1\r\n';
         for (var name in request.headers) {
             if (request.headers[name]) {
-                result = result + name + ": " + request.headers[name] + "\r\n";
+                result = result + name + ': ' + request.headers[name] + '\r\n';
             }
         }
 
-        result += "\r\n";
+        result += '\r\n';
 
         if (request.body) {
             result += request.body;
@@ -8094,8 +8371,6 @@
 
     odata.batchHandler = handler(batchParser, batchSerializer, batchMediaType, MAX_DATA_SERVICE_VERSION);
 
-
-
     var handlers = [odata.jsonHandler, odata.atomHandler, odata.xmlHandler, odata.textHandler];
 
     var dispatchHandler = function (handlerMethod, requestOrResponse, context) {
@@ -8105,11 +8380,10 @@
         /// <param name="context" type="Object">context argument for delegated call.</param>
 
         var i, len;
-        for (i = 0, len = handlers.length; i < len && !handlers[i][handlerMethod](requestOrResponse, context); i++) {
-        }
+        for (i = 0, len = handlers.length; i < len && !handlers[i][handlerMethod](requestOrResponse, context); i++) {}
 
         if (i === len) {
-            throw { message: "no handler for data" };
+            throw { message: 'no handler for data' };
         }
     };
 
@@ -8128,8 +8402,8 @@
             /// <param name="response">Response object.</param>
             /// <param name="context">Operation context.</param>
 
-            if (response && assigned(response.body) && response.headers["Content-Type"]) {
-                dispatchHandler("read", response, context);
+            if (response && assigned(response.body) && response.headers['Content-Type']) {
+                dispatchHandler('read', response, context);
             }
         },
 
@@ -8138,11 +8412,12 @@
             /// <param name="request">Reques tobject.</param>
             /// <param name="context">Operation context.</param>
 
-            dispatchHandler("write", request, context);
+            dispatchHandler('write', request, context);
         },
 
         maxDataServiceVersion: MAX_DATA_SERVICE_VERSION,
-        accept: "application/atomsvc+xml;q=0.8, application/json;odata=fullmetadata;q=0.7, application/json;q=0.5, */*;q=0.1"
+        accept:
+            'application/atomsvc+xml;q=0.8, application/json;odata=fullmetadata;q=0.7, application/json;q=0.5, */*;q=0.1',
     };
 
     odata.defaultMetadata = [];
@@ -8157,7 +8432,7 @@
         /// <param name="metadata" type="Object" optional="true">Conceptual metadata for this request.</param>
 
         var request;
-        if (urlOrRequest instanceof String || typeof urlOrRequest === "string") {
+        if (urlOrRequest instanceof String || typeof urlOrRequest === 'string') {
             request = { requestUri: urlOrRequest };
         } else {
             request = urlOrRequest;
@@ -8183,11 +8458,17 @@
 
         // Augment the request with additional defaults.
         request.recognizeDates = defined(request.recognizeDates, odata.jsonHandler.recognizeDates);
-        request.callbackParameterName = defined(request.callbackParameterName, odata.defaultHttpClient.callbackParameterName);
+        request.callbackParameterName = defined(
+            request.callbackParameterName,
+            odata.defaultHttpClient.callbackParameterName
+        );
         request.formatQueryString = defined(request.formatQueryString, odata.defaultHttpClient.formatQueryString);
         request.enableJsonpCallback = defined(request.enableJsonpCallback, odata.defaultHttpClient.enableJsonpCallback);
         request.useJsonLight = defined(request.useJsonLight, odata.jsonHandler.enableJsonpCallback);
-        request.inferJsonLightFeedAsObject = defined(request.inferJsonLightFeedAsObject, odata.jsonHandler.inferJsonLightFeedAsObject);
+        request.inferJsonLightFeedAsObject = defined(
+            request.inferJsonLightFeedAsObject,
+            odata.jsonHandler.inferJsonLightFeedAsObject
+        );
 
         // Create the base context for read/write operations, also specifying complete settings.
         var context = {
@@ -8197,7 +8478,7 @@
             formatQueryString: request.formatQueryString,
             enableJsonpCallback: request.enableJsonpCallback,
             useJsonLight: request.useJsonLight,
-            inferJsonLightFeedAsObject: request.inferJsonLightFeedAsObject
+            inferJsonLightFeedAsObject: request.inferJsonLightFeedAsObject,
         };
 
         try {
@@ -8219,8 +8500,6 @@
     // Configure the batch handler to use the default handler for the batch parts.
     odata.batchHandler.partHandler = odata.defaultHandler;
 
-
-
     var localStorage = null;
 
     var domStoreDateToJSON = function () {
@@ -8231,7 +8510,7 @@
         ///   JSON.stringify.  It should never be called directly.
         /// </remarks>
 
-        var newValue = { v: this.valueOf(), t: "[object Date]" };
+        var newValue = { v: this.valueOf(), t: '[object Date]' };
         // Date objects might have extra properties on them so we save them.
         for (var name in this) {
             newValue[name] = this[name];
@@ -8248,10 +8527,10 @@
         ///   It should never be called directly.
         /// </remarks>
 
-        if (value && value.t === "[object Date]") {
+        if (value && value.t === '[object Date]') {
             var newValue = new Date(value.v);
             for (var name in value) {
-                if (name !== "t" && name !== "v") {
+                if (name !== 't' && name !== 'v') {
                     newValue[name] = value[name];
                 }
             }
@@ -8266,7 +8545,7 @@
         /// <param name="key" type="String">Key string.</param>
         /// <returns type="String">Fully qualified key string.</returns>
 
-        return store.name + "#!#" + key;
+        return store.name + '#!#' + key;
     };
 
     var unqualifyDomStoreKey = function (store, key) {
@@ -8275,7 +8554,7 @@
         /// <param name="key" type="String">Fully qualified key string.</param>
         /// <returns type="String">Key part string</returns>
 
-        return key.replace(store.name + "#!#", "");
+        return key.replace(store.name + '#!#', '');
     };
 
     var DomStore = function (name) {
@@ -8294,7 +8573,7 @@
             return new DomStore(name);
         }
 
-        throw { message: "Web Storage not supported by the browser" };
+        throw { message: 'Web Storage not supported by the browser' };
     };
 
     DomStore.isSupported = function () {
@@ -8315,13 +8594,17 @@
 
         error = error || this.defaultError;
         var store = this;
-        this.contains(key, function (contained) {
-            if (!contained) {
-                store.addOrUpdate(key, value, success, error);
-            } else {
-                delay(error, { message: "key already exists", key: key });
-            }
-        }, error);
+        this.contains(
+            key,
+            function (contained) {
+                if (!contained) {
+                    store.addOrUpdate(key, value, success, error);
+                } else {
+                    delay(error, { message: 'key already exists', key: key });
+                }
+            },
+            error
+        );
     };
 
     DomStore.prototype.addOrUpdate = function (key, value, success, error) {
@@ -8337,7 +8620,7 @@
         error = error || this.defaultError;
 
         if (key instanceof Array) {
-            error({ message: "Array of keys not supported" });
+            error({ message: 'Array of keys not supported' });
         } else {
             var fullKey = qualifyDomStoreKey(this, key);
             var oldDateToJSON = Date.prototype.toJSON;
@@ -8351,15 +8634,13 @@
                 // Save the json string.
                 localStorage.setItem(fullKey, storedValue);
                 delay(success, key, value);
-            }
-            catch (e) {
-                if (e.code === 22 || e.number === 0x8007000E) {
-                    delay(error, { name: "QUOTA_EXCEEDED_ERR", error: e });
+            } catch (e) {
+                if (e.code === 22 || e.number === 0x8007000e) {
+                    delay(error, { name: 'QUOTA_EXCEEDED_ERR', error: e });
                 } else {
                     delay(error, e);
                 }
-            }
-            finally {
+            } finally {
                 Date.prototype.toJSON = oldDateToJSON;
             }
         }
@@ -8375,7 +8656,8 @@
 
         error = error || this.defaultError;
         try {
-            var i = 0, len = localStorage.length;
+            var i = 0,
+                len = localStorage.length;
             while (len > 0 && i < len) {
                 var fullKey = localStorage.key(i);
                 var key = unqualifyDomStoreKey(this, fullKey);
@@ -8387,8 +8669,7 @@
                 }
             }
             delay(success);
-        }
-        catch (e) {
+        } catch (e) {
             delay(error, e);
         }
     };
@@ -8433,14 +8714,13 @@
                 }
             }
             delay(success, results);
-        }
-        catch (e) {
+        } catch (e) {
             delay(error, e);
         }
     };
 
     /// <summary>Identifies the underlying mechanism used by the store.</summary>
-    DomStore.prototype.mechanism = "dom";
+    DomStore.prototype.mechanism = 'dom';
 
     DomStore.prototype.read = function (key, success, error) {
         /// <summary>Reads the value associated to a key in the store.</summary>
@@ -8450,16 +8730,15 @@
         error = error || this.defaultError;
 
         if (key instanceof Array) {
-            error({ message: "Array of keys not supported" });
+            error({ message: 'Array of keys not supported' });
         } else {
             try {
                 var fullKey = qualifyDomStoreKey(this, key);
                 var value = localStorage.getItem(fullKey);
-                if (value !== null && value !== "undefined") {
+                if (value !== null && value !== 'undefined') {
                     // Hydrate using json
                     value = window.JSON.parse(value, domStoreJSONToDate);
-                }
-                else {
+                } else {
                     value = undefined;
                 }
                 delay(success, key, value);
@@ -8477,7 +8756,7 @@
         error = error || this.defaultError;
 
         if (key instanceof Array) {
-            error({ message: "Batches not supported" });
+            error({ message: 'Batches not supported' });
         } else {
             try {
                 var fullKey = qualifyDomStoreKey(this, key);
@@ -8501,23 +8780,25 @@
 
         error = error || this.defaultError;
         var store = this;
-        this.contains(key, function (contained) {
-            if (contained) {
-                store.addOrUpdate(key, value, success, error);
-            } else {
-                delay(error, { message: "key not found", key: key });
-            }
-        }, error);
+        this.contains(
+            key,
+            function (contained) {
+                if (contained) {
+                    store.addOrUpdate(key, value, success, error);
+                } else {
+                    delay(error, { message: 'key not found', key: key });
+                }
+            },
+            error
+        );
     };
-
-
 
     var indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.indexedDB;
     var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
     var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || {};
 
-    var IDBT_READ_ONLY = IDBTransaction.READ_ONLY || "readonly";
-    var IDBT_READ_WRITE = IDBTransaction.READ_WRITE || "readwrite";
+    var IDBT_READ_ONLY = IDBTransaction.READ_ONLY || 'readonly';
+    var IDBT_READ_WRITE = IDBTransaction.READ_WRITE || 'readwrite';
 
     var getError = function (error, defaultError) {
         /// <summary>Returns either a specific error handler or the default error handler</summary>
@@ -8532,9 +8813,9 @@
             }
 
             // Old api quota exceeded error support.
-            if (Object.prototype.toString.call(e) === "[object IDBDatabaseException]") {
+            if (Object.prototype.toString.call(e) === '[object IDBDatabaseException]') {
                 if (e.code === 11 /* IndexedDb disk quota exceeded */) {
-                    errorFunc({ name: "QuotaExceededError", error: e });
+                    errorFunc({ name: 'QuotaExceededError', error: e });
                     return;
                 }
                 errorFunc(e);
@@ -8546,7 +8827,7 @@
                 var errObj = e.target.error || e;
                 errName = errObj.name;
             } catch (ex) {
-                errName = (e.type === "blocked") ? "IndexedDBBlocked" : "UnknownError";
+                errName = e.type === 'blocked' ? 'IndexedDBBlocked' : 'UnknownError';
             }
             errorFunc({ name: errName, error: e });
         };
@@ -8559,7 +8840,7 @@
         /// <param name="error" type="Function">The error callback</param>
 
         var storeName = store.name;
-        var dbName = "_datajs_" + storeName;
+        var dbName = '_datajs_' + storeName;
 
         var request = indexedDB.open(dbName);
         request.onblocked = error;
@@ -8576,8 +8857,8 @@
             var db = request.result;
             if (!db.objectStoreNames.contains(storeName)) {
                 // Should we use the old style api to define the database schema?
-                if ("setVersion" in db) {
-                    var versionRequest = db.setVersion("1.0");
+                if ('setVersion' in db) {
+                    var versionRequest = db.setVersion('1.0');
                     versionRequest.onsuccess = function () {
                         var transaction = versionRequest.transaction;
                         transaction.oncomplete = function () {
@@ -8593,12 +8874,12 @@
                 // The database doesn't have the expected store.
                 // Fabricate an error object for the event for the schema mismatch
                 // and error out.
-                event.target.error = { name: "DBSchemaMismatch" };
+                event.target.error = { name: 'DBSchemaMismatch' };
                 error(event);
                 return;
             }
 
-            db.onversionchange = function(event) {
+            db.onversionchange = function (event) {
                 event.target.close();
             };
             success(db);
@@ -8621,10 +8902,14 @@
             return;
         }
 
-        openStoreDb(store, function (db) {
-            store.db = db;
-            success(db.transaction(storeName, mode));
-        }, errorCallback);
+        openStoreDb(
+            store,
+            function (db) {
+                store.db = db;
+                success(db.transaction(storeName, mode));
+            },
+            errorCallback
+        );
     };
 
     var IndexedDBStore = function (name) {
@@ -8642,7 +8927,7 @@
             return new IndexedDBStore(name);
         }
 
-        throw { message: "IndexedDB is not supported on this browser" };
+        throw { message: 'IndexedDB is not supported on this browser' };
     };
 
     IndexedDBStore.isSupported = function () {
@@ -8670,20 +8955,25 @@
             values = [value];
         }
 
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            transaction.onabort = getError(error, defaultError, key, "add");
-            transaction.oncomplete = function () {
-                if (key instanceof Array) {
-                    success(keys, values);
-                } else {
-                    success(key, value);
-                }
-            };
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                transaction.onabort = getError(error, defaultError, key, 'add');
+                transaction.oncomplete = function () {
+                    if (key instanceof Array) {
+                        success(keys, values);
+                    } else {
+                        success(key, value);
+                    }
+                };
 
-            for (var i = 0; i < keys.length && i < values.length; i++) {
-                transaction.objectStore(name).add({ v: values[i] }, keys[i]);
-            }
-        }, error);
+                for (var i = 0; i < keys.length && i < values.length; i++) {
+                    transaction.objectStore(name).add({ v: values[i] }, keys[i]);
+                }
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.addOrUpdate = function (key, value, success, error) {
@@ -8705,21 +8995,26 @@
             values = [value];
         }
 
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            transaction.onabort = getError(error, defaultError);
-            transaction.oncomplete = function () {
-                if (key instanceof Array) {
-                    success(keys, values);
-                } else {
-                    success(key, value);
-                }
-            };
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                transaction.onabort = getError(error, defaultError);
+                transaction.oncomplete = function () {
+                    if (key instanceof Array) {
+                        success(keys, values);
+                    } else {
+                        success(key, value);
+                    }
+                };
 
-            for (var i = 0; i < keys.length && i < values.length; i++) {
-                var record = { v: values[i] };
-                transaction.objectStore(name).put(record, keys[i]);
-            }
-        }, error);
+                for (var i = 0; i < keys.length && i < values.length; i++) {
+                    var record = { v: values[i] };
+                    transaction.objectStore(name).put(record, keys[i]);
+                }
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.clear = function (success, error) {
@@ -8728,14 +9023,19 @@
         /// <param name="error" type="Function">The error callback</param>
         var name = this.name;
         var defaultError = this.defaultError;
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            transaction.onerror = getError(error, defaultError);
-            transaction.oncomplete = function () {
-                success();
-            };
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                transaction.onerror = getError(error, defaultError);
+                transaction.oncomplete = function () {
+                    success();
+                };
 
-            transaction.objectStore(name).clear();
-        }, error);
+                transaction.objectStore(name).clear();
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.close = function () {
@@ -8753,15 +9053,20 @@
         /// <param name="error" type="Function">The error callback</param>
         var name = this.name;
         var defaultError = this.defaultError;
-        openTransaction(this, IDBT_READ_ONLY, function (transaction) {
-            var objectStore = transaction.objectStore(name);
-            var request = objectStore["get"](key);
+        openTransaction(
+            this,
+            IDBT_READ_ONLY,
+            function (transaction) {
+                var objectStore = transaction.objectStore(name);
+                var request = objectStore['get'](key);
 
-            transaction.oncomplete = function () {
-                success(!!request.result);
-            };
-            transaction.onerror = getError(error, defaultError);
-        }, error);
+                transaction.oncomplete = function () {
+                    success(!!request.result);
+                };
+                transaction.onerror = getError(error, defaultError);
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.defaultError = throwErrorCallback;
@@ -8772,29 +9077,34 @@
         /// <param name="error" type="Function">The error callback</param>
         var name = this.name;
         var defaultError = this.defaultError;
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            var results = [];
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                var results = [];
 
-            transaction.oncomplete = function () {
-                success(results);
-            };
+                transaction.oncomplete = function () {
+                    success(results);
+                };
 
-            var request = transaction.objectStore(name).openCursor();
+                var request = transaction.objectStore(name).openCursor();
 
-            request.onerror = getError(error, defaultError);
-            request.onsuccess = function (event) {
-                var cursor = event.target.result;
-                if (cursor) {
-                    results.push(cursor.key);
-                    // Some tools have issues because continue is a javascript reserved word.
-                    cursor["continue"].call(cursor);
-                }
-            };
-        }, error);
+                request.onerror = getError(error, defaultError);
+                request.onsuccess = function (event) {
+                    var cursor = event.target.result;
+                    if (cursor) {
+                        results.push(cursor.key);
+                        // Some tools have issues because continue is a javascript reserved word.
+                        cursor['continue'].call(cursor);
+                    }
+                };
+            },
+            error
+        );
     };
 
     /// <summary>Identifies the underlying mechanism used by the store.</summary>
-    IndexedDBStore.prototype.mechanism = "indexeddb";
+    IndexedDBStore.prototype.mechanism = 'indexeddb';
 
     IndexedDBStore.prototype.read = function (key, success, error) {
         /// <summary>Reads the value for the specified key</summary>
@@ -8804,30 +9114,35 @@
         /// <remarks>If the key does not exist, the success handler will be called with value = undefined</remarks>
         var name = this.name;
         var defaultError = this.defaultError;
-        var keys = (key instanceof Array) ? key : [key];
+        var keys = key instanceof Array ? key : [key];
 
-        openTransaction(this, IDBT_READ_ONLY, function (transaction) {
-            var values = [];
+        openTransaction(
+            this,
+            IDBT_READ_ONLY,
+            function (transaction) {
+                var values = [];
 
-            transaction.onerror = getError(error, defaultError, key, "read");
-            transaction.oncomplete = function () {
-                if (key instanceof Array) {
-                    success(keys, values);
-                } else {
-                    success(keys[0], values[0]);
-                }
-            };
-
-            for (var i = 0; i < keys.length; i++) {
-                // Some tools have issues because get is a javascript reserved word. 
-                var objectStore = transaction.objectStore(name);
-                var request = objectStore["get"].call(objectStore, keys[i]);
-                request.onsuccess = function (event) {
-                    var record = event.target.result;
-                    values.push(record ? record.v : undefined);
+                transaction.onerror = getError(error, defaultError, key, 'read');
+                transaction.oncomplete = function () {
+                    if (key instanceof Array) {
+                        success(keys, values);
+                    } else {
+                        success(keys[0], values[0]);
+                    }
                 };
-            }
-        }, error);
+
+                for (var i = 0; i < keys.length; i++) {
+                    // Some tools have issues because get is a javascript reserved word.
+                    var objectStore = transaction.objectStore(name);
+                    var request = objectStore['get'].call(objectStore, keys[i]);
+                    request.onsuccess = function (event) {
+                        var record = event.target.result;
+                        values.push(record ? record.v : undefined);
+                    };
+                }
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.remove = function (key, success, error) {
@@ -8837,20 +9152,25 @@
         /// <param name="error" type="Function">The error callback</param>
         var name = this.name;
         var defaultError = this.defaultError;
-        var keys = (key instanceof Array) ? key : [key];
+        var keys = key instanceof Array ? key : [key];
 
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            transaction.onerror = getError(error, defaultError);
-            transaction.oncomplete = function () {
-                success();
-            };
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                transaction.onerror = getError(error, defaultError);
+                transaction.oncomplete = function () {
+                    success();
+                };
 
-            for (var i = 0; i < keys.length; i++) {
-                // Some tools have issues because continue is a javascript reserved word.
-                var objectStore = transaction.objectStore(name);
-                objectStore["delete"].call(objectStore, keys[i]);
-            }
-        }, error);
+                for (var i = 0; i < keys.length; i++) {
+                    // Some tools have issues because continue is a javascript reserved word.
+                    var objectStore = transaction.objectStore(name);
+                    objectStore['delete'].call(objectStore, keys[i]);
+                }
+            },
+            error
+        );
     };
 
     IndexedDBStore.prototype.update = function (key, value, success, error) {
@@ -8872,33 +9192,36 @@
             values = [value];
         }
 
-        openTransaction(this, IDBT_READ_WRITE, function (transaction) {
-            transaction.onabort = getError(error, defaultError);
-            transaction.oncomplete = function () {
-                if (key instanceof Array) {
-                    success(keys, values);
-                } else {
-                    success(key, value);
-                }
-            };
-
-            for (var i = 0; i < keys.length && i < values.length; i++) {
-                var request = transaction.objectStore(name).openCursor(IDBKeyRange.only(keys[i]));
-                var record = { v: values[i] };
-                request.pair = { key: keys[i], value: record };
-                request.onsuccess = function (event) {
-                    var cursor = event.target.result;
-                    if (cursor) {
-                        cursor.update(event.target.pair.value);
+        openTransaction(
+            this,
+            IDBT_READ_WRITE,
+            function (transaction) {
+                transaction.onabort = getError(error, defaultError);
+                transaction.oncomplete = function () {
+                    if (key instanceof Array) {
+                        success(keys, values);
                     } else {
-                        transaction.abort();
+                        success(key, value);
                     }
                 };
-            }
-        }, error);
+
+                for (var i = 0; i < keys.length && i < values.length; i++) {
+                    var request = transaction.objectStore(name).openCursor(IDBKeyRange.only(keys[i]));
+                    var record = { v: values[i] };
+                    request.pair = { key: keys[i], value: record };
+                    request.onsuccess = function (event) {
+                        var cursor = event.target.result;
+                        if (cursor) {
+                            cursor.update(event.target.pair.value);
+                        } else {
+                            transaction.abort();
+                        }
+                    };
+                }
+            },
+            error
+        );
     };
-
-
 
     var MemoryStore = function (name) {
         /// <summary>Constructor for store objects that use a sorted array as the underlying mechanism.</summary>
@@ -8923,11 +9246,11 @@
             var messageString;
 
             if (key instanceof Array) {
-                messageString = "Array of keys not supported";
+                messageString = 'Array of keys not supported';
             }
 
             if (key === undefined || key === null) {
-                messageString = "Invalid key";
+                messageString = 'Invalid key';
             }
 
             if (messageString) {
@@ -8953,7 +9276,7 @@
                 if (!keys.hasOwnProperty(key)) {
                     this.addOrUpdate(key, value, success, error);
                 } else {
-                    error({ message: "key already exists", key: key });
+                    error({ message: 'key already exists', key: key });
                 }
             }
         };
@@ -9072,7 +9395,7 @@
                 if (keys.hasOwnProperty(key)) {
                     this.addOrUpdate(key, value, success, error);
                 } else {
-                    error({ message: "key not found", key: key });
+                    error({ message: 'key not found', key: key });
                 }
             }
         };
@@ -9098,17 +9421,15 @@
     MemoryStore.prototype.defaultError = throwErrorCallback;
 
     /// <summary>Identifies the underlying mechanism used by the store.</summary>
-    MemoryStore.prototype.mechanism = "memory";
-
-
+    MemoryStore.prototype.mechanism = 'memory';
 
     var mechanisms = {
         indexeddb: IndexedDBStore,
         dom: DomStore,
-        memory: MemoryStore
+        memory: MemoryStore,
     };
 
-    datajs.defaultStoreMechanism = "best";
+    datajs.defaultStoreMechanism = 'best';
 
     datajs.createStore = function (name, mechanism) {
         /// <summary>Creates a new store object.</summary>
@@ -9120,8 +9441,8 @@
             mechanism = datajs.defaultStoreMechanism;
         }
 
-        if (mechanism === "best") {
-            mechanism = (DomStore.isSupported()) ? "dom" : "memory";
+        if (mechanism === 'best') {
+            mechanism = DomStore.isSupported() ? 'dom' : 'memory';
         }
 
         var factory = mechanisms[mechanism];
@@ -9129,17 +9450,14 @@
             return factory.create(name);
         }
 
-        throw { message: "Failed to create store", name: name, mechanism: mechanism };
+        throw { message: 'Failed to create store', name: name, mechanism: mechanism };
     };
-
-
-
 
     var appendQueryOption = function (uri, queryOption) {
         /// <summary>Appends the specified escaped query option to the specified URI.</summary>
         /// <param name="uri" type="String">URI to append option to.</param>
         /// <param name="queryOption" type="String">Escaped query option to append.</param>
-        var separator = (uri.indexOf("?") >= 0) ? "&" : "?";
+        var separator = uri.indexOf('?') >= 0 ? '&' : '?';
         return uri + separator + queryOption;
     };
 
@@ -9149,15 +9467,15 @@
         /// <param name="segment" type="String">Segment to append.</param>
         /// <returns type="String">The original URI with a new segment appended.</returns>
 
-        var index = uri.indexOf("?");
-        var queryPortion = "";
+        var index = uri.indexOf('?');
+        var queryPortion = '';
         if (index >= 0) {
             queryPortion = uri.substr(index);
             uri = uri.substr(0, index);
         }
 
-        if (uri[uri.length - 1] !== "/") {
-            uri += "/";
+        if (uri[uri.length - 1] !== '/') {
+            uri += '/';
         }
         return uri + segment + queryPortion;
     };
@@ -9168,13 +9486,13 @@
         /// <param name="options" type="Object">Additional options.</param>
 
         return {
-            method: "GET",
+            method: 'GET',
             requestUri: uri,
             user: options.user,
             password: options.password,
             enableJsonpCallback: options.enableJsonpCallback,
             callbackParameterName: options.callbackParameterName,
-            formatQueryString: options.formatQueryString
+            formatQueryString: options.formatQueryString,
         };
     };
 
@@ -9185,11 +9503,11 @@
         /// <returns type="Number">The index where the query option starts.</returns>
 
         var result = -1;
-        var queryIndex = uri.indexOf("?");
+        var queryIndex = uri.indexOf('?');
         if (queryIndex !== -1) {
-            var start = uri.indexOf("?" + name + "=", queryIndex);
+            var start = uri.indexOf('?' + name + '=', queryIndex);
             if (start === -1) {
-                start = uri.indexOf("&" + name + "=", queryIndex);
+                start = uri.indexOf('&' + name + '=', queryIndex);
             }
             if (start !== -1) {
                 result = start + name.length + 2;
@@ -9220,23 +9538,30 @@
         /// <returns type="Object">Object with an abort method.</returns>
 
         var request = buildODataRequest(uri, options);
-        var currentRequest = odata.request(request, function (newData) {
-            var next = newData.__next;
-            var results = newData.results;
+        var currentRequest = odata.request(
+            request,
+            function (newData) {
+                var next = newData.__next;
+                var results = newData.results;
 
-            data = data.concat(results);
+                data = data.concat(results);
 
-            if (next) {
-                currentRequest = queryForDataInternal(next, options, data, success, error);
-            } else {
-                success(data);
-            }
-        }, error, undefined, options.httpClient, options.metadata);
+                if (next) {
+                    currentRequest = queryForDataInternal(next, options, data, success, error);
+                } else {
+                    success(data);
+                }
+            },
+            error,
+            undefined,
+            options.httpClient,
+            options.metadata
+        );
 
         return {
             abort: function () {
                 currentRequest.abort();
-            }
+            },
         };
     };
 
@@ -9247,7 +9572,7 @@
 
         var that = this;
         var uri = options.source;
-        
+
         that.identifier = normalizeURICase(encodeURI(decodeURI(uri)));
         that.options = options;
 
@@ -9259,15 +9584,20 @@
 
             var options = that.options;
             return odata.request(
-                buildODataRequest(appendSegment(uri, "$count"), options),
+                buildODataRequest(appendSegment(uri, '$count'), options),
                 function (data) {
                     var count = parseInt10(data.toString());
                     if (isNaN(count)) {
-                        error({ message: "Count is NaN", count: count });
+                        error({ message: 'Count is NaN', count: count });
                     } else {
                         success(count);
                     }
-                }, error, undefined, options.httpClient, options.metadata);
+                },
+                error,
+                undefined,
+                options.httpClient,
+                options.metadata
+            );
         };
 
         that.read = function (index, count, success, error) {
@@ -9278,14 +9608,12 @@
             /// <param name="error" type="Function">Error callback.</param>
             /// <returns type="Object">Request object with an abort method./<param>
 
-            var queryOptions = "$skip=" + index + "&$top=" + count;
+            var queryOptions = '$skip=' + index + '&$top=' + count;
             return queryForData(appendQueryOption(uri, queryOptions), that.options, success, error);
         };
 
         return that;
     };
-
-
 
     var appendPage = function (operation, page) {
         /// <summary>Appends a page's data to the operation data.</summary>
@@ -9308,8 +9636,8 @@
 
         var xLast = x.i + x.c;
         var yLast = y.i + y.c;
-        var resultIndex = (x.i > y.i) ? x.i : y.i;
-        var resultLast = (xLast < yLast) ? xLast : yLast;
+        var resultIndex = x.i > y.i ? x.i : y.i;
+        var resultLast = xLast < yLast ? xLast : yLast;
         var result;
         if (resultLast >= resultIndex) {
             result = { i: resultIndex, c: resultLast - resultIndex };
@@ -9323,7 +9651,7 @@
         /// <param name="val" type="Number">Value to check.</param>
         /// <param name="name" type="String">Parameter name to use in exception.</param>
 
-        if (val === undefined || typeof val !== "number") {
+        if (val === undefined || typeof val !== 'number') {
             throw { message: "'" + name + "' must be a number." };
         }
 
@@ -9338,7 +9666,7 @@
         /// <param name="name" type="String">Parameter name to use in exception.</param>
 
         if (val !== undefined) {
-            if (typeof val !== "number") {
+            if (typeof val !== 'number') {
                 throw { message: "'" + name + "' must be a number." };
             }
 
@@ -9352,7 +9680,7 @@
         /// <summary>Checks whether val is undefined or a number</summary>
         /// <param name="val" type="Number">Value to check.</param>
         /// <param name="name" type="String">Parameter name to use in exception.</param>
-        if (val !== undefined && (typeof val !== "number" || isNaN(val) || !isFinite(val))) {
+        if (val !== undefined && (typeof val !== 'number' || isNaN(val) || !isFinite(val))) {
             throw { message: "'" + name + "' must be a number." };
         }
     };
@@ -9381,11 +9709,11 @@
         var size = 0;
         var type = typeof obj;
 
-        if (type === "object" && obj) {
+        if (type === 'object' && obj) {
             for (var name in obj) {
                 size += name.length * 2 + estimateSize(obj[name]);
             }
-        } else if (type === "string") {
+        } else if (type === 'string') {
             size = obj.length * 2;
         } else {
             size = 8;
@@ -9410,32 +9738,32 @@
 
     // DataCache state constants
 
-    var CACHE_STATE_DESTROY = "destroy";
-    var CACHE_STATE_IDLE = "idle";
-    var CACHE_STATE_INIT = "init";
-    var CACHE_STATE_READ = "read";
-    var CACHE_STATE_PREFETCH = "prefetch";
-    var CACHE_STATE_WRITE = "write";
+    var CACHE_STATE_DESTROY = 'destroy';
+    var CACHE_STATE_IDLE = 'idle';
+    var CACHE_STATE_INIT = 'init';
+    var CACHE_STATE_READ = 'read';
+    var CACHE_STATE_PREFETCH = 'prefetch';
+    var CACHE_STATE_WRITE = 'write';
 
     // DataCacheOperation state machine states.
     // Transitions on operations also depend on the cache current of the cache.
 
-    var OPERATION_STATE_CANCEL = "cancel";
-    var OPERATION_STATE_END = "end";
-    var OPERATION_STATE_ERROR = "error";
-    var OPERATION_STATE_START = "start";
-    var OPERATION_STATE_WAIT = "wait";
+    var OPERATION_STATE_CANCEL = 'cancel';
+    var OPERATION_STATE_END = 'end';
+    var OPERATION_STATE_ERROR = 'error';
+    var OPERATION_STATE_START = 'start';
+    var OPERATION_STATE_WAIT = 'wait';
 
     // Destroy state machine states
 
-    var DESTROY_STATE_CLEAR = "clear";
+    var DESTROY_STATE_CLEAR = 'clear';
 
     // Read / Prefetch state machine states
 
-    var READ_STATE_DONE = "done";
-    var READ_STATE_LOCAL = "local";
-    var READ_STATE_SAVE = "save";
-    var READ_STATE_SOURCE = "source";
+    var READ_STATE_DONE = 'done';
+    var READ_STATE_LOCAL = 'local';
+    var READ_STATE_SAVE = 'save';
+    var READ_STATE_SOURCE = 'source';
 
     var DataCacheOperation = function (stateMachine, promise, isCancelable, index, count, data, pending) {
         /// <summary>Creates a new operation object.</summary>
@@ -9560,7 +9888,7 @@
 
                 default:
                     // Any other state is passed down to the state machine describing the operation's specific behavior.
-                        stateMachine(that, opTargetState, cacheState, data);
+                    stateMachine(that, opTargetState, cacheState, data);
                     break;
             }
         };
@@ -9605,9 +9933,8 @@
     DataCacheOperation.prototype.fireCanceled = function () {
         /// <summary>Fires a canceled notification as necessary.</summary>
 
-        this.fireRejected({ canceled: true, message: "Operation canceled" });
+        this.fireRejected({ canceled: true, message: 'Operation canceled' });
     };
-
 
     var DataCache = function (options) {
         /// <summary>Creates a data cache for a collection that is efficiently loaded on-demand.</summary>
@@ -9624,22 +9951,22 @@
         var readOperations = [];
         var prefetchOperations = [];
 
-        var actualCacheSize = 0;                                             // Actual cache size in bytes.
-        var allDataLocal = false;                                            // Whether all data is local.
-        var cacheSize = undefinedDefault(options.cacheSize, 1048576);        // Requested cache size in bytes, default 1 MB.
-        var collectionCount = 0;                                             // Number of elements in the server collection.
-        var highestSavedPage = 0;                                            // Highest index of all the saved pages.
-        var highestSavedPageSize = 0;                                        // Item count of the saved page with the highest index.
-        var overflowed = cacheSize === 0;                                    // If the cache has overflowed (actualCacheSize > cacheSize or cacheSize == 0);
-        var pageSize = undefinedDefault(options.pageSize, 50);               // Number of elements to store per page.
+        var actualCacheSize = 0; // Actual cache size in bytes.
+        var allDataLocal = false; // Whether all data is local.
+        var cacheSize = undefinedDefault(options.cacheSize, 1048576); // Requested cache size in bytes, default 1 MB.
+        var collectionCount = 0; // Number of elements in the server collection.
+        var highestSavedPage = 0; // Highest index of all the saved pages.
+        var highestSavedPageSize = 0; // Item count of the saved page with the highest index.
+        var overflowed = cacheSize === 0; // If the cache has overflowed (actualCacheSize > cacheSize or cacheSize == 0);
+        var pageSize = undefinedDefault(options.pageSize, 50); // Number of elements to store per page.
         var prefetchSize = undefinedDefault(options.prefetchSize, pageSize); // Number of elements to prefetch from the source when the cache is idling.
-        var version = "1.0";
+        var version = '1.0';
         var cacheFailure;
 
         var pendingOperations = 0;
 
         var source = options.source;
-        if (typeof source === "string") {
+        if (typeof source === 'string') {
             // Create a new cache source.
             source = new ODataCacheSource(options);
         }
@@ -9673,14 +10000,17 @@
             }
 
             // TODO: Consider returning the local data count instead once allDataLocal flag is set to true.
-            var request = source.count(function (count) {
-                request = null;
-                stats.counts++;
-                deferred.resolve(count);
-            }, function (err) {
-                request = null;
-                deferred.reject(extend(err, { canceled: canceled }));
-            });
+            var request = source.count(
+                function (count) {
+                    request = null;
+                    stats.counts++;
+                    deferred.resolve(count);
+                },
+                function (err) {
+                    request = null;
+                    deferred.reject(extend(err, { canceled: canceled }));
+                }
+            );
 
             return extend(deferred.promise(), {
                 cancel: function () {
@@ -9690,7 +10020,7 @@
                         request.abort();
                         request = null;
                     }
-                }
+                },
             });
         };
 
@@ -9752,8 +10082,8 @@
             /// end of the collection is found.
             /// </returns>
 
-            checkZeroGreater(index, "index");
-            checkZeroGreater(count, "count");
+            checkZeroGreater(index, 'index');
+            checkZeroGreater(count, 'count');
 
             if (cacheFailure) {
                 throw cacheFailure;
@@ -9769,7 +10099,7 @@
                 cancel: function () {
                     /// <summary>Aborts the readRange operation.</summary>
                     op.cancel();
-                }
+                },
             });
         };
 
@@ -9777,7 +10107,7 @@
             /// <summary>Creates an Observable object that enumerates all the cache contents.</summary>
             /// <returns>A new Observable object that enumerates all the cache contents.</returns>
             if (!window.Rx || !window.Rx.Observable) {
-                throw { message: "Rx library not available - include rx.js" };
+                throw { message: 'Rx library not available - include rx.js' };
             }
 
             if (cacheFailure) {
@@ -9814,7 +10144,11 @@
 
                 that.readRange(index, pageSize).then(successCallback, errorCallback);
 
-                return { Dispose: function () { disposed = true; } };
+                return {
+                    Dispose: function () {
+                        disposed = true;
+                    },
+                };
             });
         };
 
@@ -9867,27 +10201,29 @@
             /// <returns type="DjsDeferred">A promise with no value.</returns>
 
             var deferred = new DjsDeferred();
-            store.clear(function () {
+            store.clear(
+                function () {
+                    // Reset the cache settings.
+                    actualCacheSize = 0;
+                    allDataLocal = false;
+                    collectionCount = 0;
+                    highestSavedPage = 0;
+                    highestSavedPageSize = 0;
+                    overflowed = cacheSize === 0;
 
-                // Reset the cache settings.
-                actualCacheSize = 0;
-                allDataLocal = false;
-                collectionCount = 0;
-                highestSavedPage = 0;
-                highestSavedPageSize = 0;
-                overflowed = cacheSize === 0;
+                    // version is not reset, in case there is other state in eg V1.1 that is still around.
 
-                // version is not reset, in case there is other state in eg V1.1 that is still around.
+                    // Reset the cache stats.
+                    stats = { counts: 0, netReads: 0, prefetches: 0, cacheReads: 0 };
+                    that.stats = stats;
 
-                // Reset the cache stats.
-                stats = { counts: 0, netReads: 0, prefetches: 0, cacheReads: 0 };
-                that.stats = stats;
-
-                store.close();
-                deferred.resolve();
-            }, function (err) {
-                deferred.reject(err);
-            });
+                    store.close();
+                    deferred.resolve();
+                },
+                function (err) {
+                    deferred.reject(err);
+                }
+            );
             return deferred;
         };
 
@@ -9913,16 +10249,20 @@
             /// <param name="start" type="Number">Zero-based index of items to request.</param>
             /// <returns type="DjsDeferred">A promise for a page object with (i)ndex, (c)ount, (d)ata.</returns>
 
-
             var deferred = new DjsDeferred();
             var canceled = false;
 
-            var request = source.read(start, pageSize, function (data) {
-                var page = { i: start, c: data.length, d: data };
-                deferred.resolve(page);
-            }, function (err) {
-                deferred.reject(err);
-            });
+            var request = source.read(
+                start,
+                pageSize,
+                function (data) {
+                    var page = { i: start, c: data.length, d: data };
+                    deferred.resolve(page);
+                },
+                function (err) {
+                    deferred.reject(err);
+                }
+            );
 
             return extend(deferred, {
                 cancel: function () {
@@ -9931,7 +10271,7 @@
                         canceled = true;
                         request = null;
                     }
-                }
+                },
             });
         };
 
@@ -9971,30 +10311,39 @@
                     if (count >= 0 && arr.length >= count) {
                         deferred.resolve(arr);
                     } else {
-                        pendingReadRange = that.readRange(readIndex, readCount).then(function (data) {
-                            for (var i = 0, length = data.length; i < length && (count < 0 || arr.length < count); i++) {
-                                var dataIndex = backwards ? length - i - 1 : i;
-                                var item = data[dataIndex];
-                                if (predicate(item)) {
-                                    var element = {
-                                        index: readIndex + dataIndex,
-                                        item: item
-                                    };
+                        pendingReadRange = that.readRange(readIndex, readCount).then(
+                            function (data) {
+                                for (
+                                    var i = 0, length = data.length;
+                                    i < length && (count < 0 || arr.length < count);
+                                    i++
+                                ) {
+                                    var dataIndex = backwards ? length - i - 1 : i;
+                                    var item = data[dataIndex];
+                                    if (predicate(item)) {
+                                        var element = {
+                                            index: readIndex + dataIndex,
+                                            item: item,
+                                        };
 
-                                    backwards ? arr.unshift(element) : arr.push(element);
+                                        backwards ? arr.unshift(element) : arr.push(element);
+                                    }
                                 }
-                            }
 
-                            // Have we reached the end of the collection?
-                            if ((!backwards && data.length < readCount) || (backwards && readIndex <= 0)) {
-                                deferred.resolve(arr);
-                            } else {
-                                var nextIndex = backwards ? Math.max(readIndex - pageSize, 0) : readIndex + readCount;
-                                readMore(nextIndex, pageSize);
+                                // Have we reached the end of the collection?
+                                if ((!backwards && data.length < readCount) || (backwards && readIndex <= 0)) {
+                                    deferred.resolve(arr);
+                                } else {
+                                    var nextIndex = backwards
+                                        ? Math.max(readIndex - pageSize, 0)
+                                        : readIndex + readCount;
+                                    readMore(nextIndex, pageSize);
+                                }
+                            },
+                            function (err) {
+                                deferred.reject(err);
                             }
-                        }, function (err) {
-                            deferred.reject(err);
-                        });
+                        );
                     }
                 }
             };
@@ -10012,7 +10361,7 @@
                         pendingReadRange.cancel();
                     }
                     canceled = true;
-                }
+                },
             });
         };
 
@@ -10039,10 +10388,17 @@
                 return;
             }
 
-
             if (prefetchOperations.length === 0 || (prefetchOperations[0] && prefetchOperations[0].c !== -1)) {
                 // Merging prefetch operations would be a nice optimization here.
-                var op = new DataCacheOperation(prefetchStateMachine, null, true, start, prefetchSize, null, prefetchSize);
+                var op = new DataCacheOperation(
+                    prefetchStateMachine,
+                    null,
+                    true,
+                    start,
+                    prefetchSize,
+                    null,
+                    prefetchSize
+                );
                 queueAndStart(op, prefetchOperations);
             }
         };
@@ -10063,31 +10419,38 @@
             /// <param name="key" type="Number">Zero-based index of the reuqested page.</param>
             /// <returns type="DjsDeferred">A promise for a found flag and page object with (i)ndex, (c)ount, (d)ata, and (t)icks.</returns>
 
-
             var canceled = false;
             var deferred = extend(new DjsDeferred(), {
                 cancel: function () {
                     /// <summary>Aborts the readPage operation.</summary>
                     canceled = true;
-                }
+                },
             });
 
-            var error = storeFailureCallback(deferred, "Read page from store failure");
+            var error = storeFailureCallback(deferred, 'Read page from store failure');
 
-            store.contains(key, function (contained) {
-                if (canceled) {
-                    return;
-                }
-                if (contained) {
-                    store.read(key, function (_, data) {
-                        if (!canceled) {
-                            deferred.resolve(data !== undefined, data);
-                        }
-                    }, error);
-                    return;
-                }
-                deferred.resolve(false);
-            }, error);
+            store.contains(
+                key,
+                function (contained) {
+                    if (canceled) {
+                        return;
+                    }
+                    if (contained) {
+                        store.read(
+                            key,
+                            function (_, data) {
+                                if (!canceled) {
+                                    deferred.resolve(data !== undefined, data);
+                                }
+                            },
+                            error
+                        );
+                        return;
+                    }
+                    deferred.resolve(false);
+                },
+                error
+            );
             return deferred;
         };
 
@@ -10097,17 +10460,16 @@
             /// <param name="page" type="Object">Object with (i)ndex, (c)ount, (d)ata, and (t)icks.</param>
             /// <returns type="DjsDeferred">A promise with no value.</returns>
 
-
             var canceled = false;
 
             var deferred = extend(new DjsDeferred(), {
                 cancel: function () {
                     /// <summary>Aborts the readPage operation.</summary>
                     canceled = true;
-                }
+                },
             });
 
-            var error = storeFailureCallback(deferred, "Save page to store failure");
+            var error = storeFailureCallback(deferred, 'Save page to store failure');
 
             var resolve = function () {
                 deferred.resolve(true);
@@ -10118,10 +10480,15 @@
                 overflowed = cacheSize >= 0 && cacheSize < actualCacheSize + pageBytes;
 
                 if (!overflowed) {
-                    store.addOrUpdate(key, page, function () {
-                        updateSettings(page, pageBytes);
-                        saveSettings(resolve, error);
-                    }, error);
+                    store.addOrUpdate(
+                        key,
+                        page,
+                        function () {
+                            updateSettings(page, pageBytes);
+                            saveSettings(resolve, error);
+                        },
+                        error
+                    );
                 } else {
                     resolve();
                 }
@@ -10146,13 +10513,13 @@
                 highestSavedPageSize: highestSavedPageSize,
                 pageSize: pageSize,
                 sourceId: source.identifier,
-                version: version
+                version: version,
             };
 
-            store.addOrUpdate("__settings", settings, success, error);
+            store.addOrUpdate('__settings', settings, success, error);
         };
 
-        var storeFailureCallback = function (deferred/*, message*/) {
+        var storeFailureCallback = function (deferred /*, message*/) {
             /// <summary>Creates a function that handles a store error.</summary>
             /// <param name="deferred" type="DjsDeferred">Deferred object to resolve.</param>
             /// <param name="message" type="String">Message text.</param>
@@ -10286,7 +10653,6 @@
 
             // Handle cancelation
             if (!cancelStateMachine(operation, opTargetState, cacheState, data)) {
-
                 var transition = operation.transition;
 
                 // Handle preemption
@@ -10355,7 +10721,6 @@
 
             // Handle cancelation
             if (!cancelStateMachine(operation, opTargetState, cacheState, data)) {
-
                 var transition = operation.transition;
 
                 // Handle preemption
@@ -10510,41 +10875,45 @@
         };
 
         // Initialize the cache.
-        store.read("__settings", function (_, settings) {
-            if (assigned(settings)) {
-                var settingsVersion = settings.version;
-                if (!settingsVersion || settingsVersion.indexOf("1.") !== 0) {
-                    cacheFailureCallback("Unsupported cache store version " + settingsVersion)();
-                    return;
-                }
+        store.read(
+            '__settings',
+            function (_, settings) {
+                if (assigned(settings)) {
+                    var settingsVersion = settings.version;
+                    if (!settingsVersion || settingsVersion.indexOf('1.') !== 0) {
+                        cacheFailureCallback('Unsupported cache store version ' + settingsVersion)();
+                        return;
+                    }
 
-                if (pageSize !== settings.pageSize || source.identifier !== settings.sourceId) {
-                    // The shape or the source of the data was changed so invalidate the store.
-                    clearStore().then(function () {
+                    if (pageSize !== settings.pageSize || source.identifier !== settings.sourceId) {
+                        // The shape or the source of the data was changed so invalidate the store.
+                        clearStore().then(function () {
+                            // Signal the cache is fully initialized.
+                            changeState(CACHE_STATE_IDLE);
+                        }, cacheFailureCallback('Unable to clear store during initialization'));
+                    } else {
+                        // Restore the saved settings.
+                        actualCacheSize = settings.actualCacheSize;
+                        allDataLocal = settings.allDataLocal;
+                        cacheSize = settings.cacheSize;
+                        collectionCount = settings.collectionCount;
+                        highestSavedPage = settings.highestSavedPage;
+                        highestSavedPageSize = settings.highestSavedPageSize;
+                        version = settingsVersion;
+
                         // Signal the cache is fully initialized.
                         changeState(CACHE_STATE_IDLE);
-                    }, cacheFailureCallback("Unable to clear store during initialization"));
+                    }
                 } else {
-                    // Restore the saved settings.
-                    actualCacheSize = settings.actualCacheSize;
-                    allDataLocal = settings.allDataLocal;
-                    cacheSize = settings.cacheSize;
-                    collectionCount = settings.collectionCount;
-                    highestSavedPage = settings.highestSavedPage;
-                    highestSavedPageSize = settings.highestSavedPageSize;
-                    version = settingsVersion;
-
-                    // Signal the cache is fully initialized.
-                    changeState(CACHE_STATE_IDLE);
+                    // This is a brand new cache.
+                    saveSettings(function () {
+                        // Signal the cache is fully initialized.
+                        changeState(CACHE_STATE_IDLE);
+                    }, cacheFailureCallback('Unable to write settings during initialization.'));
                 }
-            } else {
-                // This is a brand new cache.
-                saveSettings(function () {
-                    // Signal the cache is fully initialized.
-                    changeState(CACHE_STATE_IDLE);
-                }, cacheFailureCallback("Unable to write settings during initialization."));
-            }
-        }, cacheFailureCallback("Unable to read settings from store."));
+            },
+            cacheFailureCallback('Unable to read settings from store.')
+        );
 
         return that;
     };
@@ -10556,21 +10925,18 @@
         /// prefetchSize, cacheSize, storage mechanism, and initial prefetch and local-data handler.
         /// </param>
         /// <returns type="DataCache">A new data cache instance.</returns>
-        checkUndefinedGreaterThanZero(options.pageSize, "pageSize");
-        checkUndefinedOrNumber(options.cacheSize, "cacheSize");
-        checkUndefinedOrNumber(options.prefetchSize, "prefetchSize");
+        checkUndefinedGreaterThanZero(options.pageSize, 'pageSize');
+        checkUndefinedOrNumber(options.cacheSize, 'cacheSize');
+        checkUndefinedOrNumber(options.prefetchSize, 'prefetchSize');
 
         if (!assigned(options.name)) {
-            throw { message: "Undefined or null name", options: options };
+            throw { message: 'Undefined or null name', options: options };
         }
 
         if (!assigned(options.source)) {
-            throw { message: "Undefined source", options: options };
+            throw { message: 'Undefined source', options: options };
         }
 
         return new DataCache(options);
     };
-
-
-
 })(this);

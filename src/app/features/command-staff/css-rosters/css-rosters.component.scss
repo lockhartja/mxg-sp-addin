@@ -1,0 +1,38 @@
+#css-roster-page {
+    > .sidebar {
+        width: 280px;
+        min-width: 280px;
+        max-width: 280px;
+    }
+
+    > .center {
+        > .header {
+            position: relative;
+            min-height: 96px;
+            background-image: none;
+            z-index: 49;
+
+            .header-content {
+                .header-button {
+                    margin: 0;
+                }
+            }
+        }
+
+        > .content {
+            flex: 1;
+
+            mat-tab-group {
+                height: 100%;
+
+                .mat-tab-body-wrapper {
+                    flex-grow: 1;
+                }
+            }
+
+            .mat-tab-label-container {
+                padding: 0 24px;
+            }
+        }
+    }
+}

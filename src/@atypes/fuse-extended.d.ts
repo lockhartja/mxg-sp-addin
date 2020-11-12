@@ -1,6 +1,7 @@
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { FuseConfig, FuseNavigation, FuseNavigationItem } from '@fuse/types';
+import { FuseNavigationItem } from '@fuse/types';
 import { matIcon } from './icon-valid';
+import { SpUserPermissionGroup } from './sharepoint-entity';
 import { AppEndpoints } from './utility';
 
 export type XtendedFuseMatColor =
@@ -63,11 +64,7 @@ export interface XtendedFuseFooterComponent {
 }
 
 export interface XtendedFuseConfig {
-    colorTheme:
-        | 'theme-default'
-        | 'theme-yellow-light'
-        | 'theme-blue-gray-dark'
-        | 'theme-pink-dark';
+    colorTheme: 'theme-default' | 'theme-yellow-light' | 'theme-blue-gray-dark' | 'theme-pink-dark';
 
     customScrollbars: boolean;
 
@@ -90,10 +87,7 @@ export interface XtendedFuseConfig {
             hidden: boolean;
             folded: boolean;
             position: 'left' | 'right' | 'top';
-            variant:
-                | 'vertical-style-1'
-                | 'horizontal-style-1'
-                | 'vertical-style-2';
+            variant: 'vertical-style-1' | 'horizontal-style-1' | 'vertical-style-2';
         };
 
         toolbar: {
@@ -133,19 +127,17 @@ export type AppNavStubs =
     | 'global_nav_config'
     | 'msm_nav_config'
     | 'admin_nav_config'
+    | 'css-nav-config'
+    | 'css-nav-config-about'
+    | 'css-nav-config-rosters'
+    | 'exec_nav_config'
     | 'sec_nav_config';
-
-export type AppSpUserPermission =
-    | 'sm-user'
-    | 'sm-metric-user'
-    | 'sm-global-admin'
-    | 'sm-secmgr-user';
 
 export interface XtendedFuseNavItem extends FuseNavigationItem {
     id: AppNavStubs;
     icon?: matIcon;
     url?: AppEndpoints;
-    spGroupId: AppSpUserPermission;
+    spGroupId: SpUserPermissionGroup;
     children?: XtendedFuseNavItem[];
 }
 

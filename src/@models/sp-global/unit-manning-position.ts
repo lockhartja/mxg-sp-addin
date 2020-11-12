@@ -1,8 +1,8 @@
 import { BzDataProp, BzEntity } from '@models/decorator';
-import { SharepointEntity } from './sharepoint-entity';
+import { SpListEntityBase } from '../abstract/sp-list-entity-base';
 
 @BzEntity
-export class UnitManningPosition extends SharepointEntity {
+export class UnitManningPosition extends SpListEntityBase {
     readonly namespace = 'SP.Global';
     readonly shortName = 'UnitManningPosition';
 

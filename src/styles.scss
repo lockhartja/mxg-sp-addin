@@ -1,5 +1,9 @@
 // Import Fuse core library
-@import "@fuse/scss/core";
+@import '@fuse/scss/core';
 
 // Import app.theme.scss
-@import "app/app.theme";
+@import 'app/app.theme';
+
+html.swal2-shown {
+    font: 1em sans-serif;
+}

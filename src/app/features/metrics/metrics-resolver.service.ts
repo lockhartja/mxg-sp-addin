@@ -15,7 +15,7 @@ export class MetricResolver implements Resolve<any> {
         this.navService = navService;
     }
 
-    async resolve(): Promise<any> {
+    resolve(): void {
         this.navService.updateNavigationItem('msm_nav_config', {
             children: [METRICS_NAV_CONFIG],
         });

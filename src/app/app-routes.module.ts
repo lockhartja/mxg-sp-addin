@@ -1,7 +1,7 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AppRoutes } from '@atypes';
-import { AppLoadGuardService } from './app-load-guard.servic';
+import { AppLoadGuardService } from './app-load-guard.service';
 import { HomeResolverService } from './features/home/home-resolver.service';
 import { HomeComponent } from './features/home/home.component';
 
@@ -15,6 +15,14 @@ export const appRoutes: AppRoutes = [
         path: 'admin',
         loadChildren: () =>
             import('./features/admin/admin.module').then((m) => m.AdminModule),
+        canLoad: [AppLoadGuardService],
+    },
+    {
+        path: 'css',
+        loadChildren: () =>
+            import('./features/command-staff/command-staff.module').then(
+                (m) => m.CommandStaffModule
+            ),
         canLoad: [AppLoadGuardService],
     },
     {

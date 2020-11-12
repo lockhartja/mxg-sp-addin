@@ -1,0 +1,246 @@
+<div class="upLoader">
+    <div
+        mat-dialog-title
+        class="header accent-900 p-24 pb-0"
+        fxLayout="column"
+        fxLayoutAlign="space-between"
+    >
+        <div
+            class="header-content"
+            fxLayout="row wrap"
+            fxLayoutAlign="space-between"
+            fxFlex="1 0 auto"
+        >
+            <h2>Select Roster</h2>
+        </div>
+    </div>
+
+    <mat-dialog-content class="mat-typography">
+        <mat-vertical-stepper [linear]="true" (selectionChange)="stepChanged($event)">
+            <mat-step [label]="'Step 1: Upload Roster'" [stepControl]="step1FormGroup">
+                <form fxLayout="column" [formGroup]="step1FormGroup">
+                    <p> You will need to save your roster as CSV file to allow for import. </p>
+
+                    <div fxFlex="1 0 auto" fxLayout="column">
+                        <mat-form-field appearance="outline" fxFlex="100">
+                            <mat-label>Select Roster Type</mat-label>
+                            <mat-select [formControl]="rosterTypeFormControl">
+                                <mat-option value="alpha">Alpha Roster</mat-option>
+                                <mat-option value="gain">Gains Roster</mat-option>
+                                <mat-option value="loss">Loss Roster</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="rosterTypeFormControl.hasError('required')"
+                                >Please select a roster type.
+                            </mat-error>
+                            <mat-hint>{{ fileName }}</mat-hint>
+                        </mat-form-field>
+                    </div>
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                        <button
+                            mat-raised-button
+                            type="button"
+                            [disabled]="!hasRosterType"
+                            color="accent"
+                            (click)="fileInput.click()"
+                        >
+                            Select Roster
+                        </button>
+                        <input
+                            [formControl]="rosterFileFormControl"
+                            hidden
+                            required
+                            type="file"
+                            #fileInput
+                            accept=".csv"
+                            (change)="parseUpload($event.target.files)"
+                        />
+                        <mat-error *ngIf="step1FormGroup.hasError('required')"
+                            >Missing a roster file
+                        </mat-error>
+                    </div>
+                </form>
+
+                <!-- <div fxLayout="row" fxLayoutAlign="center center">
+                    <button mat-raised-button matStepperNext type="button" color="accent">
+                        Process
+                    </button>
+                                                (change)="parseUpload($event.target.files)"
+
+                </div> -->
+            </mat-step>
+
+            <mat-step
+                [label]="'Step 2: Check Field Names'"
+                [optional]="true"
+                [stepControl]="step2FormGroup"
+            >
+                <form [formGroup]="step2FormGroup">
+                    <p class="small">
+                        Here are the default names of the selected roster's column, if any do not
+                        match the roster that you have selected
+                    </p>
+
+                    <mat-table
+                        #rosterData
+                        [dataSource]="rosterDataFields"
+                        matSort
+                        [@animateStagger]="{ value: '50' }"
+                        fusePerfectScrollbar
+                        class="mat-elevation-z0"
+                    >
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="fieldName">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                >Field Name</mat-header-cell
+                            >
+                            <mat-cell *matCellDef="let rosterDataField">
+                                <p class="text-truncate">{{ rosterDataField.fieldName }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- DefaultName Column -->
+                        <ng-container matColumnDef="defaultName">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                >Default Name</mat-header-cell
+                            >
+                            <mat-cell *matCellDef="let rosterDataField">
+                                <p>{{ rosterDataField.defaultName }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- OverrideName Column -->
+                        <ng-container matColumnDef="overrideName">
+                            <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-sm
+                                >Override Name</mat-header-cell
+                            >
+                            <mat-cell
+                                *matCellDef="let rosterDataField; let rowIdx = index"
+                                fxHide
+                                fxShow.gt-sm
+                            >
+                                <mat-form-field>
+                                    <input [formControlName]="'overrideName-' + rowIdx" matInput />
+                                </mat-form-field>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row
+                            *matHeaderRowDef="step2DisplayColumns; sticky: true"
+                        ></mat-header-row>
+
+                        <mat-row *matRowDef="let rosterDataField; columns: step2DisplayColumns">
+                        </mat-row>
+                    </mat-table>
+                </form>
+            </mat-step>
+
+            <mat-step [label]="'Step 3: Fix DoDID Value'" [stepControl]="step3FormGroup">
+                <div fxLayout="row" fxLayoutAlign="center center" *ngIf="isQuerying">
+                    <mat-spinner [mode]="'indeterminate'"></mat-spinner>
+                </div>
+
+                <form [formGroup]="step3FormGroup" *ngIf="!isQuerying">
+                    <p class="small">
+                        SSAN are never uploaded to Sharepoint in a readable format. All SSANs are
+                        translated to the member's DoDID/EDPID number. The following personnel are
+                        new to the SMA...please provide the following information for each new
+                        personnel.
+                    </p>
+
+                    <mat-table
+                        #missingIdTable
+                        [dataSource]="pagedNewMemberIdentifiers"
+                        class="fix-id-table"
+                        matSort
+                        [@animateStagger]="{ value: '50' }"
+                        fusePerfectScrollbar
+                    >
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                >Name</mat-header-cell
+                            >
+                            <mat-cell *matCellDef="let memberIdentifier">
+                                <p class="text-truncate">{{ memberIdentifier.name }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- PrivateId Column -->
+                        <ng-container matColumnDef="privateId">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                >SSAN</mat-header-cell
+                            >
+                            <mat-cell *matCellDef="let memberIdentifier">
+                                <p>{{ memberIdentifier.privateId }}</p>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- PublicId Column -->
+                        <ng-container matColumnDef="publicId">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm
+                                >DoDID/EDPID</mat-header-cell
+                            >
+                            <mat-cell
+                                *matCellDef="let memberIdentifier; let rowIdx = index"
+                                fxHide
+                                fxShow.gt-sm
+                            >
+                                <mat-form-field>
+                                    <input [formControlName]="'publicId' + rowIdx" matInput />
+                                </mat-form-field>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- PublicId Column -->
+                        <!-- <ng-container matColumnDef="email">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm
+                                >Email Address</mat-header-cell
+                            >
+                            <mat-cell
+                                *matCellDef="let memberIdentifier; let rowIdx = index"
+                                fxHide
+                                fxShow.gt-sm
+                            >
+                                <mat-form-field>
+                                    <input [formControlName]="'email' + rowIdx" matInput />
+                                </mat-form-field>
+                            </mat-cell>
+                        </ng-container> -->
+
+                        <mat-header-row
+                            *matHeaderRowDef="step3DisplayColumns; sticky: true"
+                        ></mat-header-row>
+
+                        <mat-row
+                            *matRowDef="let memberIdentifier; columns: step3DisplayColumns"
+                            matRipple
+                        >
+                        </mat-row>
+                    </mat-table>
+                    <mat-paginator
+                        [length]="newMemberIdentifiers.length"
+                        [pageIndex]="0"
+                        [pageSize]="5"
+                        [pageSizeOptions]="[5, 10, 25]"
+                        (page)="step3PageEvent($event)"
+                    >
+                    </mat-paginator>
+                </form>
+            </mat-step>
+
+            <mat-step>
+                <ng-template matStepLabel>Step 4: Process New Additions</ng-template>
+            </mat-step>
+
+            <mat-step>
+                <ng-template matStepLabel>Step 5: Process Roster</ng-template>
+            </mat-step>
+        </mat-vertical-stepper>
+    </mat-dialog-content>
+
+    <div mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>Cancel</button>
+        <button mat-button cdkFocusInitial>Process Roster</button>
+    </div>
+</div>
